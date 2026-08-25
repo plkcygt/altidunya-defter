@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Altıdünya — Karakter Yöneticisi</title>
+<style>
+  :root{
+    --bg:#0f0e0c; --panel:#17151220; --panel-solid:#1a1815; --line:#3a332a;
+    --gold:#c9a961; --gold-dim:#8a7440; --ink:#e8e0d0; --ink-dim:#9a9080;
+    --red:#a3432f; --green:#5f7a4a; --blue:#4a6a7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;overflow-wrap:break-word;word-break:normal}
+  html{max-width:100%;overflow-x:hidden}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+    background-image:radial-gradient(ellipse at top,#1c1a16 0%,#0f0e0c 60%);
+    min-height:100vh; padding:0 0 60px;
+  }
+  h1,h2,h3,h4{font-family:Georgia,"Times New Roman",serif;font-weight:600;letter-spacing:.01em}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+
+  header.top{border-bottom:1px solid var(--line);padding:18px 0 14px;margin-bottom:18px;
+    background:linear-gradient(180deg,#151310,transparent)}
+  header.top h1{font-size:22px;color:var(--gold)}
+  header.top p{color:var(--ink-dim);font-size:13px;margin-top:2px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .tools{display:flex;gap:8px;flex-wrap:wrap}
+
+  button{font:inherit;cursor:pointer;border-radius:5px;border:1px solid var(--line);
+    background:#221f1a;color:var(--ink);padding:7px 13px;transition:.15s}
+  button:hover{border-color:var(--gold-dim);background:#2b2721}
+  button.primary{background:var(--gold-dim);border-color:var(--gold);color:#14120f;font-weight:600}
+  button.primary:hover{background:var(--gold)}
+  button.ghost{background:transparent;font-size:13px;padding:5px 10px}
+  button.sm{padding:3px 9px;font-size:13px}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+  .tab{background:transparent;border:1px solid transparent;border-bottom:none;
+    border-radius:6px 6px 0 0;padding:9px 18px;color:var(--ink-dim);font-family:Georgia,serif;font-size:16px}
+  .tab.on{color:var(--gold);border-color:var(--line);background:var(--panel-solid);
+    position:relative;top:1px}
+  .tab small{display:block;font-family:system-ui,sans-serif;font-size:11px;color:var(--ink-dim);
+    letter-spacing:.03em}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel-solid);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px}
+  .card h3{color:var(--gold);font-size:15px;letter-spacing:.09em;
+    margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+  /* identity */
+  .ident{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    background:linear-gradient(90deg,#1e1b16,#17151200);border:1px solid var(--line);
+    border-left:3px solid var(--gold);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  .ident h2{font-size:24px;color:var(--gold)}
+  .ident .sub{color:var(--ink-dim);font-size:13px;margin-top:2px}
+  .lvlbox{text-align:center;border:1px solid var(--gold-dim);border-radius:6px;padding:6px 16px;background:#0e0d0b}
+  .lvlbox .n{font-family:Georgia,serif;font-size:30px;color:var(--gold);line-height:1}
+  .lvlbox .l{font-size:10px;color:var(--ink-dim);letter-spacing:.14em}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  @media(max-width:560px){.stats{grid-template-columns:repeat(3,1fr)}}
+  .stat{background:#0e0d0b;border:1px solid var(--line);border-radius:6px;text-align:center;padding:8px 4px}
+  .stat .lab{font-size:10px;letter-spacing:.1em;color:var(--ink-dim)}
+  .stat .mod{font-family:Georgia,serif;font-size:23px;color:var(--gold)}
+  .stat .raw{font-size:11px;color:var(--ink-dim)}
+
+  /* mini rows */
+  .rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px}
+  .mini{background:#0e0d0b;border:1px solid var(--line);border-radius:6px;padding:7px 8px;text-align:center}
+  .mini .l{font-size:10px;color:var(--ink-dim);letter-spacing:.06em}
+  .mini .v{font-family:Georgia,serif;font-size:19px;color:var(--ink)}
+
+  /* beceriler */
+  .becler{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px}
+  @media(max-width:640px){.becler{grid-template-columns:1fr}}
+  .bec{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:4px;
+    cursor:pointer;font-size:13.5px;color:var(--ink-dim);transition:.12s;border-bottom:1px dashed #241f19}
+  .bec:hover{background:#221f1a;color:var(--ink)}
+  .bec.pr{color:var(--ink)}
+  .bec.uz{color:var(--ink)}
+  .bec .dot{color:var(--line);font-size:11px;width:11px}
+  .bec.pr .dot{color:var(--gold-dim)}
+  .bec.uz .dot{color:var(--gold)}
+  .bec .bn{flex:1}
+  .bec .bn em{font-style:normal;font-size:10px;opacity:.5;letter-spacing:.05em}
+  .bec .bv{font-family:Georgia,serif;font-size:16px;color:var(--gold-dim);min-width:26px;text-align:right}
+  .bec.pr .bv,.bec.uz .bv{color:var(--gold)}
+
+  /* saldırılar */
+  .atk{padding:8px 0;border-bottom:1px dashed #2a251e}
+  .atk:last-child{border:none}
+  .atk-ust{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .atk-ad{font-weight:600;font-size:14px}
+  .atk-say{white-space:nowrap;font-family:Georgia,serif}
+  .atk-say b{color:var(--gold);font-size:17px}
+  .atk-say i{font-style:normal;color:var(--ink-dim);font-size:13px;margin-left:7px}
+
+  ul.list{list-style:none}
+  ul.list li{padding:7px 0;border-bottom:1px dashed #2a251e;font-size:14px}
+  ul.list li:last-child{border:none}
+  ul.list b{color:var(--gold);font-weight:600}
+  .lv{display:inline-block;min-width:26px;font-size:10px;color:var(--ink-dim);
+    border:1px solid var(--line);border-radius:3px;padding:0 4px;margin-right:7px;text-align:center}
+  .note{color:var(--ink-dim);font-size:13px;line-height:1.5}
+
+  /* trackers */
+  .track{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed #2a251e;flex-wrap:wrap}
+  .track:last-child{border:none}
+  .track .name{flex:1;min-width:120px;font-size:14px}
+  .pips{display:flex;gap:4px;flex-wrap:wrap}
+  .pip{width:19px;height:19px;border:1px solid var(--gold-dim);border-radius:3px;background:#0c0b09;cursor:pointer;transition:.12s}
+  .pip.used{background:var(--gold-dim);border-color:var(--gold)}
+  .pip:hover{border-color:var(--gold)}
+
+  .hpbar{display:flex;align-items:center;gap:8px}
+  .hpbar input{width:62px;background:#0c0b09;border:1px solid var(--line);color:var(--gold);
+    font-family:Georgia,serif;font-size:20px;text-align:center;border-radius:5px;padding:4px}
+  .hpbar .max{font-family:Georgia,serif;font-size:20px;color:var(--ink-dim)}
+
+  .coins{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .coin{background:#0e0d0b;border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center}
+  .coin label{display:block;font-size:10px;color:var(--ink-dim);letter-spacing:.1em}
+  .coin input{width:100%;background:transparent;border:none;color:var(--gold);
+    font-family:Georgia,serif;font-size:20px;text-align:center;outline:none}
+
+  /* iOS Safari: 16px altı yazı alanına dokunmak sayfayı zoomlar (layout patlamış görünür).
+     Bu yüzden TÜM yazı girilen alanlar en az 16px. */
+  input,textarea,select{font-size:16px}
+  textarea{width:100%;min-height:110px;background:#0c0b09;border:1px solid var(--line);
+    border-radius:6px;color:var(--ink);padding:10px;font-family:system-ui,sans-serif;
+    font-size:16px;line-height:1.5;resize:vertical}
+  textarea:focus{outline:none;border-color:var(--gold-dim)}
+  input.fld{width:100%;background:#0c0b09;border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);padding:9px 10px;font-family:system-ui,sans-serif;font-size:16px;margin:4px 0 12px}
+  input.fld:focus{outline:none;border-color:var(--gold-dim)}
+  .modal label.note{display:block;margin-top:6px}
+
+  /* modal */
+  .mask{position:fixed;inset:0;background:#000c;display:none;align-items:flex-start;
+    justify-content:center;padding:24px 12px;overflow:auto;z-index:50}
+  .mask.on{display:flex}
+  .modal{background:#171512;border:1px solid var(--gold-dim);border-radius:10px;
+    max-width:640px;width:100%;padding:22px}
+  .modal h3{color:var(--gold);font-size:19px;margin-bottom:4px}
+  .steps{color:var(--ink-dim);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+  .opt{border:1px solid var(--line);border-radius:7px;padding:12px;margin-bottom:9px;cursor:pointer;transition:.15s;background:#131110}
+  .opt:hover{border-color:var(--gold-dim);background:#1c1917}
+  .opt.sel{border-color:var(--gold);background:#241f16}
+  .opt b{color:var(--gold);display:block;margin-bottom:3px}
+  .opt span{font-size:13px;color:var(--ink-dim)}
+  .modfoot{display:flex;justify-content:space-between;gap:10px;margin-top:18px;
+    border-top:1px solid var(--line);padding-top:14px}
+  .gain{background:#141814;border:1px solid #2f3a2a;border-radius:7px;padding:12px;margin-bottom:12px}
+  .gain b{color:#8fae74}
+  .rolled{font-family:Georgia,serif;font-size:34px;color:var(--gold);text-align:center;padding:10px}
+
+  .warn{background:#1c1512;border:1px solid #4a2f26;border-radius:7px;padding:10px 12px;
+    font-size:13px;color:#d3a894;margin-bottom:14px}
+  footer{color:var(--ink-dim);font-size:12px;text-align:center;padding:26px 16px 0;border-top:1px solid var(--line);margin-top:24px}
+
+  /* ---------- MOBİL ---------- */
+  @media(max-width:720px){
+    body{font-size:14.5px;-webkit-text-size-adjust:100%;padding-bottom:40px}
+    .wrap{padding:0 12px}
+
+    header.top{padding:13px 0 11px;margin-bottom:14px}
+    header.top h1{font-size:17px;line-height:1.25}
+    header.top p{font-size:11.5px}
+    .topbar{gap:11px}
+    .tools{width:100%;gap:6px}
+    .tools button{flex:1 1 0;min-width:0;font-size:11.5px;padding:9px 4px;text-align:center}
+
+    /* sekmeler: yatay kaydırılabilir, taşmaz */
+    .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;margin-bottom:15px}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{flex:0 0 auto;white-space:nowrap;padding:9px 15px;font-size:15px}
+
+    /* kimlik bloğu alt alta */
+    .ident{padding:13px;gap:11px}
+    .ident h2{font-size:21px}
+    .ident .sub{font-size:12px;line-height:1.45}
+    .ident>div:last-child{width:100%;justify-content:space-between}
+    .lvlbox{padding:5px 14px}
+    .lvlbox .n{font-size:26px}
+
+    .card{padding:13px;margin-bottom:13px}
+    .card h3{font-size:13px;flex-wrap:wrap;gap:6px}
+
+    /* parmakla basılabilir hedefler */
+    .pip{width:25px;height:25px}
+    .bec{padding:9px 6px;font-size:14px}
+    .bec .bv{font-size:17px;min-width:30px}
+    button{padding:9px 14px}
+    button.sm{padding:6px 11px;font-size:13px}
+    button.ghost{padding:7px 12px;font-size:13px}
+
+    .stats{grid-template-columns:repeat(3,1fr);gap:7px}
+    .stat{padding:9px 4px}
+    .stat .mod{font-size:22px}
+
+    .rows{grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:7px}
+    .track{padding:9px 0}
+    .track .name{min-width:100%;margin-bottom:3px}
+
+    textarea{min-height:96px}
+    .mask{padding:10px 8px;align-items:flex-start}
+    .modal{padding:16px;border-radius:9px}
+    .modal h3{font-size:17px}
+    .opt{padding:11px}
+    .modfoot{gap:8px}
+    .modfoot button{flex:1}
+  }
+
+  @media(max-width:400px){
+    .rows{grid-template-columns:1fr 1fr}
+    .coins{gap:6px}
+    .coin input{font-size:18px}
+    .tools button{font-size:11px;padding:8px 3px}
+    .ident h2{font-size:19px}
+  }
+
+  @media print{
+    body{background:#fff;color:#000}
+    .tabs,.tools,.mask,button,footer{display:none!important}
+    .card,.ident,.stat,.mini{border-color:#999;background:#fff;color:#000}
+    .card h3,.ident h2,.stat .mod,.mini .v,.lvlbox .n{color:#000}
+    .pane{display:block!important;page-break-after:always}
+  }
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap topbar">
+  <div>
+    <h1>Altıdünya: Yarılma — Karakter Yöneticisi</h1>
+    <p>Karya · Aya · Kuzgun — otomatik hesaplama + level up sihirbazı (3→10)
+      <span id="verBadge" style="margin-left:8px;border:1px solid var(--gold-dim);border-radius:4px;
+        padding:1px 7px;font-size:11px;color:var(--gold)"></span></p>
+  </div>
+  <div class="tools">
+    <button class="ghost" onclick="disaAktar()">↓ Yedek al</button>
+    <button class="ghost" onclick="iceAktar()">↑ Yedek yükle</button>
+    <button class="ghost" onclick="window.print()">🖨 Yazdır</button>
+    <button class="ghost" onclick="sifirla()">⟲ Sıfırla</button>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <div class="tabs" id="tabs"></div>
+  <div id="panes"></div>
+</div>
+
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+
+<footer class="wrap">
+  Veriler tarayıcına kaydedilir (localStorage) — sekmeyi kapatsan da durur.
+  Başka bilgisayara taşımak için <b>Yedek al</b> kullan.<br>
+  2024 (PHB'24) kural setine göre hazırlandı. Şüpheli bir satır görürsen kitaba bak — bu araç yardımcıdır, hakem değil.
+</footer>
+
+<script>
+/* ============================================================
+   ALTIDÜNYA KARAKTER YÖNETİCİSİ
+   ============================================================ */
+
+const HALK_BONUS = {
+  'Sular': {WIS:2, CHA:2, STR:-2, CON:-2},
+  'Çöl':   {STR:2, DEX:2, WIS:-2, CHA:-2},
+  'Vadi':  {INT:2, WIS:2, STR:-2, CHA:-2},
+  'Orman': {},
+  'Dağ':   {CON:2, WIS:2, STR:-2, CHA:-2},
+  'Ova':   {STR:2, CHA:2, WIS:-2, INT:-2}
+};
+
+/* Halk yetenekleri — 06_peoples.md'den. Düzenlemek istersen bu bloğu değiştir. */
+const HALK_YETENEK = {
+  'Vadi':[
+    ['Darkvision 20 ft','Vadi gölgesinde yetişmenin adaptasyonu — 20 ft menzilde karanlığı loş ışık, loş ışığı aydınlık gibi görürsün (renksiz).'],
+    ['Poison Resistance','Poison saving throw\'larında advantage (kuşaklar boyu artmış direnç).'],
+    ['Reduced Sleep','Günde 3-4 saat yeter. Long rest 4 saatte tamamlanabilir (DM onayıyla).'],
+    ['Hyperalert','Gizli tehdit sezerken Perception / Insight kontrollerine +1 (paranoyak dikkat).']
+  ],
+  'Sular':[
+    ['Emotion Sense','Empati — <b>yalnızca Sular halkının</b> duygu durumunu hissedebilirsin. Diğer halklar sana kapalıdır.'],
+    ['Water Memory','Suya dokunarak o suyun taşıdığı son duyguları okursun.'],
+    ['Dream Sharing','Topluluk aynı rüyayı görebilir; Andelin\'in rüyaları sızar.'],
+    ['Hive Sense','Arka plan vızıltısı — <b>yalnızca Sular halkıyla.</b> Aynı topluluktakilerin duygu durumunu fark edersin.']
+  ],
+  'Dağ':[
+    ['Stone & Wind Reading','Taşa dokunarak toprak sağlığı, rüzgâra dokunarak hava; Nature / Survival kontrollerinde advantage.'],
+    ['Altitude & Cold Endurance','Soğuk ve yükseklik seni etkilemez; ilgili Constitution save\'lerinde advantage.'],
+    ['Solo Survival','Tek başına yaşam ustası — hermit geleneği.']
+  ],
+  'Çöl':[
+    ['Hardened Hide','Doğal zırh: yaşlandıkça sertleşen deri (+1 AC, DM onayıyla).'],
+    ['Pain Threshold','Acıya dayanıklılık — Constitution save\'lerinde advantage.'],
+    ['Apex Hunter','Mega-predator avı bilgisi.'],
+    ['Arid Endurance','Susuzluk ve sıcak seni geç etkiler.']
+  ],
+  'Orman':[
+    ['Adaptability','Sınav kültürü — yeni bir beceriye hızlı uyum.'],
+    ['Team Coordination','Müttefikle koordineli saldırıda bonus.'],
+    ['Grace Under Pressure','Baskı altında panik yok.']
+  ],
+  'Ova':[
+    ['Civic Authority','Resmî protokol, hukuk, örgütlenme bilgisi.'],
+    ['Militia Training','Her vatandaş eğitimli — silah ve formasyon aşinalığı.'],
+    ['⚠ Rule Blindness','Kuralın ötesini görmezsin; ince tehditleri sezemezsin.']
+  ]
+};
+
+const STATLAR = ['STR','DEX','CON','INT','WIS','CHA'];
+const STAT_TR = {STR:'Strength',DEX:'Dexterity',CON:'Constitution',INT:'Intelligence',WIS:'Wisdom',CHA:'Charisma'};
+
+const BECERI_STAT = {
+  'Athletics':'STR','Acrobatics':'DEX','Sleight of Hand':'DEX','Stealth':'DEX',
+  'Arcana':'INT','History':'INT','Investigation':'INT','Nature':'INT','Religion':'INT',
+  'Animal Handling':'WIS','Insight':'WIS','Medicine':'WIS','Perception':'WIS','Survival':'WIS',
+  'Deception':'CHA','Intimidation':'CHA','Performance':'CHA','Persuasion':'CHA'
+};
+// Skill isimleri İngilizce orijinaliyle kullanılır (anahtarın kendisi).
+const BECERI_TR = new Proxy({}, {get:(_,k)=>k});
+
+/* --- Büyü yuvaları --- */
+const TAM_CASTER = { // Cleric
+  1:[2],2:[3],3:[4,2],4:[4,3],5:[4,3,2],6:[4,3,3],7:[4,3,3,1],8:[4,3,3,2],9:[4,3,3,3,1],10:[4,3,3,3,2]
+};
+const UCTE_BIR = { // Arcane Trickster — 3. seviyeden önce büyü yok
+  1:[],2:[],3:[2],4:[3],5:[3],6:[3],7:[4,2],8:[4,2],9:[4,2],10:[4,3]
+};
+const CLERIC_HAZIR = {1:4,2:5,3:6,4:7,5:9,6:10,7:11,8:12,9:14,10:15};
+const AT_BUYU_SAYISI = {1:0,2:0,3:3,4:4,5:4,6:4,7:5,8:6,9:6,10:7};
+const AT_CANTRIP = {1:0,2:0,3:3,4:3,5:3,6:3,7:3,8:3,9:3,10:4}; // Mage Hand dahil
+
+/* --- Feat listesi (kısa, güvenli seçki) --- */
+const FEATLER = [
+  {ad:'Alert', not:'Initiative\'e proficiency bonusunu ekle; initiative sonucunu bir müttefikle takas edebilirsin.'},
+  {ad:'Tough', not:'Maksimum HP += 2 × seviye. (Level 4\'te +8, sonra her seviyede +2.)'},
+  {ad:'Mobile', not:'Hız +10 ft. Dash sonrası zor arazi seni yavaşlatmaz; melee saldırdığın hedeften fırsat saldırısı yemezsin.'},
+  {ad:'Lucky', not:'Proficiency bonusu kadar şans puanı: bir zara avantaj ekle ya da düşmanın zarına dezavantaj.'},
+  {ad:'Resilient', not:'Bir yeteneğe +1 ve o yeteneğin saving throw\'unda proficiency.'},
+  {ad:'War Caster', not:'Konsantrasyon save\'lerinde avantaj; eller doluyken büyü yapabilirsin; fırsat saldırısı yerine büyü.'},
+  {ad:'Skulker', not:'Loş ışıkta gizlenebilirsin; menzilli saldırı ıskalamak konumunu ele vermez. (Aya için tematik.)'},
+  {ad:'Magic Initiate', not:'2 cantrip + 1 adet 1. seviye büyü (günde bir bedava, ayrıca slot ile).'},
+  {ad:'Sentinel', not:'Fırsat saldırın hedefin hızını 0 yapar; yanındaki müttefiğe saldıranı reaction ile vurursun.'},
+  {ad:'Savage Attacker', not:'Turda bir kez, melee silah hasar zarlarını iki kez atıp yükseğini kullan.'},
+  {ad:'Observant', not:'Passive Perception ve Investigation +5 civarı; ayrıntıyı kaçırmazsın.'},
+  {ad:'Healer', not:'Healer\'s kit ile şifa; ölmek üzere olanı ayağa kaldırmakta usta.'}
+];
+
+/* --- Büyü havuzları (kısaltılmış, kampanyaya uygun seçki) --- */
+const CLERIC_BUYU = {
+  1:['Bless — Kutsama','Cure Wounds — Yara Sarma','Guiding Bolt — Yönlendiren Işık','Healing Word — Şifa Sözü',
+     'Shield of Faith — İnanç Kalkanı','Detect Magic — Büyü Sezme','Sanctuary — Sığınak','Command — Buyruk',
+     'Protection from Evil and Good','Inflict Wounds — Yara Açma'],
+  2:['Aid — Destek','Lesser Restoration — Küçük Arınma','Spiritual Weapon — Ruhani Silah','Hold Person — İnsanı Tut',
+     'Silence — Sessizlik','Prayer of Healing — Şifa Duası','Zone of Truth — Doğruluk Alanı','Augury — Kehanet',
+     'Warding Bond — Koruyucu Bağ','Blindness/Deafness'],
+  3:['Spirit Guardians — Ruh Muhafızları','Revivify — Diriltme','Dispel Magic — Büyü Bozma','Mass Healing Word',
+     'Beacon of Hope — Umut Feneri','Protection from Energy','Speak with Dead — Ölüyle Konuşma','Sending — Ulak',
+     'Clairvoyance — Uzak Görü','Remove Curse — Lanet Kaldırma'],
+  4:['Death Ward — Ölüm Siperi','Guardian of Faith — İnanç Bekçisi','Banishment — Sürgün','Divination — Falcılık',
+     'Freedom of Movement — Hareket Özgürlüğü','Stone Shape — Taş Biçimleme','Control Water — Su Denetimi'],
+  5:['Greater Restoration — Büyük Arınma','Mass Cure Wounds','Flame Strike — Alev Darbesi','Raise Dead — Ölüyü Kaldırma',
+     'Commune — Kutsal Danışma','Scrying — Uzaktan Gözetleme','Dispel Evil and Good','Hallow — Kutsama Alanı']
+};
+const AT_BUYU = {
+  0:['Minor Illusion — Küçük Yanılsama','Message — Fısıltı','Prestidigitation — El Çabukluğu','Fire Bolt — Ateş Oku',
+     'Ray of Frost — Ayaz Işını','True Strike — Gerçek Vuruş','Mind Sliver — Zihin Kıymığı'],
+  1:['Disguise Self — Kılık Değiştirme ★','Silent Image — Sessiz İmge ★','Charm Person — Cezbetme ★','Sleep — Uyku ★',
+     'Color Spray — Renk Püskürtme ★','Tasha\'s Hideous Laughter ★','Shield — Kalkan (serbest)','Find Familiar — Uşak Çağırma (serbest)',
+     'Magic Missile — Büyü Mermisi (serbest)','Absorb Elements (serbest)','Feather Fall (serbest)'],
+  2:['Invisibility — Görünmezlik ★','Suggestion — Telkin ★','Mirror Image — Ayna İmgeleri ★','Phantasmal Force ★',
+     'Hold Person — İnsanı Tut ★','Misty Step — Sisli Adım (serbest)','Web — Ağ (serbest)','Knock — Kilit Açma (serbest)']
+};
+
+/* --- BÜYÜ AÇIKLAMALARI (2024 PHB) ---
+   {DC} = karakterin spell save DC'si · {ATK} = spell attack bonusu · {MOD} = casting mod
+   Anahtar: İngilizce büyü adı (küçük harf). */
+const SPELL_INFO = {
+  // ---- Cleric cantrips ----
+  'sacred flame':'Action · 60 ft · V,S — Hedef <b>Dexterity save {DC}</b>. Fail → <b>1d8 radiant</b>. Cover işe yaramaz (ışık yukarıdan iner). Level 5\'te 2d8.',
+  'guidance':'Action · Touch · V,S · Concentration 1 dk — Dost bir yaratık, süre dolmadan <b>bir ability check\'ine +1d4</b> ekler. Saldırıya/save\'e değil, sadece check\'e.',
+  'resistance':'Action · Touch · V,S,M · Concentration 1 dk — Dost bir yaratık <b>bir saving throw\'una +1d4</b> ekler.',
+  'mending':'1 dakika · Touch · V,S,M — Tek bir kırık/yırtık/delik onarılır (en fazla 1 ft). Kopmuş uzuv ya da sihirli eşyanın gücü geri gelmez.',
+  'light':'Action · Touch · V,M — 1 saat. Dokunduğun nesne <b>20 ft parlak + 20 ft loş</b> ışık saçar. İstemeyen hedef Dexterity save.',
+  'thaumaturgy':'Action · 30 ft · V — 1 dk. Küçük mucize efekti: sesin üç kat gürleşir, alevler renk değiştirir, kapı kendiliğinden çarpar, yer titrer.',
+  'toll the dead':'Action · 60 ft · V,S — Hedef <b>Wisdom save {DC}</b>. Fail → <b>1d8 necrotic</b> (hedefin HP\'si eksikse <b>1d12</b>).',
+  'spare the dying':'Action · 15 ft · V,S — 0 HP\'deki bir yaratığı <b>stabilize</b> eder (death save atmayı bırakır).',
+  'word of radiance':'Action · <b>Self (5 ft)</b> · V,M — Etrafındaki 5 ft\'te <b>seçtiğin</b> yaratıklar <b>Constitution save {DC}</b> atar. Fail → <b>1d6 radiant</b>. Dostlarını seçmeyebilirsin. Level 5\'te 2d6, 11\'de 3d6. <i>Sarıldığın anda patlayan cantrip — melee cleric için ideal.</i>',
+
+  // ---- Cleric 1 ----
+  'bless':'Action · 30 ft · V,S,M · Concentration 1 dk — <b>3 yaratık</b>, her <b>attack roll ve saving throw</b>\'una <b>+1d4</b> ekler. Upcast: her seviye +1 hedef. <i>Partinin en verimli 1. seviye büyüsü.</i>',
+  'cure wounds':'Action · Touch · V,S — <b>2d8 + {MOD}</b> HP iyileşme. Undead ve construct\'a işlemez. Upcast: her seviye +2d8.',
+  'healing word':'<b>BONUS ACTION</b> · 60 ft · V — <b>2d4 + {MOD}</b> HP. Menzilli ve bonus action olduğu için <b>yerdeki arkadaşı ayağa kaldırmanın en hızlı yolu</b>. Upcast: +2d4.',
+  'guiding bolt':'Action · 120 ft · V,S — <b>Ranged spell attack {ATK}</b>. Hit → <b>4d6 radiant</b>, ayrıca o hedefe yapılacak <b>bir sonraki saldırı advantage</b> alır. Upcast: +1d6.',
+  'shield of faith':'<b>BONUS ACTION</b> · 60 ft · V,S,M · Concentration 10 dk — Hedefin <b>AC\'si +2</b>.',
+  'command':'Action · 60 ft · V — Hedef <b>Wisdom save {DC}</b>. Fail → sıradaki turunda tek kelimelik emri uygular: <b>Approach / Drop / Flee / Grovel (yere kapan) / Halt (hiç hareket etmez)</b>. Upcast: +1 hedef.',
+  'sanctuary':'<b>BONUS ACTION</b> · 30 ft · V,S,M — 1 dk. Korunan kişiye saldırmak isteyen <b>Wisdom save {DC}</b> atar; fail → başka hedef seçmek zorunda. <b>Korunan saldırırsa/zarar verirse biter.</b>',
+  'detect magic':'Action (ritual) · Self · Concentration 10 dk — 30 ft içindeki büyü ve sihirli eşyaları sezersin; bir action harcayıp <b>büyü okulunu</b> öğrenirsin.',
+  'inflict wounds':'Action · Touch · V,S — <b>Melee spell attack {ATK}</b>. Hit → <b>3d10 necrotic</b>. Upcast: +1d10. <i>Yüksek risk/ödül.</i>',
+  'protection from evil and good':'Action · Touch · V,S,M · Concentration 10 dk — Aberration/celestial/elemental/fey/fiend/undead saldırıları <b>disadvantage</b>; hedef bu türlerce <b>charm/frighten/possess edilemez</b>.',
+  'create or destroy water':'Action · 30 ft · V,S,M — <b>Create:</b> açık bir kapta <b>~38 litre (10 galon)</b> temiz su yaratır, ya da 30 ft küplük alana yağmur yağdırır. <b>Destroy:</b> aynı miktar suyu yok eder / sisi dağıtır. Upcast: her seviye +38 litre.',
+
+  // ---- Cleric 2 ----
+  'aid':'Action · 30 ft · V,S,M — <b>8 saat</b>. 3 yaratığın <b>maksimum HP\'si ve güncel HP\'si +5</b>. Upcast: her seviye +5. <i>Savaştan önce bas, tüm gün sürer.</i>',
+  'spiritual weapon':'<b>BONUS ACTION</b> · 60 ft · V,S · Concentration 1 dk — Hayalet bir silah belirir. Her tur <b>bonus action</b> ile 20 ft hareket ettirip <b>melee spell attack {ATK}</b> yaparsın: <b>1d8 + {MOD} force</b>. Upcast: her 2 seviyede +1d8. <i>Aksiyonunu harcamadan her tur hasar.</i>',
+  'hold person':'Action · 60 ft · V,S,M · Concentration 1 dk — <b>Humanoid</b> hedef <b>Wisdom save {DC}</b>. Fail → <b>paralyzed</b> (her turunun sonunda tekrar save). Paralyzed hedefe <b>5 ft\'ten yapılan her saldırı otomatik critical</b>. Upcast: +1 hedef.',
+  'lesser restoration':'Action · Touch · V,S — Hedefin şu durumlarından <b>birini</b> sonlandırır: blinded, deafened, paralyzed, poisoned.',
+  'silence':'Action (ritual) · 120 ft · V,S · Concentration 10 dk — 20 ft yarıçapta <b>hiç ses yok</b>: içeride kimse <b>V bileşenli büyü yapamaz</b>, herkes deafened. <i>Düşman büyücüyü kilitlemenin ucuz yolu.</i>',
+  'prayer of healing':'<b>10 dakika</b> · 30 ft · V — 5 yaratık <b>2d8 + {MOD}</b> HP iyileşir. Savaşta kullanılamaz (döküm süresi uzun).',
+  'zone of truth':'Action · 60 ft · V,S — 10 dk. 15 ft küre; içindekiler <b>Charisma save {DC}</b>, fail → <b>bilerek yalan söyleyemez</b> (ama susabilir/kaçamak cevap verebilir). Kimin geçtiğini bilirsin.',
+  'blindness/deafness':'Action · 30 ft · V — 1 dk. Hedef <b>Constitution save {DC}</b>; fail → <b>blinded</b> ya da <b>deafened</b> (sen seçersin). Her turun sonunda tekrar save. Upcast: +1 hedef.',
+  'warding bond':'Action · Touch · V,S,M (2× 50 gp halka) — 1 saat. Hedef <b>+1 AC, +1 save, tüm hasara resistance</b> kazanır; <b>ama aldığı hasarın aynısını sen de alırsın</b>.',
+  'augury':'Ritual 1 dk · Self · V,S,M — Önümüzdeki 30 dakikada yapacağın bir eylemin sonucunu sorarsın. Cevap: <b>Weal</b> (iyi), <b>Woe</b> (kötü), <b>Weal and Woe</b> (ikisi), <b>Nothing</b> (belirsiz).',
+  'magic weapon':'<b>BONUS ACTION</b> · Touch · V,S · Concentration 1 saat — Bir silah <b>+1 magical</b> olur (6. seviye slot: +2). Magical hasar direncini aşar.',
+  'divine favor':'<b>BONUS ACTION</b> · Self · V,S · Concentration 1 dk — Silah saldırıların <b>+1d4 radiant</b> hasar verir.',
+  'heroism':'Action · Touch · V,S · Concentration 1 dk — Hedef <b>frightened olamaz</b> ve her turunun başında <b>{MOD} temp HP</b> kazanır.',
+
+  // ---- Cleric 3+ ----
+  'spirit guardians':'Action · Self (15 ft) · V,S,M · Concentration 10 dk — Etrafındaki 15 ft\'te <b>düşmanların hızı yarıya iner</b>; alana giren ya da turuna orada başlayan <b>Wisdom save {DC}</b>: fail <b>3d8 radiant</b>, başarı yarısı. Upcast: +1d8. <i>Cleric\'in imza alan büyüsü.</i>',
+  'revivify':'Action · Touch · V,S,M (<b>300 gp elmas, tükenir</b>) — Son <b>1 dakika</b> içinde ölmüş bir yaratığı <b>1 HP</b> ile geri getirir. Eksik uzuv geri gelmez.',
+  'dispel magic':'Action · 120 ft · V,S — <b>3. seviye ve altı</b> büyüyü otomatik sonlandırır. Daha yükseği için <b>Wisdom check DC 10 + büyü seviyesi</b>.',
+  'mass healing word':'<b>BONUS ACTION</b> · 60 ft · V — 6 yaratık <b>2d4 + {MOD}</b> HP. Upcast: +1d4.',
+  'beacon of hope':'Action · 30 ft · V,S · Concentration 1 dk — Hedefler <b>Wisdom ve death save\'lerde advantage</b>; aldıkları <b>her iyileşme maksimum</b> değerde sayılır.',
+  'speak with dead':'Action · 10 ft · V,S,M — 10 dk. Bir cesede <b>5 soru</b> sorarsın. Ceset ağzı bozulmamış olmalı, aynı cesede 10 gün bir kez.',
+  'sending':'Action · Sınırsız menzil · V,S,M — Tanıdığın birine <b>25 kelimelik</b> mesaj yollarsın; o da 25 kelimeyle cevaplayabilir.',
+  'remove curse':'Action · Touch · V,S — Bir yaratıktaki laneti kaldırır; lanetli eşyanın <b>bağını kırar</b> (eşyanın laneti kalkmaz ama bırakabilirsin).',
+  'protection from energy':'Action · Touch · V,S · Concentration 1 saat — Hedef seçtiğin bir hasar türüne (acid/cold/fire/lightning/thunder) <b>resistance</b> kazanır.',
+  'death ward':'Action · Touch · V,S — 8 saat. Hedef 0 HP\'ye düşerse <b>1 HP\'de kalır</b> (bir kez).',
+  'guardian of faith':'Action · 30 ft · V — 8 saat. Büyük hayalet bir muhafız; 10 ft içine giren düşman <b>Dexterity save {DC}</b>, fail <b>20 radiant</b> (başarı yarısı). Toplam 60 hasar verince kaybolur.',
+  'banishment':'Action · 60 ft · V,S,M · Concentration 1 dk — Hedef <b>Charisma save {DC}</b>; fail → başka bir düzleme sürülür. Süre dolarsa geri gelir; yerli değilse <b>kalıcı gider</b>.',
+  'freedom of movement':'Action · Touch · V,S,M — 1 saat. Hedef zor araziden etkilenmez, <b>grappled/restrained/paralyzed hızını etkilemez</b>, su altında normal hareket eder.',
+  'greater restoration':'Action · Touch · V,S,M (<b>100 gp elmas tozu</b>) — Şunlardan birini kaldırır: <b>charm, petrification, curse, exhaustion 1 seviye, HP maksimum azalması, ability score azalması</b>.',
+  'mass cure wounds':'Action · 60 ft · V,S — 30 ft küredeki 6 yaratık <b>3d8 + {MOD}</b> HP iyileşir.',
+  'flame strike':'Action · 60 ft · V,S,M — 10 ft yarıçap, 40 ft yüksek sütun. <b>Dexterity save {DC}</b>: fail <b>4d6 fire + 4d6 radiant</b>, başarı yarısı.',
+  'raise dead':'1 saat · Touch · V,S,M (<b>500 gp elmas, tükenir</b>) — <b>10 güne kadar</b> ölmüş bir yaratığı 1 HP ile diriltir. 4 gün boyunca tüm zarlarına <b>−4</b> (her uzun dinlenmede 1 azalır).',
+  'commune':'Ritual 1 dk · Self · V,S,M — Tanrına <b>3 evet/hayır sorusu</b> sorarsın. Günde birden fazla kullanırsan cevapsız kalma riski artar.',
+
+  // ---- Arcane Trickster cantrips ----
+  'mage hand':'Action · 30 ft · V,S — 1 dk. <b>10 lb</b>\'a kadar taşıyan hayalet el: nesne taşır, kapı açar, kap boşaltır. <b>Legerdemain ile görünmezdir</b> — uzaktan <b>cep karıştırma, kilit açma, trap etkisizleştirme</b> yapabilirsin (Sleight of Hand ile). Saldıramaz, büyü yapamaz.',
+  'minor illusion':'Action · 30 ft · S,M — 1 dk. <b>Ya bir ses ya bir görüntü</b> yaratırsın (ikisi birden değil). Görüntü 5 ft küpü geçemez, dokunulamaz. Şüphelenen <b>Investigation check {DC}</b> ile anlar.',
+  'message':'Action · 120 ft · S,M — 1 tur. Gördüğün bir yaratığa <b>fısıltıyla</b> mesaj yollarsın; <b>sadece o duyar</b> ve fısıltıyla cevaplayabilir. Duvarları aşmaz (ince engel hariç).',
+  'prestidigitation':'Action · 10 ft · V,S — Küçük büyü numaraları: nesne temizle/kirlet, koku/tat/renk ver, 1 ft küpü ısıt/soğut, 1 kg\'a kadar nesne yarat (kalıcı değil), alev yak/söndür.',
+  'fire bolt':'Action · 120 ft · V,S — <b>Ranged spell attack {ATK}</b>. Hit → <b>1d10 fire</b>. Taşınmayan nesneleri tutuşturur. Level 5\'te 2d10.',
+  'ray of frost':'Action · 60 ft · V,S — <b>Ranged spell attack {ATK}</b>. Hit → <b>1d8 cold</b> ve hedefin <b>hızı 10 ft azalır</b> (bir sonraki turunun başına dek).',
+  'mind sliver':'Action · 60 ft · V — Hedef <b>Intelligence save {DC}</b>. Fail → <b>1d6 psychic</b> ve bir sonraki saving throw\'undan <b>1d4 çıkarır</b>.',
+  'true strike':'Action · Self · S,M — Silahınla bir saldırı yaparsın; hasarı <b>casting ability\'nle</b> hesaplarsın ve saldırı <b>radiant</b> olabilir (2024 sürümü).',
+
+  // ---- Arcane Trickster 1 ----
+  'disguise self':'Action · Self · V,S — <b>1 saat</b>. Görünüşünü değiştirirsin: yüz, saç, ses tonu değil ama kıyafet/zırh görüntüsü ve <b>boy ±1 ft</b>. <b>İllüzyon fizikseldir değil</b> — dokunan anlar; şüphelenen <b>Investigation {DC}</b>.',
+  'silent image':'Action · 60 ft · V,S,M · Concentration 10 dk — <b>15 ft küp</b> içinde tamamen <b>görsel</b> (sessiz, kokusuz, dokunulamaz) bir illüzyon. Action ile hareket ettirebilirsin. <b>Investigation {DC}</b> ile anlaşılır.',
+  'charm person':'Action · 30 ft · V,S — <b>1 saat</b>. Humanoid <b>Wisdom save {DC}</b> (savaştaysa <b>advantage</b> alır); fail → seni <b>dost</b> bilir. Sen ya da dostların ona zarar verirse <b>hemen biter</b> ve charm edildiğini <b>anlar</b>. Upcast: +1 hedef.',
+  'sleep':'Action · 60 ft · V,S,M · Concentration 1 dk — Alandaki yaratıklar <b>Wisdom save {DC}</b>; fail → <b>Incapacitated</b>, turunun sonunda uykuya dalar (unconscious). Hasar alınca uyanır. Undead ve uyumayanlar etkilenmez.',
+  'color spray':'Action · Self (15 ft koni) · V,S,M — Koni içindekiler <b>Constitution save {DC}</b>; fail → <b>blinded</b> (senin bir sonraki turunun sonuna kadar).',
+  'tasha\'s hideous laughter':'Action · 30 ft · V,S,M · Concentration 1 dk — Hedef <b>Wisdom save {DC}</b>; fail → yere düşer, <b>prone + incapacitated</b>, gülmekten konuşamaz. Hasar alırsa tekrar save.',
+  'shield':'<b>REACTION</b> (saldırıya uğradığında) · Self · V,S — Turunun başına kadar <b>+5 AC</b> (gelen saldırıyı ıskalatabilir) ve <b>Magic Missile\'a tamamen bağışık</b> olursun. <i>Kırılgan karakterin can simidi.</i>',
+  'magic missile':'Action · 120 ft · V,S — <b>3 dart</b>, her biri <b>1d4+1 force</b>, <b>OTOMATİK İSABET</b> (attack roll yok, save yok). Hepsini tek hedefe ya da dağıtabilirsin. Upcast: +1 dart.',
+  'find familiar':'Ritual 1 saat · 10 ft · V,S,M (10 gp) — Bir <b>familiar</b> çağırırsın (kedi, kuzgun, fare…). Gözünden bakabilir, <b>action ile büyülerini onun konumundan</b> yapabilirsin. Ölürse tekrar çağırılır. <i>Kuzgun için tematik: bir kuzgun.</i>',
+  'absorb elements':'<b>REACTION</b> (acid/cold/fire/lightning/thunder hasarı alınca) · Self · S — O hasara <b>resistance</b>, ayrıca bir sonraki melee saldırına <b>+1d6</b> aynı türden hasar.',
+  'feather fall':'<b>REACTION</b> (düşerken) · 60 ft · V,M — 5 yaratığın düşüş hızı <b>60 ft/tur</b>\'a iner, <b>düşme hasarı almazlar</b>.',
+
+  // ---- Arcane Trickster 2 ----
+  'invisibility':'Action · Touch · V,S,M · Concentration 1 saat — Hedef <b>görünmez</b> olur. <b>Saldırırsa ya da büyü yaparsa biter</b>. Upcast: +1 hedef.',
+  'suggestion':'Action · 30 ft · V,M · Concentration 8 saat — Hedef <b>Wisdom save {DC}</b>; fail → makul görünen <b>bir-iki cümlelik öneriyi</b> uygular. Açıkça zararlı bir emir işe yaramaz.',
+  'mirror image':'Action · Self · V,S — 1 dk. <b>3 kopya</b> belirir. Sana gelen saldırı önce kopyalardan birine gidebilir (d20 ile belirlenir); kopyanın AC\'si <b>10 + DEX mod</b>, bir isabette dağılır.',
+  'phantasmal force':'Action · 60 ft · V,S,M · Concentration 1 dk — Hedef <b>Intelligence save {DC}</b>; fail → sadece onun gördüğü bir illüzyon yaratırsın; illüzyon ona <b>1d6 psychic</b> hasar verebilir (kendi zihni acıtır).',
+  'misty step':'<b>BONUS ACTION</b> · Self · V — Gördüğün boş bir alana <b>30 ft teleport</b>. Fırsat saldırısı yemez. <i>Kaçış/konum aracı.</i>',
+  'web':'Action · 60 ft · V,S,M · Concentration 1 saat — 20 ft küp ağ; alan <b>zor arazi</b>, giren/turuna orada başlayan <b>Dexterity save {DC}</b> → fail <b>restrained</b> (Strength check ile kurtulur). <b>Ateşe verilirse yanar.</b>',
+  'knock':'Action · 60 ft · V — Kilitli bir kapı/sandık/kelepçeyi <b>açar</b> (Arcane Lock\'u 10 dk askıya alır). <b>300 ft\'ten duyulan gürültü çıkarır.</b>',
+  'pass without trace':'Action · Self · V,S,M · Concentration 1 saat — Sen ve 30 ft içindeki dostların <b>Stealth kontrollerine +10</b>; <b>iz bırakmazsınız</b>, sihirsiz yollarla takip edilemezsiniz.',
+  'see invisibility':'Action · Self · V,S,M — 1 saat. <b>Görünmez yaratıkları ve nesneleri</b> görürsün, Ethereal Plane\'e bakabilirsin.',
+  'faerie fire':'Action · 60 ft · V · Concentration 1 dk — 20 ft küp; içindekiler <b>Dexterity save {DC}</b>, fail → <b>ışıldar</b>: onlara yapılan saldırılar <b>advantage</b>, görünmez olamazlar.',
+  'burning hands':'Action · Self (15 ft koni) · V,S — <b>Dexterity save {DC}</b>: fail <b>3d6 fire</b>, başarı yarısı. Upcast: +1d6.',
+  'scorching ray':'Action · 120 ft · V,S — <b>3 ışın</b>, her biri ayrı <b>ranged spell attack {ATK}</b>, hit başına <b>2d6 fire</b>. Upcast: +1 ışın.',
+  'daylight':'Action · 60 ft · V,S — 1 saat. <b>60 ft parlak + 60 ft loş</b> gün ışığı. 3. seviye ve altı magical darkness\'ı <b>dağıtır</b>.',
+
+  // ---- Shadow Arts (Warrior of Shadow) ----
+  'darkness':'<b>2. seviye · Evocation</b> · Action · 60 ft · Concentration <b>10 dakika</b> — Seçtiğin noktadan <b>15 ft yarıçaplı küre</b> büyülü karanlık yayılır; köşeleri döner. <b>Darkvision bunu DELEMEZ</b>, sihirsiz ışık aydınlatamaz — içerideki herkes <b>blinded</b> sayılır. <b>Sen kendi karanlığını görürsün</b> (Shadow Arts) ve <b>bonus action ile 30 ft kaydırabilirsin</b>. 2. seviye ve altı ışık büyülerini söndürür.<br><i>Sonuç: sen advantage ile vurursun, sana gelen saldırılar disadvantage alır.</i>',
+  'silence':'<b>2. seviye · Illusion (ritual)</b> · Action · 120 ft · Concentration <b>10 dakika</b> — <b>20 ft yarıçaplı küre</b>: içinde <b>hiç ses çıkmaz/duyulmaz</b>. İçerideki herkes <b>deafened</b>, hiç kimse <b>sözlü (V) bileşenli büyü yapamaz</b>. Thunder hasarına bağışık.<br><i>Düşman büyücüsünü kilitlemenin en ucuz yolu.</i>',
+  'pass without trace':'<b>2. seviye · Abjuration</b> · Action · Self (30 ft) · Concentration <b>1 saat</b> — Sen ve 30 ft içindeki dostların <b>Stealth kontrollerine +10</b> alır ve <b>iz bırakmazsınız</b> — sihirsiz hiçbir yolla takip edilemezsiniz.',
+  'darkvision':'<b>2. seviye · Transmutation</b> · Action · Touch · <b>8 saat</b> — Dokunduğun yaratık <b>60 ft darkvision</b> kazanır: karanlığı loş ışık, loş ışığı aydınlık gibi görür (renksiz). <i>Büyülü karanlığı yine de delemez.</i>'
+};
+
+/* Büyü satırından İngilizce adı çıkar: "[1] Bless — Kutsama ★" → "bless" */
+function spellAnahtar(s){
+  return String(s)
+    .replace(/^\s*\[\d\]\s*/,'')      // [1] ön ekini at
+    .split('—')[0]                     // Türkçe karşılığı at
+    .replace(/[★◆◈]/g,'')
+    .replace(/\((serbest|zorunlu)\)/gi,'')
+    .trim().toLowerCase();
+}
+function spellDetay(s, k){
+  const info = SPELL_INFO[spellAnahtar(s)];
+  if(!info) return '';
+  const md = mod(k.scores[k.castStat]);
+  return info.replace(/\{DC\}/g, buyuDC(k))
+             .replace(/\{ATK\}/g, isaret(buyuAtk(k)))
+             .replace(/\{MOD\}/g, isaret(md));
+}
+
+/* --- Sınıf ilerlemesi 3→10 --- */
+const ILERLEME = {
+  cleric:{
+    1:{ozellik:['<b>Spellcasting</b> — Wisdom tabanlı, Cleric büyü listesi','<b>Divine Order: Thaumaturge</b> — ekstra cantrip + Religion/Arcana kontrollerinde Wisdom bonusu']},
+    2:{ozellik:['<b>Channel Divinity</b> (2 kullanım) — <i>Turn Undead</i> ve <i>Divine Spark</i> (30 ft: şifa ya da radiant hasar, Wisdom save)']},
+    3:{ozellik:['<b>Subclass (Divine Domain)</b> seçilir','<b>2nd-level spells</b> açıldı']},
+    4:{ozellik:['Yeni cantrip'],secim:['asi']},
+    5:{ozellik:['<b>Sear Undead</b> — Turn Undead artık hasar da verir','<b>3rd-level spells</b> açıldı']},
+    6:{ozellik:['<b>Subclass feature</b> (6. seviye tarikat yeteneği)','<b>Channel Divinity</b> kullanımı +1']},
+    7:{ozellik:['<b>Blessed Strikes</b> — cantrip ve silah vuruşlarına ek kutsal hasar','<b>4th-level spells</b> açıldı']},
+    8:{ozellik:[],secim:['asi']},
+    9:{ozellik:['<b>5th-level spells</b> açıldı']},
+    10:{ozellik:['<b>Divine Intervention</b> — günde bir kez, tanrından doğrudan yardım istersin']}
+  },
+  monk:{
+    1:{ozellik:['<b>Martial Arts</b> — Dexterity ile unarmed strike / monk weapon, bonus action ile ek vuruş (d6)','<b>Unarmored Defense</b> — AC = 10 + Dexterity + Wisdom']},
+    2:{ozellik:['<b>Monk\'s Focus</b> (2 Focus Point) — <i>Flurry of Blows</i> (2 ek vuruş), <i>Patient Defense</i> (Disengage + Dodge), <i>Step of the Wind</i> (Dash + Disengage, zıplama ×2)','<b>Unarmored Movement</b> — hız +10 ft','<b>Uncanny Metabolism</b> — 1/long rest: initiative\'de tüm Focus tazelenir + iyileşirsin']},
+    3:{ozellik:['<b>Subclass: Warrior of Shadow</b> — Shadow Arts (aşağıda)','<b>Deflect Attacks</b> — reaction ile gelen hasarı azalt/yansıt']},
+    4:{ozellik:['<b>Slow Fall</b> — düşme hasarını reaction ile azalt'],secim:['asi']},
+    5:{ozellik:['<b>Extra Attack</b> — Attack action\'da 2 saldırı','<b>Stunning Strike</b> — 1 Focus: Constitution save ya da stunned','<b>Martial Arts die</b> → d8']},
+    6:{ozellik:['<b>Empowered Strikes</b> — unarmed strike\'ların magical sayılır','<b>Shadow Step</b> — karanlıktan karanlığa 60 ft teleport + advantage']},
+    7:{ozellik:['<b>Evasion</b> — Dexterity save\'de başarı = 0 hasar']},
+    8:{ozellik:[],secim:['asi']},
+    9:{ozellik:['<b>Acrobatic Movement</b> — dikey yüzeyde ve su üstünde koşabilirsin']},
+    10:{ozellik:['<b>Heightened Focus</b> — Flurry / Patient Defense / Step of the Wind güçlenir','<b>Self-Restoration</b> — kendi poisoned/frightened/exhaustion durumunu temizle']}
+  },
+  rogue:{
+    1:{ozellik:['<b>Expertise</b> (2 skill)','<b>Sneak Attack 1d6</b>','<b>Thieves\' Cant</b>','<b>Weapon Mastery</b> — Dagger (Nick), Dart (Vex)']},
+    2:{ozellik:['<b>Cunning Action</b> — bonus action: Dash, Disengage ya da Hide']},
+    3:{ozellik:['<b>Subclass: Arcane Trickster</b> — Spellcasting (Intelligence) + Mage Hand Legerdemain (aşağıda)','<b>Steady Aim</b> — bonus action: saldırıya advantage (o tur hareket etmeden)','<b>Sneak Attack 2d6</b>']},
+    4:{ozellik:[],secim:['asi']},
+    5:{ozellik:['<b>Cunning Strike</b> — Sneak Attack hasarından feda et: Poison / Trip / Withdraw','<b>Uncanny Dodge</b> — reaction: gelen hasarı yarıya indir','<b>Sneak Attack 3d6</b>']},
+    6:{ozellik:[],secim:['expertise']},
+    7:{ozellik:['<b>Evasion</b> — Dexterity save\'de başarı = 0 hasar','<b>Reliable Talent</b> — proficient olduğun kontrollerde d20\'yi 10\'un altında sayma','<b>Sneak Attack 4d6</b>']},
+    8:{ozellik:[],secim:['asi']},
+    9:{ozellik:['<b>Magical Ambush</b> — hidden iken büyü yaparsan hedef save\'de disadvantage','<b>Sneak Attack 5d6</b>']},
+    10:{ozellik:[],secim:['asi']}
+  }
+};
+
+/* --- Cleric alt sınıf seçenekleri (Level 3'te oyuncu seçer) --- */
+const CLERIC_ALTSINIFLAR = {
+  war:{
+    ad:'WAR DOMAIN',
+    kisa:'Altıdünya adı: <i>Dengenin Eli</i> — denge bozulunca kılıç. Yargın\'ın müdahale etmeyen yüzünün tersi.',
+    temel:'War Domain',
+    ozellikler:[
+      ['3','<b>War Priest</b> — Attack action aldığında <b>bonus action</b> ile bir saldırı daha yaparsın. Kullanım: Wisdom modifiyen kadar (en az 1), long rest\'te tazelenir.'],
+      ['3','<b>Channel Divinity: Guided Strike</b> — Attack roll\'unu attıktan sonra (sonucu öğrenmeden) <b>+10</b> ekle.'],
+      ['3','<b>Proficiency</b> — Heavy armor ve martial weapons.'],
+      ['3','<b>Domain Spells</b> (hep prepared, limite sayılmaz): Divine Favor, Guiding Bolt, Magic Weapon, Shield of Faith, Spiritual Weapon.'],
+      ['6','<b>War God\'s Blessing</b> — Guided Strike\'ı <b>reaction</b> ile 30 ft içindeki bir müttefik için kullanabilirsin.']
+    ]
+  },
+  peace:{
+    ad:'PEACE DOMAIN',
+    kisa:'Altıdünya adı: <i>Düğüm Tarikatı</i> — bağ kuran, dengeleyen tarikat. Yldrik = "Düğüm / Aracı".',
+    temel:'Peace Domain',
+    ozellikler:[
+      ['3','<b>Emboldening Bond</b> — Action: 30 ft içinde proficiency bonusun kadar yaratığı 10 dakika bağla. Bağlılar birbirine 30 ft içindeyken attack roll / save / ability check\'lerine <b>+1d4</b>.'],
+      ['3','<b>Implement of Peace</b> — Insight, Performance ve Persuasion skill\'lerinde proficiency.'],
+      ['3','<b>Channel Divinity: Balm of Peace</b> — 30 ft içindeki yaratıklara 2d6 + cleric level şifa dağıt.'],
+      ['6','<b>Protective Bond</b> — Bağlı biri hasar alırsa diğeri reaction ile yanına teleport olup hasarın yarısını üstlenir.']
+    ]
+  },
+  life:{
+    ad:'LIFE DOMAIN', kisa:'Altıdünya adı: <i>Yaşam Tarikatı</i> — ayakta tutan el, en güçlü şifacı.', temel:'Life Domain',
+    ozellikler:[
+      ['3','<b>Disciple of Life</b> — Verdiğin her şifaya +2 (+ büyünün seviyesi) ekle.'],
+      ['3','<b>Proficiency</b> — Heavy armor.'],
+      ['3','<b>Channel Divinity: Preserve Life</b> — 30 ft içinde toplam 5 × cleric level kadar HP dağıt.'],
+      ['6','<b>Blessed Healer</b> — Başkasını iyileştirdiğinde sen de 2 + büyü seviyesi kadar HP kazanırsın.']
+    ]
+  },
+  light:{
+    ad:'LIGHT DOMAIN', kisa:'Altıdünya adı: <i>Işık Tarikatı</i> — karanlığı delen, hasar odaklı.', temel:'Light Domain',
+    ozellikler:[
+      ['3','<b>Warding Flare</b> — Reaction: 30 ft içinde birine gelen attack roll\'a disadvantage.'],
+      ['3','<b>Light</b> cantrip bedava + Domain Spells (Burning Hands, Faerie Fire, Scorching Ray…).'],
+      ['3','<b>Channel Divinity: Radiance of the Dawn</b> — 30 ft yarıçap, Constitution save, 2d10 + cleric level radiant.'],
+      ['6','<b>Improved Warding Flare</b> — Warding Flare kullanımı artar ve hedefe temp HP verir.']
+    ]
+  },
+  trickery:{
+    ad:'TRICKERY DOMAIN', kisa:'Altıdünya adı: <i>Hile Tarikatı</i> — gölgede duran tanrı hizmetkârı.', temel:'Trickery Domain',
+    ozellikler:[
+      ['3','<b>Blessing of the Trickster</b> — Bir yaratığa dokun: 1 saat Stealth kontrollerinde advantage.'],
+      ['3','<b>Channel Divinity: Invoke Duplicity</b> — 30 ft\'te kendi illusory kopyanı yarat (1 dakika).'],
+      ['6','<b>Trickster\'s Transposition</b> — Duplicity ile yer değiştirebilirsin (bonus action).']
+    ]
+  }
+};
+
+/* --- Domain Spells: hep prepared, hazırlama limitine SAYILMAZ, ama normal slot kullanır --- */
+const DOMAIN_SPELLS = {
+  war:     ['[1] Divine Favor','[1] Guiding Bolt — Yönlendiren Işık','[1] Shield of Faith — İnanç Kalkanı',
+            '[2] Magic Weapon','[2] Spiritual Weapon — Ruhani Silah'],
+  peace:   ['[1] Heroism','[1] Sanctuary — Sığınak','[2] Aid — Destek','[2] Warding Bond','[3] Beacon of Hope'],
+  life:    ['[1] Bless — Kutsama','[1] Cure Wounds — Yara Sarma','[2] Aid — Destek',
+            '[2] Lesser Restoration','[3] Mass Healing Word'],
+  light:   ['[1] Burning Hands','[1] Faerie Fire','[2] Scorching Ray','[2] See Invisibility','[3] Daylight'],
+  trickery:['[1] Charm Person — Cezbetme','[1] Disguise Self — Kılık Değiştirme','[2] Invisibility — Görünmezlik',
+            '[2] Mirror Image','[2] Pass Without Trace']
+};
+
+/* --- Alt sınıf kartları --- */
+const ALTSINIF_KART = {
+  cleric:null, // Level 3'te seçilir — CLERIC_ALTSINIFLAR'dan gelir
+  monk:{
+    ad:'WARRIOR OF SHADOW',
+    alt:'Altıdünya adı: <i>Sessizlik Yolu</i> — Sular\'dan kaçanın disiplini, hissedilmemeyi öğrenmek.',
+    ozellikler:[
+      ['3','<b>Shadow Arts</b> — <i>Minor Illusion</i> cantrip\'ini bilirsin (Wisdom ile). 1 Focus Point harcayarak <b>Darkness</b> yaratırsın — içinden normal görürsün, bonus action ile 30 ft kaydırabilirsin. <span class="note">(Altıdünya tadı: "Derin Su")</span>'],
+      ['3','<b>◆ Genişletilmiş liste (DM izniyle)</b> — 1 Focus ile ayrıca: <b>Silence</b> (Sular\'lılar için dehşet: empati uğultusunu keser), <b>Pass Without Trace</b> (iz bırakmadan — <i>duygu bırakmadan</i> geçersin), <b>Darkvision</b>.'],
+      ['6','<b>Shadow Step</b> — Bonus action: dim light/darkness\'tan 60 ft ötede dim light/darkness\'a teleport. Bu turdaki ilk melee saldırına <b>advantage</b>.'],
+    ]
+  },
+  rogue:{
+    ad:'ARCANE TRICKSTER',
+    alt:'Altıdünya adı: <i>Sır Hırsızı</i> — Vadi geleneği, bilgiyi çalan el.',
+    ozellikler:[
+      ['3','<b>Spellcasting</b> — Intelligence tabanlı, Wizard büyü listesi. 3 cantrip (Mage Hand zorunlu) + 3 spell; spell\'lerinin <b>en az 2\'si Illusion ya da Enchantment</b> okulundan olmalı. ★ işaretliler o okullardan; "(serbest)" olanlar serbest seçim hakkınla alınır.'],
+      ['3','<b>Mage Hand Legerdemain</b> — Mage Hand\'in invisible olur; onunla cep karıştırabilir, kilit açabilir, trap etkisizleştirebilirsin (Sleight of Hand ile, uzaktan).'],
+      ['9','<b>Magical Ambush</b> — Hidden iken bir yaratığa büyü yaparsan, o büyünün save\'inde <b>disadvantage</b> alır.'],
+    ]
+  }
+};
+
+/* --- Başlangıç karakterleri (Level 3) --- */
+const BASLANGIC = {
+  karya:{
+    ad:'Karya', eskiAd:'Elofin', sinif:'cleric', sinifAd:'Rahip (Cleric)', halk:'Dağ', tanri:'Yargın',
+    seviye:3, hitDie:8, altsinifId:'war',
+    scores:{STR:12,DEX:11,CON:14,INT:10,WIS:15,CHA:10},
+    castStat:'WIS', saveProf:['WIS','CHA'],
+    skills:{'Insight':1,'Religion':1,'Medicine':1,'Survival':1}, // 2 = expertise, 1 = proficient
+    zirh:'Pul zırh + kalkan', acForm:'zirh', acBase:14, acShield:2, acDexCap:2,
+    hpMax:24, hpNow:24,
+    para:{bakir:0,gumus:55,altin:0},
+    secimler:[{seviye:3, baslik:'Divine Domain', deger:'WAR DOMAIN'}],
+    ozelYetenekler:[{seviye:'3',ad:'◆ Yargın\'ın Kefesi',aciklama:'<b>2. seviye spell</b> — bir 2nd-level spell slot harcar. 1/long rest. İki yaratığın güncel HP\'sini topla, eşit böl. Kimse max HP üstüne çıkamaz — taşan pay ötekinde kalır. BEDEL: tüm save\'lerde dezavantaj, dinlenene kadar.'}],
+    notlar:'Dolunay gecesi Yargın\'la bir bağ kuruldu: "dengeyi koru." Ardında bir imge bıraktı — taştan, iki kefeli bir terazi. Henüz nasıl kullanacağını bilmiyorsun.',
+    buyuler:['[1] Bless — Kutsama','[1] Healing Word — Şifa Sözü','[1] Create or Destroy Water','[1] Command — Buyruk','[2] Aid — Destek','[2] Hold Person — İnsanı Tut'],
+    cantripler:['Sacred Flame','Guidance','Word of Radiance','Thaumaturgy']
+  },
+  aya:{
+    ad:'Aya', eskiAd:'BFA', sinif:'monk', sinifAd:'Keşiş (Monk)', halk:'Sular', tanri:'Andelin',
+    seviye:3, hitDie:8,
+    scores:{STR:8,DEX:14,CON:12,INT:10,WIS:15,CHA:13},
+    castStat:'WIS', saveProf:['STR','DEX'],
+    skills:{'Acrobatics':1,'Insight':1},
+    zirh:'Zırhsız Savunma (10+DEX+WIS)', acForm:'monk', acBase:10, acShield:0, acDexCap:99,
+    hpMax:21, hpNow:21,
+    para:{bakir:0,gumus:0,altin:0},
+    secimler:[], ozelYetenekler:[],
+    notlar:'Andelin\'in çağrısı geceleri hâlâ duyuluyor. Dolunay ritüeline direndin. İçinde adını koyamadığın bir eksiklik var.',
+    buyuler:[], cantripler:[]
+  },
+  kuzgun:{
+    ad:'Kuzgun', eskiAd:'HÜS', sinif:'rogue', sinifAd:'Hırsız (Rogue)', halk:'Vadi', tanri:'Sezgir',
+    seviye:3, hitDie:8,
+    scores:{STR:10,DEX:14,CON:11,INT:14,WIS:12,CHA:12},
+    castStat:'INT', saveProf:['DEX','INT'],
+    skills:{'Deception':2,'Sleight of Hand':2,'Perception':1,'Stealth':1},
+    zirh:'Deri zırh', acForm:'zirh', acBase:11, acShield:0, acDexCap:99,
+    hpMax:18, hpNow:18,
+    para:{bakir:0,gumus:0,altin:0},
+    secimler:[
+      {seviye:3, baslik:'New cantrip', deger:'Minor Illusion — Küçük Yanılsama · Mage Hand — Görünmez El · Message — Fısıltı'},
+      {seviye:3, baslik:'New spell', deger:'Disguise Self ★ · Silent Image ★ · Charm Person ★'}
+    ],
+    ozelYetenekler:[{seviye:'—',ad:'Karanlıkta Görüş 20 ft',aciklama:'Vadi halkı — gölgede yetişmenin adaptasyonu. 20 ft menzilde karanlığı loş ışık, loş ışığı aydınlık gibi görürsün (renksiz).'}],
+    notlar:'',
+    buyuler:['[1] Disguise Self — Kılık Değiştirme ★','[1] Silent Image — Sessiz İmge ★','[1] Charm Person — Cezbetme ★'],
+    cantripler:['Minor Illusion — Küçük Yanılsama','Mage Hand — Görünmez El','Message — Fısıltı']
+  }
+};
+
+/* ============ DURUM ============ */
+/* Bu sayı değişince eski kayıtlar geçersiz sayılır ve yeni default yüklenir.
+   Karakterlerin başlangıç verisini güncellediğinde bunu bir artır.
+   ⚠ yukle() içinde kullanıldığı için D'den ÖNCE tanımlı olmalı. */
+const VERSIYON = 3;
+let eskiKayitUyarisi = false;
+
+let D = yukle();
+let aktif = 'karya';
+
+function yukle(){
+  try{
+    const s = localStorage.getItem('altidunya_karakterler');
+    if(s){
+      const p = JSON.parse(s);
+      if(p && p.karya){
+        if(p.__v === VERSIYON) return p;          // güncel kayıt → devam et
+        // Eski sürüm kayıt: yedeğini sakla, yeni default'a geç
+        try{ localStorage.setItem('altidunya_karakterler_eski', s); }catch(e){}
+        eskiKayitUyarisi = true;
+      }
+    }
+  }catch(e){}
+  const yeni = JSON.parse(JSON.stringify(BASLANGIC));
+  yeni.__v = VERSIYON;
+  return yeni;
+}
+
+function kaydet(){
+  try{ D.__v = VERSIYON; localStorage.setItem('altidunya_karakterler', JSON.stringify(D)); }catch(e){}
+  try{ if(window.parent !== window) window.parent.postMessage({type:'alt-save', data:D}, '*'); }catch(e){}
+}
+
+/* Eski kaydı geri yükle (yanlışlıkla sıfırlandıysa) */
+function eskiKaydiGeriYukle(){
+  try{
+    const s = localStorage.getItem('altidunya_karakterler_eski');
+    if(!s){ alert('Saklanmış eski kayıt yok.'); return; }
+    const p = JSON.parse(s);
+    p.__v = VERSIYON;
+    D = p; ciz();
+    alert('Eski kayıt geri yüklendi.');
+  }catch(e){ alert('Eski kayıt okunamadı.'); }
+}
+
+/* Alt sınıf kartını çöz — Cleric'inki Level 3'te seçilir */
+function altKart(k){
+  if(k.sinif==='cleric'){
+    if(!k.altsinifId) return null;
+    const a = CLERIC_ALTSINIFLAR[k.altsinifId];
+    if(!a) return null;
+    return {ad:a.ad, alt:a.kisa+' (Mekanik temel: '+a.temel+')', ozellikler:a.ozellikler};
+  }
+  return ALTSINIF_KART[k.sinif];
+}
+
+/* ============ HESAPLAMALAR ============ */
+const mod = v => Math.floor((v-10)/2);
+const isaret = n => (n>=0?'+':'') + n;
+const profBonus = lv => Math.ceil(lv/4)+1;
+
+function ac(k){
+  const dex = mod(k.scores.DEX);
+  if(k.acForm==='monk') return 10 + dex + mod(k.scores.WIS);
+  return k.acBase + Math.min(dex, k.acDexCap) + k.acShield;
+}
+function buyuDC(k){ return 8 + profBonus(k.seviye) + mod(k.scores[k.castStat]); }
+function buyuAtk(k){ return profBonus(k.seviye) + mod(k.scores[k.castStat]); }
+function yuvalar(k){
+  if(k.sinif==='cleric') return TAM_CASTER[k.seviye] || [];
+  if(k.sinif==='rogue')  return UCTE_BIR[k.seviye] || [];
+  return [];
+}
+function sneakZar(lv){ return Math.ceil(lv/2); }
+function sanatZari(lv){ return lv>=11?'d10' : lv>=5?'d8' : 'd6'; }
+
+/* ============ SALDIRILAR ============
+   Her saldırı otomatik hesaplanır: isabet = prof + stat mod, hasar = zar + stat mod */
+function saldirilar(k){
+  const pb = profBonus(k.seviye), L = k.seviye;
+  const d = st => mod(k.scores[st]);
+  const S = [];
+
+  if(k.sinif==='monk'){
+    const md = '1' + sanatZari(L);            // 1d6 → 1d8 (5. sv)
+    const atk = isaret(pb + d('DEX'));
+    const dmg = isaret(d('DEX'));
+    S.push({ad:'Unarmed Strike', menzil:'5 ft', isabet:atk, hasar:`${md}${dmg} bludgeoning`,
+      not:'Martial Arts: Dexterity kullanırsın. <b>Her tur bonus action ile bir tane bedava.</b>'});
+    S.push({ad:'Spear (monk weapon)', menzil:'5 ft · fırlat 20/60', isabet:atk, hasar:`1d6${dmg} piercing`,
+      not:'İki elle <b>1d8</b>. Monk weapon olduğu için Dexterity ve Martial Arts die kullanabilirsin.'});
+    S.push({ad:'Dagger', menzil:'5 ft · fırlat 20/60', isabet:atk, hasar:`1d4${dmg} piercing`, not:'Finesse, light.'});
+    if(L>=2) S.push({ad:'⚡ Flurry of Blows', menzil:'5 ft', isabet:atk, hasar:`2× ${md}${dmg}`,
+      not:'<b>1 Focus Point · Bonus action</b> — iki ek Unarmed Strike.'});
+    if(L>=3) S.push({ad:'🛡 Deflect Attacks', menzil:'Reaction', isabet:'—', hasar:`azalt: 1d10${isaret(d('DEX')+L)}`,
+      not:'Reaction: gelen bludgeoning/piercing/slashing hasarını azaltırsın. 0\'a inerse 1 Focus ile geri fırlatabilirsin.'});
+    if(L>=5) S.push({ad:'💫 Stunning Strike', menzil:'5 ft', isabet:'—', hasar:'—',
+      not:`<b>1 Focus</b> — vurduğun hedef <b>Constitution save ${buyuDC(k)}</b>, fail → <b>stunned</b> (senin sonraki turuna kadar).`});
+  }
+
+  if(k.sinif==='rogue'){
+    const atk = isaret(pb + d('DEX'));
+    const dmg = isaret(d('DEX'));
+    const sn = sneakZar(L);
+    S.push({ad:'Dagger', menzil:'5 ft · fırlat 20/60', isabet:atk, hasar:`1d4${dmg} piercing`,
+      not:'<b>Mastery: Nick</b> — light özelliğiyle yaptığın ek saldırı bonus action harcamaz.'});
+    S.push({ad:'Shortsword', menzil:'5 ft', isabet:atk, hasar:`1d6${dmg} piercing`, not:'Finesse, light.'});
+    S.push({ad:'Shortbow', menzil:'80/320 ft', isabet:atk, hasar:`1d6${dmg} piercing`, not:'İki el gerekir.'});
+    S.push({ad:'Dart (iskambil kartı)', menzil:'fırlat 20/60', isabet:atk, hasar:`1d4${dmg} piercing`,
+      not:'<b>Mastery: Vex</b> — isabet edersen o hedefe <b>bir sonraki saldırın advantage</b>.'});
+    S.push({ad:`🗡 Sneak Attack (${sn}d6)`, menzil:'—', isabet:'—', hasar:`+${sn}d6`,
+      not:'Turda <b>bir kez</b>. Koşul: saldırıda <b>advantage</b> VEYA hedefin 5 ft yanında bir müttefikin var (ve disadvantage yok). Finesse/ranged silah gerekir.'});
+    if(L>=3) S.push({ad:'🎯 Steady Aim', menzil:'Bonus action', isabet:'—', hasar:'—',
+      not:'O tur hareket etmediysen: bir saldırına <b>advantage</b> (yani Sneak Attack açılır). Hızın 0 olur.'});
+    if(L>=5) S.push({ad:'✂ Cunning Strike', menzil:'—', isabet:'—', hasar:'—',
+      not:`Sneak Attack zarından feda et: <b>Poison</b> (1d6, CON save ${buyuDC(k)}) · <b>Trip</b> (1d6, DEX save → prone) · <b>Withdraw</b> (1d6, fırsat saldırısı yemeden çekil).`});
+  }
+
+  if(k.sinif==='cleric'){
+    const s = isaret(pb + d('STR'));
+    const sd = isaret(d('STR'));
+    S.push({ad:'Mace', menzil:'5 ft', isabet:s, hasar:`1d6${sd} bludgeoning`, not:'Simple weapon.'});
+    if(k.altsinifId==='war'){
+      S.push({ad:'Longsword (martial)', menzil:'5 ft', isabet:s, hasar:`1d8${sd} slashing`,
+        not:'<b>War Domain</b> martial weapon yetkinliği verdi. İki elle <b>1d10</b>.'});
+      S.push({ad:'⚔ War Priest', menzil:'Bonus action', isabet:s, hasar:'silahınla bir saldırı',
+        not:`Attack action aldığın turda <b>bonus action ile bir saldırı daha</b>. Günde ${Math.max(1,d('WIS'))} kez (long rest).`});
+      S.push({ad:'✨ Guided Strike', menzil:'Channel Divinity', isabet:'+10', hasar:'—',
+        not:`Attack roll'unu attıktan sonra, sonucu öğrenmeden <b>+10 ekle</b>. <b>Channel Divinity havuzundan harcar (${L>=6?3:2}/rest)</b> — Divine Spark ve Turn Undead ile <b>aynı havuz</b>. Short rest'te 1, long rest'te hepsi yenilenir.`});
+    }
+    S.push({ad:'Sacred Flame (cantrip)', menzil:'60 ft', isabet:`DEX save ${buyuDC(k)}`, hasar:'1d8 radiant',
+      not:'Attack roll yok — hedef save atar. <b>Cover işe yaramaz.</b>'});
+    if((k.buyuler||[]).some(b=>b.toLowerCase().includes('spiritual weapon')))
+      S.push({ad:'👻 Spiritual Weapon', menzil:'60 ft', isabet:isaret(buyuAtk(k)), hasar:`1d8${isaret(d('WIS'))} force`,
+        not:'<b>Bonus action</b> ile hareket ettir + saldır. Konsantrasyon gerekmez (2024: gerekir).'});
+  }
+  return S;
+}
+
+/* ============ ARAYÜZ ============ */
+// D içindeki karakter anahtarları ( __v gibi meta alanları hariç )
+const karakterler = () => Object.keys(D).filter(k=> k[0]!=='_' && D[k] && D[k].sinif);
+
+function ciz(){
+  // sekmeler
+  document.getElementById('tabs').innerHTML = karakterler().map(id=>{
+    const k = D[id];
+    return `<button class="tab ${id===aktif?'on':''}" onclick="sekme('${id}')">
+      ${k.ad}<small>${k.sinifAd.split(' ')[0]} ${k.seviye} · ${k.halk}</small></button>`;
+  }).join('');
+
+  document.getElementById('panes').innerHTML = pane(D[aktif], aktif);
+  kaydet();
+}
+function sekme(id){ aktif = id; ciz(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function pane(k, id){
+  const pb = profBonus(k.seviye);
+  const yv = yuvalar(k);
+
+  // stat kutuları
+  const statHTML = STATLAR.map(s=>`
+    <div class="stat" title="${STAT_TR[s]}">
+      <div class="lab">${s}</div>
+      <div class="mod">${isaret(mod(k.scores[s]))}</div>
+      <div class="raw">${k.scores[s]}</div>
+    </div>`).join('');
+
+  // save'ler
+  const saveHTML = STATLAR.map(s=>{
+    const p = k.saveProf.includes(s);
+    return `<div class="mini" style="${p?'border-color:var(--gold-dim)':''}">
+      <div class="l">${s}${p?' ✦':''}</div>
+      <div class="v">${isaret(mod(k.scores[s]) + (p?pb:0))}</div></div>`;
+  }).join('');
+
+  // beceriler
+  const becHTML = Object.keys(BECERI_STAT)
+    .sort((a,b)=> BECERI_TR[a].localeCompare(BECERI_TR[b],'tr'))
+    .map(b=>{
+      const lvl = k.skills[b]||0;
+      const bonus = mod(k.scores[BECERI_STAT[b]]) + pb*lvl;
+      const isim = lvl ? `<b>${BECERI_TR[b]}</b>` : BECERI_TR[b];
+      return `<div class="bec ${lvl===2?'uz':lvl===1?'pr':''}" onclick="becTikla('${id}','${b}')"
+        title="Tıkla: none -> proficient -> expertise">
+        <span class="dot">${lvl===2?'◆':lvl===1?'●':'○'}</span>
+        <span class="bn">${isim} <em>${BECERI_STAT[b]}</em></span>
+        <span class="bv">${isaret(bonus)}</span></div>`;
+    }).join('');
+
+  // özellik geçmişi
+  let ozHTML = '';
+  for(let lv=1; lv<=k.seviye; lv++){
+    const o = ILERLEME[k.sinif][lv];
+    if(!o) continue;
+    o.ozellik.forEach(x=> ozHTML += `<li><span class="lv">${lv}</span>${x}</li>`);
+    (k.secimler||[]).filter(s=>s.seviye===lv).forEach(s=>{
+      ozHTML += `<li><span class="lv">${lv}</span><b>${s.baslik}:</b> ${s.deger}</li>`;
+    });
+  }
+
+  // alt sınıf kartı
+  const ask = altKart(k);
+  const askHTML = ask
+    ? ask.ozellikler
+        .filter(([lv])=> lv==='—' || (parseInt(lv,10)||0) <= k.seviye)   // henüz gelmemişleri gizle
+        .map(([lv,t])=>`<li><span class="lv">${lv}</span>${t}</li>`).join('')
+    : `<li class="note">Subclass'ın <b>Level 3'te</b> seçilecek — seviye atlama sihirbazı seçenekleri önüne getirecek.</li>`
+      + Object.values(CLERIC_ALTSINIFLAR).map(a=>
+        `<li><span class="lv">?</span><b>${a.ad}</b> <span class="note">— ${a.kisa}</span></li>`).join('');
+
+  // kaynak izleyiciler
+  let kaynak = '';
+  kaynak += pipSatir(id,'hp_hit',`Hit Dice — ${k.seviye}d${k.hitDie} <span class="note">(short rest'te harca: 1d${k.hitDie}+CON iyileşme)</span>`, k.seviye);
+  if(k.sinif==='cleric'){
+    kaynak += pipSatir(id,'cd',`Channel Divinity <span class="note">(Guided Strike / Divine Spark / Turn Undead — ortak havuz; short rest'te 1 yenilenir)</span>`, k.seviye>=6?3:2);
+    if(k.seviye>=3) kaynak += pipSatir(id,'kefe','◆ Yargın\'ın Kefesi', 1);
+    if(k.altsinifId==='peace') kaynak += pipSatir(id,'bag','Emboldening Bond', pb);
+    if(k.altsinifId==='war')   kaynak += pipSatir(id,'warpriest','War Priest (bonus action attack)', Math.max(1,mod(k.scores.WIS)));
+  }
+  if(k.sinif==='monk'){
+    kaynak += pipSatir(id,'focus','Focus Points', k.seviye);
+    kaynak += pipSatir(id,'metab','Uncanny Metabolism', 1);
+  }
+  if(k.sinif==='rogue'){
+    kaynak += `<div class="track"><div class="name">Sneak Attack</div>
+      <div class="v" style="font-family:Georgia,serif;font-size:19px;color:var(--gold)">${sneakZar(k.seviye)}d6</div></div>`;
+  }
+  yv.forEach((adet,i)=> kaynak += pipSatir(id,'yuva'+(i+1), `Spell Slots — level ${i+1}`, adet));
+
+  // büyüler
+  let buyuBlok = '';
+  // --- Monk / Warrior of Shadow: Focus ile kullanılan büyüler ---
+  if(k.sinif==='monk'){
+    if(k.seviye>=3){
+      const sa = [
+        ['Cantrip','Minor Illusion','bedava'],
+        ['1 Focus','Darkness','1 Focus Point'],
+        ['1 Focus','Silence','1 Focus Point · DM izniyle'],
+        ['1 Focus','Pass Without Trace','1 Focus Point · DM izniyle'],
+        ['1 Focus','Darkvision','1 Focus Point · DM izniyle']
+      ];
+      buyuBlok = `<div class="card">
+        <h3>Shadow Arts <span class="note" style="letter-spacing:0">
+          Save DC ${buyuDC(k)} · Wisdom ile · bileşen gerekmez</span></h3>
+        <ul class="list">
+          ${sa.map(([mal,ad,not])=>`<li><span class="lv">${mal==='Cantrip'?'C':'◉'}</span><b>${ad}</b>
+            <span class="note"> — ${not}</span>
+            ${spellDetay(ad,k)?`<div class="note" style="margin-top:3px">${spellDetay(ad,k)}</div>`:''}</li>`).join('')}
+        </ul>
+        <div class="note" style="margin-top:10px;border-top:1px solid var(--line);padding-top:8px">
+          Bu büyüler <b>Focus Point</b> ile yapılır, spell slot kullanmaz ve <b>sözlü/el hareketi bileşeni gerektirmez</b>
+          (bağlıyken bile yapabilirsin). Konsantrasyon gerektirenler için hasar alınca
+          <b>Constitution save (DC 10 ya da hasarın yarısı)</b> at.
+        </div>
+      </div>`;
+    }
+  }
+  const limit = k.sinif==='cleric' ? CLERIC_HAZIR[k.seviye] : AT_BUYU_SAYISI[k.seviye];
+  if(k.sinif==='rogue' && !limit){
+    buyuBlok = `<div class="card"><h3>Spells</h3>
+      <div class="note">Sır Hırsızı büyücülüğü <b>Level 3'te</b> açılır — 3 cantrip (Mage Hand zorunlu) + 3 büyü seçeceksin.</div></div>`;
+  } else if(k.sinif!=='monk'){
+    // Domain Spells — hep prepared, limite sayılmaz, normal slot kullanır
+    const maxBuyuLv = yv.length;
+    const ds = (k.altsinifId && DOMAIN_SPELLS[k.altsinifId] || [])
+      .filter(function(x){ var m = x.match(/\[(\d)\]/); return (m ? parseInt(m[1],10) : 1) <= maxBuyuLv; });
+    let dsHTML = ds.length ? `
+      <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px">
+        <div class="note" style="margin-bottom:6px"><b style="color:var(--gold-dim)">Domain Spells</b> —
+          hep prepared, <b>limite sayılmaz</b>; ama normal spell slot kullanırlar.</div>
+        <ul class="list">${ds.map(b=>`<li><span class="lv">◈</span><b>${b}</b>
+          ${spellDetay(b,k)?`<div class="note" style="margin-top:3px">${spellDetay(b,k)}</div>`:''}</li>`).join('')}</ul>
+      </div>` : '';
+    // Kampanyaya özel: Yargın'ın Kefesi 2. seviye spell sayılır
+    if(k.sinif==='cleric' && k.seviye>=3 && (k.ozelYetenekler||[]).some(o=>o.ad.includes('Kefe'))){
+      dsHTML += `<div style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+        <ul class="list"><li><span class="lv">◆</span><b>[2] Yargın'ın Kefesi</b>
+        <div class="note">Kampanyaya özel · 2nd-level spell slot harcar · 1/long rest ·
+        bedel: dinlenene kadar tüm save'lerde disadvantage</div></li></ul></div>`;
+    }
+    buyuBlok = `
+    <div class="card">
+      <h3>Spells <span class="note" style="text-transform:none;letter-spacing:0">
+        DC ${buyuDC(k)} · Spell Attack ${isaret(buyuAtk(k))} · ${k.sinif==='cleric'?'Prepared':'Known'}: ${(k.buyuler||[]).length}/${limit}</span></h3>
+      <ul class="list">
+        ${(k.cantripler||[]).map(c=>`<li><span class="lv">C</span><b>${c}</b>
+          ${spellDetay(c,k)?`<div class="note" style="margin-top:3px">${spellDetay(c,k)}</div>`:''}</li>`).join('')}
+        ${(k.buyuler||[]).map((b,i)=>`<li><b>${b}</b>
+          <button class="ghost sm" style="float:right" onclick="buyuSil('${id}',${i})">×</button>
+          ${spellDetay(b,k)?`<div class="note" style="margin-top:3px">${spellDetay(b,k)}</div>`:''}</li>`).join('')}
+      </ul>
+      ${dsHTML}
+      <button class="ghost" style="margin-top:10px" onclick="buyuEkle('${id}')">+ Spell ekle</button>
+    </div>`;
+  }
+
+  return `<div class="pane">
+    <div class="ident">
+      <div>
+        <h2>${k.ad}</h2>
+        <div class="sub">${k.sinifAd} ${k.seviye} · ${k.halk} halkı · ${k.tanri} · <i>${ask?ask.ad:'domain seçilmedi'}</i>
+        ${k.eskiAd?` · <span style="opacity:.6">eski ad: ${k.eskiAd}</span>`:''}</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button class="ghost" onclick="duzenle('${id}')" title="Gerçek kağıtla eşitle">✎ Düzenle</button>
+        <div class="lvlbox"><div class="n">${k.seviye}</div><div class="l">level</div></div>
+        ${k.seviye<10 ? `<button class="primary" onclick="sihirbaz('${id}')">Level Up →</button>`
+                      : `<span class="note">Bu araç level 10'a kadar</span>`}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Ability Scores <span class="note" style="text-transform:none;letter-spacing:0">
+        Proficiency ${isaret(profBonus(k.seviye))} · ${k.halk} racial bonuses applied</span></h3>
+      <div class="stats">${statHTML}</div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h3>Combat</h3>
+          <div class="rows">
+            <div class="mini"><div class="l">Armor Class</div><div class="v">${ac(k)}</div></div>
+            <div class="mini"><div class="l">Initiative</div><div class="v">${isaret(mod(k.scores.DEX))}</div></div>
+            <div class="mini"><div class="l">Speed</div><div class="v">${k.sinif==='monk'?(k.seviye>=10?40:k.seviye>=6?35:30):30}</div></div>
+            <div class="mini"><div class="l">Pass. Perception</div><div class="v">${10+mod(k.scores.WIS)+(k.skills['Perception']?pb*k.skills['Perception']:0)}</div></div>
+            <div class="mini"><div class="l">Pass. Insight</div><div class="v">${10+mod(k.scores.WIS)+(k.skills['Insight']?pb*k.skills['Insight']:0)}</div></div>
+            ${k.sinif==='monk'?`<div class="mini"><div class="l">Martial Arts</div><div class="v">${sanatZari(k.seviye)}</div></div>`:''}
+          </div>
+          <div style="margin-top:14px" class="hpbar">
+            <b style="color:var(--gold-dim);font-size:12px;letter-spacing:.1em">HP</b>
+            <input type="number" value="${k.hpNow}" onchange="hpSet('${id}',this.value)">
+            <span class="max">/ ${k.hpMax}</span>
+            <button class="ghost sm" onclick="hpSet('${id}',${k.hpMax})">Full</button>
+          </div>
+          <div class="note" style="margin-top:8px">${k.zirh}</div>
+        </div>
+
+        <div class="card">
+          <h3>Attacks</h3>
+          <div class="atklar">
+            ${saldirilar(k).map(a=>`<div class="atk">
+              <div class="atk-ust">
+                <span class="atk-ad">${a.ad}</span>
+                <span class="atk-say"><b>${a.isabet}</b> <i>${a.hasar}</i></span>
+              </div>
+              <div class="note">${a.menzil} · ${a.not}</div>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <div class="card"><h3>Saving Throws</h3><div class="rows">${saveHTML}</div></div>
+
+        <div class="card">
+          <h3>Skills <span class="note" style="text-transform:none;letter-spacing:0">○ none · ● proficient (+${pb}) · ◆ expertise (+${pb*2}) — tıkla değiştir</span></h3>
+          <div class="becler">${becHTML}</div>
+        </div>
+
+        <div class="card">
+          <h3>Currency <span class="note" style="text-transform:none;letter-spacing:0">1 gold = 10 silver = 100 copper</span></h3>
+          <div class="coins">
+            <div class="coin"><label>Copper</label><input type="number" value="${k.para.bakir}" onchange="paraSet('${id}','bakir',this.value)"></div>
+            <div class="coin"><label>Silver</label><input type="number" value="${k.para.gumus}" onchange="paraSet('${id}','gumus',this.value)"></div>
+            <div class="coin"><label>Gold</label><input type="number" value="${k.para.altin}" onchange="paraSet('${id}','altin',this.value)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h3>Resources
+            <button class="ghost sm" onclick="kisaDinlenme('${id}')">Short Rest</button>
+            <button class="ghost sm" onclick="uzunDinlenme('${id}')">Long Rest</button></h3>
+          ${kaynak}
+        </div>
+
+        <div class="card">
+          <h3>${ask?ask.ad:'DIVINE DOMAIN — Level 3\'te seçilecek'}</h3>
+          ${ask?`<div class="note" style="margin:-4px 0 10px">${ask.alt}</div>`:''}
+          <ul class="list">${askHTML}</ul>
+        </div>
+
+        <div class="card">
+          <h3>${k.halk} Halkı — Racial Traits</h3>
+          <ul class="list">
+            ${(HALK_YETENEK[k.halk]||[]).map(([a,n])=>
+              `<li><b>${a}</b><div class="note">${n}</div></li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Special Abilities <button class="ghost sm" onclick="ozelEkle('${id}')">+ Ekle</button></h3>
+          <ul class="list">
+            ${(k.ozelYetenekler||[]).length ? k.ozelYetenekler.map((o,i)=>
+              `<li><span class="lv">${o.seviye||'—'}</span><b>${o.ad}</b>
+               <button class="ghost sm" style="float:right" onclick="ozelSil('${id}',${i})">×</button>
+               ${o.aciklama?`<div class="note">${o.aciklama}</div>`:''}</li>`).join('')
+              : '<li class="note">Henüz yok. Homebrew güç, kazanılmış beceri, kutsanmış eşya, hikâye yeteneği — buraya ekle.</li>'}
+          </ul>
+        </div>
+
+        <div class="card"><h3>Features Gained</h3><ul class="list">${ozHTML||'<li class="note">—</li>'}</ul></div>
+
+        ${buyuBlok}
+
+        <div class="card">
+          <h3>Notes</h3>
+          <textarea onchange="notSet('${id}',this.value)">${k.notlar||''}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function pipSatir(id, anahtar, isim, adet){
+  const k = D[id];
+  k.kullanim = k.kullanim || {};
+  const kullanilan = k.kullanim[anahtar] || 0;
+  let pips = '';
+  for(let i=0;i<adet;i++)
+    pips += `<div class="pip ${i<kullanilan?'used':''}" onclick="pipTikla('${id}','${anahtar}',${i})"></div>`;
+  return `<div class="track"><div class="name">${isim}</div><div class="pips">${pips}</div></div>`;
+}
+
+/* ============ EYLEMLER ============ */
+function pipTikla(id, anahtar, i){
+  const k = D[id]; k.kullanim = k.kullanim||{};
+  const cur = k.kullanim[anahtar]||0;
+  const harciyor = !(i < cur);
+  k.kullanim[anahtar] = (i < cur) ? i : i+1;
+  if(anahtar==='hp_hit' && harciyor){
+    const zar = 1 + Math.floor(Math.random()*k.hitDie);
+    const iyilesme = Math.max(1, zar + mod(k.scores.CON));
+    k.hpNow = Math.min(k.hpMax, k.hpNow + iyilesme);
+    bildir(k.ad+' hit die harcadı: 1d'+k.hitDie+'('+zar+') + CON = '+iyilesme+' HP');
+  }
+  if(anahtar==='kefe' && harciyor){
+    bildir('Kefe kalktı — BEDEL: dinlenene dek TÜM save\'ler dezavantajlı!');
+  }
+  ciz();
+}
+
+function bildir(msg){
+  let d = document.getElementById('alt-bildirim');
+  if(!d){
+    d = document.createElement('div');
+    d.id = 'alt-bildirim';
+    d.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#242019;border:1px solid #8a7434;color:#e8ded0;padding:9px 18px;border-radius:8px;z-index:99;font-size:14px;max-width:90vw;text-align:center';
+    document.body.appendChild(d);
+  }
+  d.textContent = msg; d.style.display = 'block';
+  clearTimeout(d._tm); d._tm = setTimeout(()=>{ d.style.display='none'; }, 3200);
+}
+
+/* Kısa dinlenme: Monk Focus tam yenilenir; Cleric Channel Divinity 1 geri gelir.
+   Hit die harcamak istersen piplerden işaretle (otomatik iyileşme ekler). */
+function kisaDinlenme(id){
+  const k = D[id]; k.kullanim = k.kullanim||{};
+  let n = [];
+  if(k.sinif==='monk' && (k.kullanim.focus||0)>0){ k.kullanim.focus = 0; n.push('Focus tam'); }
+  if(k.sinif==='cleric' && (k.kullanim.cd||0)>0){ k.kullanim.cd = Math.max(0,(k.kullanim.cd||0)-1); n.push('Channel Divinity +1'); }
+  bildir(k.ad+' kısa dinlendi'+(n.length?' — '+n.join(', '):'')+'. Hit die harcamak için Resources\'taki Hit Dice piplerine tıkla.');
+  ciz();
+}
+function uzunDinlenme(id){
+  const k = D[id];
+  const harcanan = (k.kullanim||{}).hp_hit || 0;
+  k.kullanim = {};
+  // 5e kuralı: long rest'te hit dice'ın YARISI geri gelir (en az 1)
+  if(harcanan > 0){
+    const geri = Math.max(1, Math.floor(k.seviye/2));
+    k.kullanim.hp_hit = Math.max(0, harcanan - geri);
+  }
+  k.hpNow = k.hpMax;
+  bildir(k.ad+' uzun dinlendi: HP tam, slotlar/kaynaklar yenilendi'+(harcanan>0?', hit dice yarısı geri geldi':'')+'.');
+  ciz();
+}
+function hpSet(id,v){ D[id].hpNow = Math.max(0, Math.min(D[id].hpMax, parseInt(v)||0)); ciz(); }
+function becTikla(id, b){
+  const k = D[id];
+  const cur = k.skills[b]||0;
+  if(cur===0) k.skills[b]=1;
+  else if(cur===1) k.skills[b]=2;
+  else delete k.skills[b];
+  ciz();
+}
+function paraSet(id,tur,v){ D[id].para[tur] = Math.max(0, parseInt(v)||0); kaydet(); }
+function notSet(id,v){ D[id].notlar = v; kaydet(); }
+function buyuSil(id,i){ D[id].buyuler.splice(i,1); ciz(); }
+
+/* --- Çekirdek değerleri düzenle (gerçek kağıtla eşitleme) --- */
+function duzenle(id){
+  const k = D[id];
+  modalAc(`
+    <h3>${k.ad} — Değerleri Düzenle</h3>
+    <div class="steps">Gerçek karakter kağıdıyla eşitle</div>
+    <div class="warn">Buradaki değerler tahmini olabilir (Level 1 kağıdından hesaplandı).
+      Oyuncunun asıl kağıdı farklıysa burada düzelt.</div>
+
+    <label class="note">Seviye</label>
+    <input id="e_lv" class="fld" type="number" value="${k.seviye}">
+
+    <label class="note">Maximum HP</label>
+    <input id="e_hp" class="fld" type="number" value="${k.hpMax}">
+
+    <label class="note">Ability Scores (halk bonusu dahil, son hâl)</label>
+    <div class="stats" style="margin-bottom:12px">
+      ${STATLAR.map(s=>`<div class="stat">
+        <div class="lab">${s}</div>
+        <input id="e_${s}" type="number" value="${k.scores[s]}"
+          style="width:100%;background:transparent;border:none;color:var(--gold);
+                 font-family:Georgia,serif;font-size:20px;text-align:center;outline:none">
+      </div>`).join('')}
+    </div>
+
+    <label class="note">Armor Class temeli ${k.acForm==='monk'?'(Monk: 10+DEX+WIS — otomatik)':'(zırh değeri, kalkan hariç)'}</label>
+    ${k.acForm==='monk' ? `<div class="note" style="margin-bottom:12px">Otomatik hesaplanıyor: ${ac(k)}</div>`
+      : `<input id="e_ac" class="fld" type="number" value="${k.acBase}">
+         <label class="note">Shield bonusu</label>
+         <input id="e_sh" class="fld" type="number" value="${k.acShield}">`}
+
+    <div class="modfoot">
+      <button onclick="modalKapat()">Vazgeç</button>
+      <button class="primary" onclick="duzenleKaydet('${id}')">Kaydet</button>
+    </div>`);
+}
+function duzenleKaydet(id){
+  const k = D[id];
+  const lv = Math.max(1, Math.min(10, parseInt(document.getElementById('e_lv').value)||k.seviye));
+  k.seviye = lv;
+  k.hpMax = Math.max(1, parseInt(document.getElementById('e_hp').value)||k.hpMax);
+  k.hpNow = Math.min(k.hpNow, k.hpMax);
+  STATLAR.forEach(s=>{
+    const v = parseInt(document.getElementById('e_'+s).value);
+    if(!isNaN(v)) k.scores[s] = Math.max(1, Math.min(30, v));
+  });
+  const eac = document.getElementById('e_ac');
+  if(eac) k.acBase = parseInt(eac.value)||k.acBase;
+  const esh = document.getElementById('e_sh');
+  if(esh) k.acShield = parseInt(esh.value)||0;
+  modalKapat(); ciz();
+}
+
+/* --- Özel yetenek ekleme (homebrew / halk / hikâye) --- */
+function ozelEkle(id){
+  const k = D[id];
+  modalAc(`
+    <h3>Özel Yetenek Ekle — ${k.ad}</h3>
+    <div class="steps">Homebrew · halk yeteneği · hikâyeden kazanılan</div>
+    <label class="note">Seviye (opsiyonel)</label>
+    <input id="oz_lv" class="fld" placeholder="örn. 3 ya da boş bırak">
+    <label class="note">Yetenek adı</label>
+    <input id="oz_ad" class="fld" placeholder="örn. Karanlıkta Görüş 20 ft">
+    <label class="note">Açıklama</label>
+    <textarea id="oz_ac" style="min-height:80px" placeholder="Mekanik etkisi, kullanım sayısı, koşulu..."></textarea>
+    <div class="modfoot">
+      <button onclick="modalKapat()">Vazgeç</button>
+      <button class="primary" onclick="ozelKaydet('${id}')">Ekle</button>
+    </div>`);
+  setTimeout(()=>document.getElementById('oz_ad').focus(),50);
+}
+function ozelKaydet(id){
+  const ad = document.getElementById('oz_ad').value.trim();
+  if(!ad){ alert('Yetenek adı gerekli.'); return; }
+  D[id].ozelYetenekler = D[id].ozelYetenekler || [];
+  D[id].ozelYetenekler.push({
+    seviye: document.getElementById('oz_lv').value.trim(),
+    ad, aciklama: document.getElementById('oz_ac').value.trim()
+  });
+  modalKapat(); ciz();
+}
+function ozelSil(id,i){ D[id].ozelYetenekler.splice(i,1); ciz(); }
+
+function buyuEkle(id){
+  const k = D[id];
+  let havuz = [];
+  if(k.sinif==='cleric'){
+    const maxLv = Math.min(5, Math.ceil(k.seviye/2));
+    for(let i=1;i<=maxLv;i++) havuz = havuz.concat(CLERIC_BUYU[i].map(b=>`[${i}] ${b}`));
+  } else {
+    const yv = yuvalar(k);
+    for(let i=1;i<=yv.length;i++) if(AT_BUYU[i]) havuz = havuz.concat(AT_BUYU[i].map(b=>`[${i}] ${b}`));
+  }
+  modalAc(`
+    <h3>Add Spell — ${k.ad}</h3>
+    <div class="steps">${k.sinif==='cleric'?'Prepared spell':'Known spell'} seç</div>
+    ${k.sinif==='rogue'?'<div class="warn">★ = yanılsama/büyüleme (en az 2 tanesi bu okullardan olmalı). "(serbest)" olanlar serbest seçim hakkınla alınır.</div>':''}
+    <div style="max-height:40vh;overflow:auto">
+      ${havuz.map(b=>`<div class="opt" onclick="buyuSec('${id}',this.dataset.b)" data-b="${b.replace(/"/g,'&quot;')}"><b>${b}</b></div>`).join('')}
+    </div>
+    <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
+      <label class="note">Listede yok mu? Elle yaz:</label>
+      <input id="bs_ozel" class="fld" placeholder="örn. [2] Pass Without Trace — Suyun Anısını Silmek"
+             onkeydown="if(event.key==='Enter')buyuOzel('${id}')">
+    </div>
+    <div class="modfoot">
+      <button onclick="modalKapat()">Vazgeç</button>
+      <button class="primary" onclick="buyuOzel('${id}')">Elle ekle</button>
+    </div>
+  `);
+}
+function buyuSec(id,b){ D[id].buyuler.push(b); modalKapat(); ciz(); }
+function buyuOzel(id){
+  const v = document.getElementById('bs_ozel').value.trim();
+  if(!v) return;
+  D[id].buyuler.push(v); modalKapat(); ciz();
+}
+
+/* ============ SEVİYE ATLAMA SİHİRBAZI ============ */
+let S = null;
+
+function buyuLimiti(sinif, lv){
+  if(sinif==='cleric') return CLERIC_HAZIR[lv]||0;
+  if(sinif==='rogue')  return AT_BUYU_SAYISI[lv]||0;
+  return 0;
+}
+function cantripLimiti(sinif, lv){
+  if(sinif==='rogue') return AT_CANTRIP[lv]||0;
+  return 0; // Cleric cantrip'leri elle yönetiliyor
+}
+function buyuHavuzu(k, lv){
+  let havuz = [];
+  if(k.sinif==='cleric'){
+    const maxLv = Math.min(5, Math.ceil(lv/2));
+    for(let i=1;i<=maxLv;i++) havuz = havuz.concat(CLERIC_BUYU[i].map(b=>`[${i}] ${b}`));
+  } else {
+    const yv = UCTE_BIR[lv]||[];
+    for(let i=1;i<=yv.length;i++) if(AT_BUYU[i]) havuz = havuz.concat(AT_BUYU[i].map(b=>`[${i}] ${b}`));
+  }
+  return havuz.filter(b=> !(k.buyuler||[]).includes(b));
+}
+
+function sihirbaz(id){
+  const k = D[id];
+  const yeni = k.seviye + 1;
+  const bilgi = ILERLEME[k.sinif][yeni];
+  S = { id, yeni, adim:0, hp:null, secimler:[], yeniBuyuler:[], yeniCantripler:[], altsinif:null, adimlar:['hp','ozellik'] };
+  // Cleric alt sınıfını Level 3'te seçer
+  if(k.sinif==='cleric' && yeni===3 && !k.altsinifId) S.adimlar.push('altsinif');
+  (bilgi.secim||[]).forEach(s=> S.adimlar.push(s));
+  // cantrip limiti arttıysa cantrip adımı
+  if(cantripLimiti(k.sinif, yeni) > cantripLimiti(k.sinif, k.seviye)) S.adimlar.push('cantrip');
+  // büyü limiti arttıysa büyü seçme adımı
+  const eski = buyuLimiti(k.sinif, k.seviye), yeniLim = buyuLimiti(k.sinif, yeni);
+  if(yeniLim > eski) S.adimlar.push('buyu');
+  S.adimlar.push('ozet');
+  adimCiz();
+}
+
+function adimCiz(){
+  const k = D[S.id];
+  const tur = S.adimlar[S.adim];
+  const toplam = S.adimlar.length;
+  const bas = `<h3>${k.ad} — Level ${k.seviye} → ${S.yeni}</h3>
+    <div class="steps">Step ${S.adim+1} / ${toplam}</div>`;
+  let govde = '';
+
+  if(tur==='hp'){
+    const conMod = mod(k.scores.CON);
+    const ort = Math.floor(k.hitDie/2)+1;
+    govde = `
+      <p class="note" style="margin-bottom:14px">HP artisi: <b>d${k.hitDie} ${isaret(conMod)}</b> (CON)</p>
+      ${S.hp===null?`
+        <div class="opt" onclick="hpSecOrt(${ort+conMod})">
+          <b>Ortalama al — ${isaret(ort+conMod)} HP</b>
+          <span>Sabit ve güvenli. Çoğu masa bunu kullanır.</span></div>
+        <div class="opt" onclick="hpZarAt()">
+          <b>Zar at — d${k.hitDie} ${isaret(conMod)}</b>
+          <span>Şansına güveniyorsan. En az 1 HP kazanırsın.</span></div>
+      `:`<div class="rolled">${isaret(S.hp)} HP</div>
+         <p class="note" style="text-align:center">Yeni maksimum: <b>${k.hpMax + S.hp}</b></p>
+         <div style="text-align:center;margin-top:10px"><button class="ghost" onclick="S.hp=null;adimCiz()">Yeniden</button></div>`}
+    `;
+  }
+
+  if(tur==='ozellik'){
+    const o = ILERLEME[k.sinif][S.yeni];
+    const liste = o.ozellik.length ? o.ozellik.map(x=>`<li>${x}</li>`).join('')
+                                   : '<li class="note">Bu seviyede otomatik özellik yok — sadece seçim var.</li>';
+    // yuva değişimi
+    const eskiY = k.sinif==='cleric'?TAM_CASTER[k.seviye]:(k.sinif==='rogue'?UCTE_BIR[k.seviye]:null);
+    const yeniY = k.sinif==='cleric'?TAM_CASTER[S.yeni]:(k.sinif==='rogue'?UCTE_BIR[S.yeni]:null);
+    let yuvaNot = '';
+    if(eskiY && yeniY && JSON.stringify(eskiY)!==JSON.stringify(yeniY))
+      yuvaNot = `<li><b>Spell Slots:</b> ${eskiY.join('/')} → <b>${yeniY.join('/')}</b></li>`;
+    if(k.sinif==='monk')
+      yuvaNot = `<li><b>Focus Points:</b> ${k.seviye} → <b>${S.yeni}</b></li>`;
+
+    govde = `<div class="gain"><b>Otomatik gelenler</b>
+      <ul class="list" style="margin-top:8px">${liste}${yuvaNot}</ul></div>`;
+  }
+
+  if(tur==='asi'){
+    const secili = S.secimler.find(x=>x.tip==='asi');
+    govde = `
+      <p class="note" style="margin-bottom:12px"><b>Ability Score Improvement</b> ya da bir <b>Feat</b> seç.</p>
+      <div class="opt ${secili&&secili.mod==='iki'?'sel':''}" onclick="asiSec('iki')">
+        <b>+1 / +1 — iki farklı ability score'a</b><span>Dengeli. Tek sayı bir stat varsa ideal.</span></div>
+      <div class="opt ${secili&&secili.mod==='bir'?'sel':''}" onclick="asiSec('bir')">
+        <b>+2 — tek ability score'a</b><span>Ana yeteneğini zirveye taşır.</span></div>
+      ${secili&&secili.mod?`<div style="border:1px solid var(--gold-dim);border-radius:7px;padding:12px;margin:10px 0">
+        ${STATLAR.map(s=>`<button class="sm" style="margin:3px" onclick="statArtir('${s}')">${s} ${k.scores[s]}${statArtisi(s)?' → '+(k.scores[s]+statArtisi(s)):''}</button>`).join('')}
+        <div class="note" style="margin-top:8px">Kalan puan: ${asiKalan()}</div></div>`:''}
+      <div style="border-top:1px solid var(--line);margin:14px 0 10px;padding-top:12px">
+        <div class="note" style="margin-bottom:8px">…ya da bir FEAT:</div>
+        <div style="max-height:32vh;overflow:auto">
+        ${FEATLER.map(f=>`<div class="opt ${secili&&secili.feat===f.ad?'sel':''}" onclick="featSec('${f.ad}')">
+          <b>${f.ad}</b><span>${f.not}</span></div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  if(tur==='expertise'){
+    const secili = S.secimler.find(x=>x.tip==='expertise') || {liste:[]};
+    const uygun = Object.keys(k.skills).filter(b=>k.skills[b]===1);
+    govde = `
+      <p class="note" style="margin-bottom:12px">Expertise: <b>2 skill</b> seç — proficiency bonusun o skill'lerde iki katina cikar.</p>
+      ${uygun.map(b=>`<div class="opt ${secili.liste.includes(b)?'sel':''}" onclick="expSec('${b}')">
+        <b>${BECERI_TR[b]}</b><span>Şu an ${isaret(mod(k.scores[BECERI_STAT[b]])+profBonus(S.yeni))} →
+        expertise ile ${isaret(mod(k.scores[BECERI_STAT[b]])+profBonus(S.yeni)*2)}</span></div>`).join('')}
+      <div class="note">Seçilen: ${secili.liste.length}/2</div>`;
+  }
+
+  if(tur==='altsinif'){
+    govde = `
+      <p class="note" style="margin-bottom:12px">Divine Domain seç — bu, Yargın'la kurduğun bağın hangi yöne aktığını belirler. <b>Geri alınamaz.</b></p>
+      ${Object.keys(CLERIC_ALTSINIFLAR).map(key=>{
+        const a = CLERIC_ALTSINIFLAR[key];
+        return `<div class="opt ${S.altsinif===key?'sel':''}" onclick="altsinifSec('${key}')">
+          <b>${a.ad}</b><span>${a.kisa}<br><i style="opacity:.6">Mekanik temel: ${a.temel}</i></span>
+          ${S.altsinif===key?`<ul class="list" style="margin-top:8px">${a.ozellikler.map(([lv,t])=>`<li><span class="lv">${lv}</span>${t}</li>`).join('')}</ul>`:''}
+        </div>`;
+      }).join('')}`;
+  }
+
+  if(tur==='cantrip'){
+    const hedef = cantripLimiti(k.sinif, S.yeni) - cantripLimiti(k.sinif, k.seviye);
+    const kalan = hedef - S.yeniCantripler.length;
+    const zorunlu = k.seviye < 3;
+    const havuz = AT_BUYU[0].filter(c=> !S.yeniCantripler.includes(c));
+    govde = `
+      <p class="note" style="margin-bottom:10px">Cantrip seç — kalan: <b>${kalan}</b></p>
+      ${zorunlu?`<div class="warn">⚑ <b>Mage Hand (Görünmez El)</b> zorunludur — Sır Hırsızı'nın imza yeteneği.</div>`:''}
+      ${S.yeniCantripler.length?`<div class="gain"><b>Seçtiklerin</b><ul class="list" style="margin-top:6px">
+        ${S.yeniCantripler.map((c,i)=>`<li>${c}<button class="ghost sm" style="float:right" onclick="wCantSil(${i})">×</button></li>`).join('')}
+      </ul></div>`:''}
+      ${kalan>0?`
+        ${zorunlu&&!S.yeniCantripler.some(c=>c.indexOf('Mage Hand')>=0)?
+          `<div class="opt" style="border-color:var(--gold)" onclick="wCantSec('Mage Hand — Görünmez El (zorunlu)')"><b>Mage Hand — Görünmez El</b><span>Görünmez el; uzaktan cep karıştırma, kilit açma, tuzak etkisizleştirme.</span></div>`:''}
+        <div style="max-height:34vh;overflow:auto">
+          ${havuz.map(c=>`<div class="opt" onclick="wCantSec(this.dataset.c)" data-c="${c.replace(/"/g,'&quot;')}"><b>${c}</b></div>`).join('')}
+        </div>`
+      :`<p class="note" style="text-align:center;padding:14px">✓ Cantrip seçimi tamam.</p>`}
+    `;
+  }
+
+  if(tur==='buyu'){
+    const eski = buyuLimiti(k.sinif, k.seviye);
+    const yeniLim = buyuLimiti(k.sinif, S.yeni);
+    const kalan = yeniLim - eski - S.yeniBuyuler.length;
+    const havuz = buyuHavuzu(k, S.yeni).filter(b=> !S.yeniBuyuler.includes(b));
+    const yeniSeviyeAcildi = (k.sinif==='cleric' ? TAM_CASTER[S.yeni].length > TAM_CASTER[k.seviye].length
+                                                 : (UCTE_BIR[S.yeni]||[]).length > (UCTE_BIR[k.seviye]||[]).length);
+    govde = `
+      <p class="note" style="margin-bottom:10px">
+        ${k.sinif==='cleric'?'Prepare edebileceğin':'Bilebileceğin'} büyü sayısı
+        <b>${eski} → ${yeniLim}</b>. Seçilecek: <b>${kalan}</b>
+      </p>
+      ${yeniSeviyeAcildi?`<div class="warn">🎉 Yeni bir büyü seviyesi açıldı! Listede yeni [${(k.sinif==='cleric'?TAM_CASTER:UCTE_BIR)[S.yeni].length}] işaretli büyüleri göreceksin.</div>`:''}
+      ${k.sinif==='rogue'?'<div class="warn">★ = yanılsama/büyüleme. Sır Hırsızı olarak büyülerinin çoğu bu okullardan olmalı; "(serbest)" olanlar serbest seçim hakkın.</div>':''}
+      ${S.yeniBuyuler.length?`<div class="gain"><b>Seçtiklerin</b><ul class="list" style="margin-top:6px">
+        ${S.yeniBuyuler.map((b,i)=>`<li>${b}<button class="ghost sm" style="float:right" onclick="wBuyuSil(${i})">×</button></li>`).join('')}
+      </ul></div>`:''}
+      ${kalan>0?`<div style="max-height:36vh;overflow:auto">
+        ${havuz.map(b=>`<div class="opt" onclick="wBuyuSec(this.dataset.b)" data-b="${b.replace(/"/g,'&quot;')}"><b>${b}</b></div>`).join('')}
+      </div>
+      <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px">
+        <label class="note">Listede yok mu? Elle yaz:</label>
+        <input id="w_ozel" class="fld" placeholder="örn. [2] Silence — Sessizlik Cebi"
+               onkeydown="if(event.key==='Enter')wBuyuOzel()">
+        <button class="ghost sm" onclick="wBuyuOzel()">Elle ekle</button>
+      </div>`
+      :`<p class="note" style="text-align:center;padding:14px">✓ Seçim tamam.</p>`}
+    `;
+  }
+
+  if(tur==='ozet'){
+    const sec = S.secimler.map(s=>`<li><b>${s.baslik}:</b> ${s.deger}</li>`).join('');
+    govde = `<div class="gain"><b>Özet</b><ul class="list" style="margin-top:8px">
+      <li><b>HP:</b> ${k.hpMax} → ${k.hpMax + S.hp} (${isaret(S.hp)})</li>
+      <li><b>Level:</b> ${k.seviye} → ${S.yeni}</li>
+      ${profBonus(S.yeni)>profBonus(k.seviye)?`<li><b>Proficiency:</b> ${isaret(profBonus(k.seviye))} → ${isaret(profBonus(S.yeni))} 🎉</li>`:''}
+      ${sec}
+      ${S.yeniCantripler.length?`<li><b>New cantrip:</b> ${S.yeniCantripler.join(' · ')}</li>`:''}
+      ${S.yeniBuyuler.length?`<li><b>New spells:</b> ${S.yeniBuyuler.join(' · ')}</li>`:''}
+      </ul></div>
+      <p class="note">Uyguladıktan sonra kartta hepsini görürsün. Büyü seçimini kart üzerinden yaparsın.</p>`;
+  }
+
+  const ileriAktif = adimGecerli();
+  modalAc(bas + govde + `<div class="modfoot">
+    <button onclick="${S.adim===0?'modalKapat()':'S.adim--;adimCiz()'}">${S.adim===0?'Vazgeç':'← Geri'}</button>
+    ${S.adimlar[S.adim]==='ozet'
+      ? `<button class="primary" onclick="seviyeUygula()">✓ Uygula</button>`
+      : `<button class="primary" ${ileriAktif?'':'disabled style="opacity:.4;cursor:not-allowed"'} onclick="${ileriAktif?'S.adim++;adimCiz()':''}">İleri →</button>`}
+  </div>`);
+}
+
+function adimGecerli(){
+  const tur = S.adimlar[S.adim];
+  if(tur==='hp') return S.hp!==null;
+  if(tur==='asi'){ const s=S.secimler.find(x=>x.tip==='asi'); return s && (s.feat || asiKalan()===0); }
+  if(tur==='expertise'){ const s=S.secimler.find(x=>x.tip==='expertise'); return s && s.liste.length===2; }
+  if(tur==='buyu'){
+    const k=D[S.id];
+    return S.yeniBuyuler.length >= (buyuLimiti(k.sinif,S.yeni) - buyuLimiti(k.sinif,k.seviye));
+  }
+  if(tur==='cantrip'){
+    const k=D[S.id];
+    return S.yeniCantripler.length >= (cantripLimiti(k.sinif,S.yeni) - cantripLimiti(k.sinif,k.seviye));
+  }
+  if(tur==='altsinif') return !!S.altsinif;
+  return true;
+}
+function altsinifSec(key){ S.altsinif = key; adimCiz(); }
+function wCantSec(c){ S.yeniCantripler.push(c); adimCiz(); }
+function wCantSil(i){ S.yeniCantripler.splice(i,1); adimCiz(); }
+function wBuyuSec(b){ S.yeniBuyuler.push(b); adimCiz(); }
+function wBuyuSil(i){ S.yeniBuyuler.splice(i,1); adimCiz(); }
+function wBuyuOzel(){
+  const el = document.getElementById('w_ozel'); if(!el) return;
+  const v = el.value.trim(); if(!v) return;
+  S.yeniBuyuler.push(v); adimCiz();
+}
+function hpSecOrt(v){ S.hp=v; adimCiz(); }
+function hpZarAt(){
+  const k=D[S.id];
+  const z = Math.floor(Math.random()*k.hitDie)+1;
+  S.hp = Math.max(1, z + mod(k.scores.CON));
+  adimCiz();
+}
+function asiSec(m){
+  let s = S.secimler.find(x=>x.tip==='asi');
+  if(!s){ s={tip:'asi',baslik:'Ability Score Improvement',deger:'',artis:{}}; S.secimler.push(s); }
+  s.mod=m; s.feat=null; s.artis={}; s.deger='';
+  adimCiz();
+}
+function statArtisi(st){ const s=S.secimler.find(x=>x.tip==='asi'); return (s&&s.artis&&s.artis[st])||0; }
+function asiKalan(){
+  const s=S.secimler.find(x=>x.tip==='asi'); if(!s) return 0;
+  const kul = Object.values(s.artis||{}).reduce((a,b)=>a+b,0);
+  return (s.mod==='bir'?2:2) - kul;
+}
+function statArtir(st){
+  const s=S.secimler.find(x=>x.tip==='asi'); if(!s||!s.mod) return;
+  s.artis = s.artis||{};
+  if(asiKalan()<=0){ s.artis={}; }
+  else {
+    const cur = s.artis[st]||0;
+    if(s.mod==='bir' && cur>=2) return;
+    if(s.mod==='iki' && cur>=1) return;
+    s.artis[st]=cur+1;
+  }
+  s.deger = Object.keys(s.artis).map(x=>`${x} ${isaret(s.artis[x])}`).join(', ') || '—';
+  adimCiz();
+}
+function featSec(ad){
+  let s = S.secimler.find(x=>x.tip==='asi');
+  if(!s){ s={tip:'asi',baslik:'Feat',deger:''}; S.secimler.push(s); }
+  s.mod=null; s.artis={}; s.feat=ad; s.baslik='Feat'; s.deger=ad;
+  adimCiz();
+}
+function expSec(b){
+  let s = S.secimler.find(x=>x.tip==='expertise');
+  if(!s){ s={tip:'expertise',baslik:'Expertise',deger:'',liste:[]}; S.secimler.push(s); }
+  const i = s.liste.indexOf(b);
+  if(i>=0) s.liste.splice(i,1);
+  else if(s.liste.length<2) s.liste.push(b);
+  s.deger = s.liste.map(x=>BECERI_TR[x]).join(', ');
+  adimCiz();
+}
+
+function seviyeUygula(){
+  const k = D[S.id];
+  if(S.altsinif){
+    k.altsinifId = S.altsinif;
+    k.secimler.push({seviye:S.yeni, baslik:'Divine Domain', deger:CLERIC_ALTSINIFLAR[S.altsinif].ad});
+  }
+  k.hpMax += S.hp;
+  k.hpNow += S.hp;
+  k.seviye = S.yeni;
+  S.secimler.forEach(s=>{
+    if(s.tip==='asi' && s.artis) Object.keys(s.artis).forEach(st=> k.scores[st] += s.artis[st]);
+    if(s.tip==='expertise') s.liste.forEach(b=> k.skills[b]=2);
+    k.secimler.push({seviye:S.yeni, baslik:s.baslik, deger:s.deger});
+  });
+  if(S.yeniCantripler.length){
+    k.cantripler = (k.cantripler||[]).concat(S.yeniCantripler);
+    k.secimler.push({seviye:S.yeni, baslik:'New cantrip', deger:S.yeniCantripler.join(' · ')});
+  }
+  if(S.yeniBuyuler.length){
+    k.buyuler = (k.buyuler||[]).concat(S.yeniBuyuler);
+    k.secimler.push({seviye:S.yeni, baslik:'New spell', deger:S.yeniBuyuler.join(' · ')});
+  }
+  S = null;
+  modalKapat();
+  ciz();
+}
+
+/* ============ MODAL & YEDEK ============ */
+function modalAc(html){
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('mask').classList.add('on');
+}
+function modalKapat(){ document.getElementById('mask').classList.remove('on'); S=null; }
+document.getElementById('mask').addEventListener('click', e=>{ if(e.target.id==='mask') modalKapat(); });
+
+function disaAktar(){
+  const blob = new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'altidunya_karakterler.json';
+  a.click();
+}
+function iceAktar(){
+  const inp = document.createElement('input');
+  inp.type='file'; inp.accept='.json';
+  inp.onchange = e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{ try{ D = JSON.parse(r.result); ciz(); }catch(err){ alert('Dosya okunamadı.'); } };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+function sifirla(){
+  if(confirm('Tüm karakterler kayıtlı başlangıç hâline döner (Karya 3 / Aya 3 / Kuzgun 3). Emin misin?')){
+    try{ localStorage.setItem('altidunya_karakterler_eski', JSON.stringify(D)); }catch(e){}
+    D = JSON.parse(JSON.stringify(BASLANGIC)); D.__v = VERSIYON; ciz();
+  }
+}
+
+/* Sürüm rozeti + eski kayıt uyarısı */
+function rozetCiz(){
+  const b = document.getElementById('verBadge');
+  if(b) b.textContent = 'v' + VERSIYON;
+  if(eskiKayitUyarisi){
+    eskiKayitUyarisi = false;
+    const d = document.createElement('div');
+    d.className = 'wrap';
+    d.innerHTML = `<div class="warn" style="margin-bottom:14px">
+      Yeni bir sürüm yüklendi (v${VERSIYON}) — eski kaydın uyumsuz olduğu için <b>güncel başlangıç verisi</b> yüklendi.
+      Eski kaydın saklandı.
+      <button class="ghost sm" style="margin-left:8px" onclick="eskiKaydiGeriYukle()">Eski kaydı geri yükle</button>
+      <button class="ghost sm" onclick="this.parentElement.parentElement.remove()">Tamam</button>
+    </div>`;
+    document.getElementById('panes').before(d);
+  }
+}
+
+ciz();
+rozetCiz();
+</script>
+
+<script>
+/* === Parti Defteri kabuk köprüsü (site/) === */
+window.addEventListener('message', function(e){
+  var m = e.data;
+  if(m && m.type==='alt-rest'){
+    ['karya','aya','kuzgun'].forEach(function(id){
+      if(!D[id]) return;
+      if(m.tip==='uzun') uzunDinlenme(id); else kisaDinlenme(id);
+    });
+    return;
+  }
+  if(m && m.type==='alt-load' && m.data && m.data.karya){
+    m.data.__v = VERSIYON;
+    D = m.data; try{ ciz(); }catch(err){}
+    try{ localStorage.setItem('altidunya_karakterler', JSON.stringify(D)); }catch(err){}
+  }
+});
+try{ if(window.parent !== window) window.parent.postMessage({type:'alt-ready'}, '*'); }catch(e){}
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+/* Altıdünya Parti Defteri — koyu, tek tema */
+:root{
+  --bg:#12100e; --panel:#1c1815; --panel2:#242019; --line:#3a322a;
+  --ink:#e8ded0; --ink-dim:#a3968a; --gold:#c9a227; --gold-soft:#8a7434;
+  --red:#b3542e; --green:#5f8a5a; --blue:#5b7d8a;
+  --font-body:'IBM Plex Sans',system-ui,sans-serif;
+  --font-disp:'Spectral',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;-webkit-font-smoothing:antialiased}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:.55em 1.1em;border-radius:6px;font-size:.95em}
+.btn.primary{background:var(--gold-soft);border-color:var(--gold);color:#fff}
+.btn.ghost{background:transparent}
+.btn.small-btn{padding:.3em .7em;font-size:.85em}
+.btn:active{transform:translateY(1px)}
+.err{color:var(--red);margin-top:.6em;font-size:.9em}
+
+/* --- Giriş --- */
+#view-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1em}
+.login-box{width:min(340px,92vw);text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:2.2em 1.6em}
+.logo{font-family:var(--font-disp);font-weight:700;letter-spacing:.35em;color:var(--gold);font-size:1.6em}
+.logo.small{font-size:1em;letter-spacing:.25em}
+.logo-sub{color:var(--ink-dim);margin:.4em 0 1.6em;font-size:.9em}
+#login-pass{width:100%;padding:.7em .9em;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:1em;margin-bottom:.8em;text-align:center}
+#login-btn{width:100%}
+.mode-badge{margin-top:1.2em;font-size:.75em;color:var(--ink-dim)}
+
+/* --- Üst bar + sekmeler --- */
+#view-main{display:flex;flex-direction:column;min-height:100vh}
+#topbar{display:flex;align-items:center;gap:.8em;padding:.6em .9em;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;flex-wrap:wrap}
+#tabs{display:flex;gap:.2em;flex:1;min-width:0;overflow-x:auto}
+.tab{background:transparent;border:none;color:var(--ink-dim);padding:.5em .8em;border-radius:6px;white-space:nowrap;font-size:.92em;position:relative}
+.tab.active{color:var(--gold);background:var(--panel2)}
+.dot{position:absolute;top:4px;right:2px;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.top-right{display:flex;align-items:center;gap:.6em}
+#role-badge{font-size:.78em;color:var(--ink-dim);border:1px solid var(--line);padding:.15em .5em;border-radius:10px}
+#role-badge.dm{color:var(--gold);border-color:var(--gold-soft)}
+#sync-badge{font-size:.9em;color:var(--ink-dim)}
+#sync-badge.on{color:var(--green)} #sync-badge.err{color:var(--red)}
+
+/* --- İçerik --- */
+#content{flex:1;display:flex;flex-direction:column}
+.pane{flex:1;padding:1em;max-width:900px;width:100%;margin:0 auto}
+#pane-karakterler{padding:0;max-width:none}
+#char-frame{width:100%;height:calc(100vh - 58px);border:none;display:block;background:var(--bg)}
+
+h2.sec{font-family:var(--font-disp);color:var(--gold);font-size:1.15em;margin:.4em 0 .7em;letter-spacing:.03em}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.9em 1em;margin-bottom:.8em}
+.muted{color:var(--ink-dim);font-size:.85em}
+
+/* Kasa */
+.kasa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6em}
+.para{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:.7em;text-align:center}
+.para .v{font-family:var(--font-disp);font-size:1.5em;color:var(--gold)}
+.para .l{font-size:.75em;color:var(--ink-dim);margin-top:.15em}
+.para .adj{display:flex;justify-content:center;gap:.4em;margin-top:.5em}
+.para .adj button{width:2em;height:2em;border-radius:5px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.para.isaretli .v{color:var(--red)}
+
+/* Envanter */
+.env-item{display:flex;align-items:center;gap:.7em;padding:.6em .2em;border-bottom:1px solid var(--line)}
+.env-item:last-child{border-bottom:none}
+.env-item .ad{flex:1;cursor:pointer}
+.env-item .ad:hover{color:var(--gold)}
+.env-item .adet{font-family:var(--font-disp);color:var(--ink-dim);min-width:2.2em;text-align:center}
+.etiket{font-size:.68em;padding:.1em .45em;border-radius:8px;border:1px solid var(--line);color:var(--ink-dim)}
+.etiket.riskli{color:var(--red);border-color:var(--red)}
+.etiket.onemli{color:var(--gold);border-color:var(--gold-soft)}
+
+/* Notlar */
+.not{border-left:3px solid var(--line);padding:.5em .8em;margin-bottom:.7em;background:var(--panel)}
+.not.onemli{border-left-color:var(--gold)}
+.not .meta{font-size:.75em;color:var(--ink-dim);margin-bottom:.25em}
+textarea{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.6em;font-family:inherit;font-size:.95em;min-height:70px}
+
+/* Modal */
+#modal-root{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:50;padding:1em}
+#modal-card{background:var(--panel);border:1px solid var(--gold-soft);border-radius:12px;max-width:440px;width:100%;padding:1.2em;max-height:85vh;overflow-y:auto}
+#modal-card h3{font-family:var(--font-disp);color:var(--gold);margin-bottom:.6em}
+#modal-card .butonlar{display:flex;gap:.6em;margin-top:1em;flex-wrap:wrap}
+
+/* Fener diyagramı */
+.fener-svg{display:block;margin:0 auto}
+.fener-aciklama{text-align:center;font-size:.85em;color:var(--ink-dim);margin-top:.4em}
+
+/* Toast */
+#toast{position:fixed;bottom:1.2em;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--gold-soft);color:var(--ink);padding:.6em 1.2em;border-radius:8px;z-index:60;font-size:.9em;max-width:90vw;text-align:center}
+
+/* DM panel */
+.dm-row{display:flex;align-items:center;justify-content:space-between;gap:.8em;padding:.5em 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dm-row:last-child{border-bottom:none}
+
+@media (max-width:600px){
+  #topbar{padding:.5em}
+  .logo.small{display:none}
+  .pane{padding:.8em}
+}

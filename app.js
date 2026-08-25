@@ -1,0 +1,269 @@
+/* Altıdünya Parti Defteri — kabuk uygulaması */
+(function(){
+  const $ = (s)=>document.querySelector(s);
+  const S = window.AltStore;
+  let PARTI = null, NOTLAR = null, ROLE = null;
+  let charFrameReady = false, pendingChars = null;
+
+  /* ---------- yardımcılar ---------- */
+  function toast(msg){
+    const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden');
+    clearTimeout(t._tm); t._tm = setTimeout(()=>t.classList.add('hidden'), 2600);
+  }
+  function modal(html){
+    $('#modal-card').innerHTML = html;
+    $('#modal-root').classList.remove('hidden');
+  }
+  function closeModal(){ $('#modal-root').classList.add('hidden'); }
+  $('#modal-root').addEventListener('click', (e)=>{ if(e.target.id==='modal-root') closeModal(); });
+  window.altKapat = closeModal;
+
+  async function kaydetParti(){ await S.set('parti', PARTI); S.markSeen('parti', PARTI); guncelleSync(true); }
+  async function kaydetNotlar(){ await S.set('notlar', NOTLAR); S.markSeen('notlar', NOTLAR); guncelleSync(true); }
+  function guncelleSync(ok){
+    const b = $('#sync-badge');
+    b.className = S.mode==='supabase' ? (ok?'on':'err') : '';
+    b.title = S.mode==='supabase' ? (ok?'Senkron: bağlı':'Senkron: HATA — yerel kayıt sürüyor') : 'Yerel mod (tek cihaz)';
+  }
+
+  /* ---------- giriş ---------- */
+  async function girisDene(){
+    const p = $('#login-pass').value.trim();
+    if(!p) return;
+    $('#login-btn').disabled = true;
+    const r = await S.login(p);
+    $('#login-btn').disabled = false;
+    if(!r){ $('#login-err').classList.remove('hidden'); return; }
+    baslat(r);
+  }
+  $('#login-btn').addEventListener('click', girisDene);
+  $('#login-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') girisDene(); });
+  $('#logout-btn').addEventListener('click', ()=>{ S.logout(); location.reload(); });
+  $('#mode-badge').textContent = S.mode==='supabase'
+    ? 'Bulut modu — cihazlar arası senkron açık'
+    : 'YEREL MOD — veriler yalnız bu cihazda (SETUP.md ile buluta geç)';
+
+  /* ---------- ana başlangıç ---------- */
+  async function baslat(role){
+    ROLE = role;
+    $('#view-login').classList.add('hidden');
+    $('#view-main').classList.remove('hidden');
+    const rb = $('#role-badge');
+    rb.textContent = role==='dm' ? 'DM' : 'Oyuncu';
+    rb.className = role==='dm' ? 'dm' : '';
+    if(role==='dm') $('#tab-dm').classList.remove('hidden');
+
+    PARTI  = (await S.get('parti'))  || JSON.parse(JSON.stringify(window.ALT_SEED.parti));
+    NOTLAR = (await S.get('notlar')) || JSON.parse(JSON.stringify(window.ALT_SEED.notlar));
+    S.markSeen('parti', PARTI); S.markSeen('notlar', NOTLAR);
+    guncelleSync(true);
+
+    const chars = await S.get('karakterler');
+    if(chars){ pendingChars = chars; pushChars(); }
+
+    cizKasa(); cizNotlar(); if(role==='dm') cizDM();
+
+    S.poll(['parti','notlar','karakterler'], (k,v)=>{
+      if(k==='parti'){ PARTI=v; cizKasa(); toast('Kasa/envanter güncellendi'); }
+      if(k==='notlar'){ NOTLAR=v; cizNotlar(); $('#not-dot').classList.remove('hidden'); }
+      if(k==='karakterler'){ pendingChars=v; pushChars(); toast('Karakterler güncellendi'); }
+    }, 5000);
+  }
+
+  /* ---------- karakter motoru köprüsü ---------- */
+  window.addEventListener('message', async (e)=>{
+    const m = e.data;
+    if(!m) return;
+    if(m.type==='alt-ready'){ charFrameReady = true; pushChars(); }
+    if(m.type==='alt-save' && m.data){
+      await S.set('karakterler', m.data);
+      S.markSeen('karakterler', m.data);
+      guncelleSync(true);
+    }
+  });
+  function pushChars(){
+    if(charFrameReady && pendingChars){
+      $('#char-frame').contentWindow.postMessage({type:'alt-load', data:pendingChars}, '*');
+      pendingChars = null;
+    }
+  }
+
+  /* ---------- sekmeler ---------- */
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      ['karakterler','kasa','notlar','dm'].forEach(p=>$('#pane-'+p).classList.add('hidden'));
+      $('#pane-'+t.dataset.tab).classList.remove('hidden');
+      if(t.dataset.tab==='notlar') $('#not-dot').classList.add('hidden');
+    });
+  });
+
+  /* ---------- KASA & ENVANTER ---------- */
+  function cizKasa(){
+    const k = PARTI.kasa;
+    const paraKart = (id,lab,val,cls)=>`
+      <div class="para ${cls||''}">
+        <div class="v" id="p-${id}">${val}</div><div class="l">${lab}</div>
+        <div class="adj">
+          <button onclick="altPara('${id}',-1)">−</button>
+          <button onclick="altPara('${id}',1)">+</button>
+          <button onclick="altPara('${id}',-10)" title="−10">≪</button>
+          <button onclick="altPara('${id}',10)" title="+10">≫</button>
+        </div>
+      </div>`;
+    let html = `<h2 class="sec">Parti Kasası</h2>
+      <div class="kasa-grid">
+        ${paraKart('temiz_gumus','Temiz Gümüş',k.temiz_gumus)}
+        ${paraKart('isaretli_gumus','İşaretli Gümüş',k.isaretli_gumus,'isaretli')}
+        ${paraKart('bakir','Bakır',k.bakir)}
+        ${paraKart('altin','Altın',k.altin)}
+      </div>
+      <p class="muted" style="margin-top:.5em">${PARTI.kasa_notu||''}</p>
+      <h2 class="sec" style="margin-top:1.2em">Envanter</h2>
+      <div class="card">`;
+    PARTI.envanter.forEach((it,i)=>{
+      html += `<div class="env-item">
+        <span class="ad" onclick="altDetay(${i})">${it.ad}</span>
+        ${it.etiket?`<span class="etiket ${it.etiket}">${it.etiket==='riskli'?'⚠ riskli':'★ önemli'}</span>`:''}
+        <span class="adet">×${it.adet}</span>
+      </div>`;
+    });
+    html += `</div>`;
+    if(ROLE==='dm'){
+      html += `<h2 class="sec">Katalogdan Ekle <span class="muted">(DM)</span></h2><div class="card">`;
+      window.ALT_SEED.katalog.forEach((c,i)=>{
+        html += `<div class="env-item"><span class="ad">${c.ad} <span class="muted">· ${c.fiyat}</span></span>
+                 <button class="btn small-btn" onclick="altKatalogEkle(${i})">Ekle</button></div>`;
+      });
+      html += `</div>`;
+    }
+    $('#pane-kasa').innerHTML = html;
+  }
+
+  window.altPara = function(id, d){
+    PARTI.kasa[id] = Math.max(0, (PARTI.kasa[id]||0) + d);
+    $('#p-'+id).textContent = PARTI.kasa[id];
+    kaydetParti();
+  };
+
+  window.altKatalogEkle = function(i){
+    const c = window.ALT_SEED.katalog[i];
+    const mevcut = PARTI.envanter.find(x=>x.id===c.envId);
+    if(mevcut) mevcut.adet++;
+    else PARTI.envanter.push({id:c.envId, ad:c.ad, adet:1, tip:c.tip, detay:c.detay, etiket:''});
+    kaydetParti(); cizKasa(); toast(c.ad+' envantere eklendi');
+  };
+
+  window.altDetay = function(i){
+    const it = PARTI.envanter[i];
+    let ekstra = '';
+    if(it.tip==='ic') ekstra = `<button class="btn primary" onclick="altKullan(${i})">Kullan (1 adet düşer)</button>`;
+    if(it.tip==='duduk') ekstra = `
+      <button class="btn" onclick="altToast('Kısa-kısa-uzun: TEHLİKE perdesi çalındı')">Tehlike</button>
+      <button class="btn" onclick="altToast('Uzun-uzun: TOPLAN perdesi çalındı')">Toplan</button>
+      <button class="btn" onclick="altToast('Tek uzun düşen ton: TEMİZ perdesi çalındı')">Temiz</button>`;
+    if(it.tip==='mektup') ekstra = `<button class="btn" onclick="altToast('Mühür soğuk. Açılmıyor.')">Mührü zorla</button>`;
+    if(it.tip==='fener' || it.id==='fener') ekstra = `<div id="fener-alan"></div>`;
+    modal(`<h3>${it.ad} <span class="muted">×${it.adet}</span></h3>
+      <p>${it.detay}</p>
+      <div class="butonlar">${ekstra}
+        ${ROLE==='dm'?`<button class="btn ghost" onclick="altAdet(${i},-1)">− adet</button>
+                       <button class="btn ghost" onclick="altAdet(${i},1)">+ adet</button>`:''}
+        <button class="btn" onclick="altKapat()">Kapat</button></div>`);
+    if(it.tip==='fener' || it.id==='fener') cizFener();
+  };
+  window.altToast = toast;
+  window.altKullan = function(i){
+    const it = PARTI.envanter[i];
+    if(it.adet<=0) return toast('Kalmadı.');
+    it.adet--;
+    if(it.adet===0 && ROLE!=='dm') it.etiket='';
+    kaydetParti(); cizKasa(); closeModal();
+    toast(it.ad+' kullanıldı'+(it.id==='potion1'?' — 2d4+2 iyileşme zarı at!':''));
+  };
+  window.altAdet = function(i,d){
+    PARTI.envanter[i].adet = Math.max(0, PARTI.envanter[i].adet+d);
+    if(PARTI.envanter[i].adet===0) PARTI.envanter.splice(i,1);
+    kaydetParti(); cizKasa(); closeModal();
+  };
+
+  /* Fener ışık diyagramı — interaktif */
+  function cizFener(){
+    let acik = true;
+    function r(){
+      const b = acik?30:0, d = acik?30:5;         // parlak / loş (ft)
+      const scale = 2.2, cx=110, cy=110;
+      $('#fener-alan').innerHTML = `
+        <svg class="fener-svg" width="220" height="220" viewBox="0 0 220 220">
+          <circle cx="${cx}" cy="${cy}" r="${(b+d)*scale/2}" fill="#c9a22722" stroke="#c9a22755" stroke-dasharray="3 3"/>
+          ${b?`<circle cx="${cx}" cy="${cy}" r="${b*scale/2}" fill="#c9a22744" stroke="#c9a227"/>`:''}
+          <circle cx="${cx}" cy="${cy}" r="4" fill="#e8ded0"/>
+          <text x="${cx}" y="${cy-((b||d)*scale/2)-6}" text-anchor="middle" fill="#a3968a" font-size="11">${acik?'30 ft parlak + 30 ft loş':'5 ft loş'}</text>
+        </svg>
+        <p class="fener-aciklama">Her kare 5 ft. ${acik?'Kapak açık — herkes sizi görür.':'Kapak kısık — süzülen tek şerit ışık.'}</p>
+        <div class="butonlar" style="justify-content:center">
+          <button class="btn" id="fener-tgl">${acik?'Kapağı kıs':'Kapağı aç'}</button>
+        </div>`;
+      $('#fener-tgl').onclick = ()=>{ acik=!acik; r(); };
+    }
+    r();
+  }
+
+  /* ---------- NOTLAR ---------- */
+  function cizNotlar(){
+    let html = `<h2 class="sec">Notlar <span class="muted">(DM yayınlar — herkes görür)</span></h2>`;
+    if(ROLE==='dm'){
+      html += `<div class="card"><textarea id="not-metin" placeholder="Yeni not…"></textarea>
+        <div class="butonlar" style="margin-top:.5em">
+          <label class="muted"><input type="checkbox" id="not-onemli"> Önemli işaretle</label>
+          <button class="btn primary" onclick="altNotEkle()">Yayınla</button>
+        </div></div>`;
+    }
+    [...NOTLAR].reverse().forEach(n=>{
+      html += `<div class="not ${n.onemli?'onemli':''}">
+        <div class="meta">${n.t} · ${n.kim}</div><div>${n.metin}</div></div>`;
+    });
+    $('#pane-notlar').innerHTML = html;
+  }
+  window.altNotEkle = function(){
+    const m = $('#not-metin').value.trim();
+    if(!m) return;
+    NOTLAR.push({t:new Date().toISOString().slice(0,10), kim:'DM', metin:m, onemli:$('#not-onemli').checked});
+    kaydetNotlar(); cizNotlar(); toast('Not yayınlandı');
+  };
+
+  /* ---------- DM PANELİ ---------- */
+  function cizDM(){
+    $('#pane-dm').innerHTML = `
+      <h2 class="sec">DM Paneli</h2>
+      <div class="card">
+        <div class="dm-row"><span>Mod</span><span class="muted">${S.mode==='supabase'?'Bulut (Supabase) — senkron açık':'YEREL — tek cihaz; SETUP.md ile buluta geç'}</span></div>
+        <div class="dm-row"><span>Karakter kayıtları</span><span class="muted">Karakterler sekmesindeki her değişiklik otomatik ortak kayda yazılır</span></div>
+        <div class="dm-row"><span>Parti dinlenmesi <span class="muted">(üç karaktere birden uygular ve kaydeder)</span></span>
+          <span>
+            <button class="btn small-btn" onclick="altParteRest('kisa')">Kısa</button>
+            <button class="btn small-btn" onclick="altParteRest('uzun')">Uzun</button>
+          </span></div>
+        <div class="dm-row"><span>Envanter/kasa tohumu (STATE S8 sonu)</span>
+          <button class="btn small-btn" onclick="altSifirla()">Tohuma sıfırla</button></div>
+      </div>
+      <p class="muted">Spoiler kuralı: bu sitede yalnız oyuncuların bilebileceği [O] bilgiler yaşar. GM sırları repoda kalır.</p>`;
+  }
+  window.altParteRest = function(tip){
+    $('#char-frame').contentWindow.postMessage({type:'alt-rest', tip}, '*');
+    toast(tip==='uzun' ? 'Parti uzun dinlendi — HP/kaynaklar yenilendi' : 'Parti kısa dinlendi');
+    document.querySelector('[data-tab="karakterler"]').click();
+  };
+
+  window.altSifirla = function(){
+    if(!confirm('Kasa + envanter + notlar tohum verisine döner (karakterlere dokunmaz). Emin misin?')) return;
+    PARTI = JSON.parse(JSON.stringify(window.ALT_SEED.parti));
+    NOTLAR = JSON.parse(JSON.stringify(window.ALT_SEED.notlar));
+    kaydetParti(); kaydetNotlar(); cizKasa(); cizNotlar(); toast('Tohuma sıfırlandı');
+  };
+
+  /* ---------- oturum sürdür ---------- */
+  const resumed = S.resume();
+  if(resumed) baslat(resumed);
+})();
