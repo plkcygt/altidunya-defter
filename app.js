@@ -77,6 +77,18 @@
     ? 'Bulut modu — cihazlar arası senkron açık'
     : 'YEREL MOD — veriler yalnız bu cihazda (SETUP.md ile buluta geç)';
 
+  (function surumGoster(){
+    try{
+      const s = document.querySelector('script[src^="app.js"]');
+      const m = s && s.getAttribute('src').match(/v=(\d+)/);
+      if(m){
+        const d = new Date(parseInt(m[1])*1000);
+        const el = document.getElementById('surum-etiket');
+        if(el) el.textContent = 'v' + d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+      }
+    }catch(e){}
+  })();
+
   S.oturumBittiginde(()=>{
     toast('Oturum süresi doldu — lütfen tekrar gir (verin bulutta duruyor)');
     setTimeout(()=>location.reload(), 1500);
@@ -90,7 +102,7 @@
     const rb = $('#role-badge');
     rb.textContent = role==='dm' ? 'DM' : 'Oyuncu';
     rb.className = role==='dm' ? 'dm' : '';
-    if(role==='dm'){ $('#tab-dm').classList.remove('hidden'); $('#tab-kasa').classList.remove('hidden'); }
+    if(role==='dm') $('#tab-dm').classList.remove('hidden');
 
     async function guvenliYukle(key, seed){
       if(S.mode!=='supabase'){
