@@ -425,6 +425,8 @@
           <button class="btn small-btn" onclick="altYereliBulutaYaz()">Yükle</button></div>
         <div class="dm-row"><span><b>Bulutla karşılaştır</b> <span class="muted">— ekrandaki hâl buluta yazıldı mı?</span></span>
           <button class="btn small-btn" onclick="altDogrula()">Doğrula</button></div>
+        <div class="dm-row"><span><b>Panodan yükle</b> <span class="muted">— Claude'un hazırladığı JSON'u uygula</span></span>
+          <button class="btn small-btn" onclick="altPanodanYukle()">Yapıştır</button></div>
         <div class="dm-row"><span><b>Yedeği panoya kopyala</b> <span class="muted">— Claude'a yapıştır, repoya işlensin (git = kalıcı arşiv)</span></span>
           <button class="btn small-btn" onclick="altYedekKopyala()">Kopyala</button></div>
         <div id="gecmis-alan" style="margin-top:.6em"></div>
@@ -478,6 +480,28 @@
       if(v){ await S.set(key, v); S.markSeen(key, v); sayi++; }
     }
     toast(sayi+' kayıt buluta yazıldı');
+  };
+
+  window.altPanodanYukle = function(){
+    modal(`<h3>Panodan yükle</h3>
+      <p class="muted">Claude'un verdiği JSON paketini buraya yapıştır. Uygulamadan önce şu anki hâl otomatik yedeklenir.</p>
+      <textarea id="py-metin" style="min-height:180px" placeholder='{"parti": {...}, "notlar": [...]}'></textarea>
+      <div class="butonlar">
+        <button class="btn primary" onclick="altPanodanUygula()">Uygula</button>
+        <button class="btn" onclick="altKapat()">Vazgeç</button>
+      </div>`);
+  };
+
+  window.altPanodanUygula = async function(){
+    let p;
+    try{ p = JSON.parse(document.querySelector('#py-metin').value); }
+    catch(e){ return toast('JSON okunamadı: ' + e.message); }
+    if(!p || (!p.parti && !p.notlar)) return toast('Pakette parti/notlar yok');
+    const ozet = (p.parti ? (p.parti.envanter||[]).length + ' eşya' : '') + (p.notlar ? ' · ' + p.notlar.length + ' not' : '');
+    if(!confirm("Uygulanacak: " + ozet + " — şu anki hâl yedeklerde kalır. Devam?")) return;
+    if(p.parti){ PARTI = p.parti; await kaydetParti(); cizKasa(); }
+    if(p.notlar){ NOTLAR = p.notlar; await kaydetNotlar(); cizNotlar(); }
+    closeModal(); toast('Uygulandı ve buluta yazıldı');
   };
 
   window.altDogrula = async function(){
