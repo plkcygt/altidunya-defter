@@ -24,6 +24,15 @@
     const tamam = await S.set('parti', PARTI, kilit);
     S.markSeen('parti', PARTI); guncelleSync(tamam && !kilit);
     if(kilit) toast('⚠ Bulut doğrulanmadı — değişiklik henüz buluta yazılmadı');
+    else if(S.mode==='supabase') sonYazma(tamam);
+  }
+
+  function sonYazma(ok){
+    const b = $('#sync-badge');
+    const s = new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    b.textContent = ok ? '● '+s : '● yazılamadı';
+    b.title = ok ? ('Son bulut yazımı: '+s) : 'Bulut yazımı BAŞARISIZ';
+    if(!ok) toast('⚠ Buluta yazılamadı — internet/oturum kontrol et');
   }
   async function kaydetNotlar(){
     const kilit = S.mode==='supabase' && !remoteOK.notlar;
@@ -414,6 +423,8 @@
           <button class="btn small-btn" onclick="altGecmis('karakterler')">Listele</button></div>
         <div class="dm-row"><span>Bu cihazdaki kaydı buluta zorla yaz</span>
           <button class="btn small-btn" onclick="altYereliBulutaYaz()">Yükle</button></div>
+        <div class="dm-row"><span><b>Bulutla karşılaştır</b> <span class="muted">— ekrandaki hâl buluta yazıldı mı?</span></span>
+          <button class="btn small-btn" onclick="altDogrula()">Doğrula</button></div>
         <div class="dm-row"><span><b>Yedeği panoya kopyala</b> <span class="muted">— Claude'a yapıştır, repoya işlensin (git = kalıcı arşiv)</span></span>
           <button class="btn small-btn" onclick="altYedekKopyala()">Kopyala</button></div>
         <div id="gecmis-alan" style="margin-top:.6em"></div>
@@ -467,6 +478,26 @@
       if(v){ await S.set(key, v); S.markSeen(key, v); sayi++; }
     }
     toast(sayi+' kayıt buluta yazıldı');
+  };
+
+  window.altDogrula = async function(){
+    const alan = $('#gecmis-alan');
+    alan.innerHTML = '<span class="muted">Buluttan çekiliyor…</span>';
+    const sonuc = [];
+    const esler = [['parti', PARTI], ['notlar', NOTLAR]];
+    for(const [key, yerel] of esler){
+      const r = await S.getRemote(key);
+      if(r.status!=='ok'){ sonuc.push('<div class="dm-row"><span>'+key+'</span><span style="color:var(--red)">✗ buluttan okunamadı</span></div>'); continue; }
+      const ayni = JSON.stringify(r.value) === JSON.stringify(yerel);
+      sonuc.push('<div class="dm-row"><span>'+key+'</span><span style="color:'+(ayni?'var(--green)':'var(--red)')+'">'+
+        (ayni?'✓ bulut ekranla AYNI':'✗ FARK VAR — kaydedilmemiş değişiklik olabilir')+'</span></div>');
+    }
+    // karakterler: motordaki güncel hâl
+    const rk = await S.getRemote('karakterler');
+    sonuc.push('<div class="dm-row"><span>karakterler</span><span style="color:'+(rk.status==='ok'?'var(--green)':'var(--red)')+'">'+
+      (rk.status==='ok'?'✓ bulutta kayıt var':'✗ bulutta yok/okunamadı')+'</span></div>');
+    alan.innerHTML = sonuc.join('') +
+      '<p class="muted" style="margin-top:.5em">Fark varsa: "Bu cihazdaki kaydı buluta zorla yaz" ile eşitleyebilirsin.</p>';
   };
 
   window.altYerelYedekler = function(key){
