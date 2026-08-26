@@ -151,158 +151,204 @@
       <div id="zar-sonuc" class="not">Ekip 5 adım önde. "Turu at" → ekip d20 · öncü d20+2 · orta d20 · ağır d20−2. Kazanan yönde fark ±1 değişir; eşitlik sabit.</div>
     </div>
     <div class="kart not">
-      <b>Yakalanma:</b> bir pul 0'a inerse ekip yerinde çakılır → savaş. Kalanlar sabit aralıkla girer:
-      <b>orta savaşın 5. raundu</b>, <b>ağırlar 10. raund.</b><br>
+      <b>Yakalanma:</b> bir pul 0'a inerse ekip yerinde çakılır → savaş. Üç grup ayrı ayrı savaşır:
+      Savaş biterse kaçış <b>kaldığı yerden devam eder</b>; savaş <b>5 raundu geçerse</b> sıradaki grup da yetişir.<br>
       <b>20 tur dolarsa:</b> merkez menzili — Karan durur, tarif defterine bakar, ekibi bir kez süzer, geri döner.
     </div>
   </div>
 
   <!-- ============ DÜŞMANLAR ============ -->
   <div class="bolum" id="b-dusman">
-    <div class="kart"><b>Karan’ın kolu: 20 kişi, üç dalga.</b> Amaç öldürmek değil <b>tutmak</b> — "canlı getirin" emri var.<br>
-      <b>Moral:</b> öncüde çavuş VE bir rahip düşerse kalanlar çekilir. <b>PC-ölmez:</b> 0 HP’ye düşeni bitirmezler, bağlarlar.</div>
+    <div class="kart"><b>Kaynak: SRD 5.2.1 (2024) statblokları</b> — reskin, sayılar resmî ("X/gün" formatı; masada slot yönetimi yok).<br>
+      <b>⚠ Bu savaşlar ölümcül olabilir:</b> PC-ölmez vanası bu oturumda kapalı. Öncünün emri "canlı getir" — gövde gelirse o emir düşer.</div>
 
-    <h2>🟡 ÖNCÜ — 6 kişi <span class="not">hızlı atlılar (+2) · savaşa ilk bunlar girer</span></h2>
-    <div class="sb"><div class="ad">⛨ Vadi Şifa Rahibi ×2 <span class="not">CR 1 · ÖNCE BUNLARI İNDİR</span></div>
-      <div class="say">AC 15 · HP 27 · Hız 30 · Büyü DC 13 · Büyü saldırısı +5 · Passive Perc 13</div>
-      <ul>
-        <li><b>Aksiyon:</b> Topuz +4, 1d6+2 · <b>Sacred Flame</b> 60 ft (DEX save 13 → 2d8 radiant, cover işlemez)</li>
-        <li><b>Healing Word ×3</b> — BONUS aksiyon, 60 ft, 2d4+3 (düşeni ayağa kaldırır)</li>
-        <li><b>Bless ×1</b> (3 kişiye +1d4) · <b>Shield of Faith ×1</b> (+2 AC) · <b>Sanctuary ×1</b> (saldıran WIS save 13)</li>
-        <li class="not">20-30 ft geride durur. Sıra: Bless → düşeni kaldır → kendine Sanctuary. Menzilden vurulmazsa dövüş bitmez.</li>
-      </ul></div>
-    <div class="sb"><div class="ad">🛡 Genç Paladin ×2 <span class="not">CR 1 · ön duvar</span></div>
-      <div class="say">AC 18 (zincir + kalkan) · HP 30 · Save WIS +3, CHA +4</div>
-      <ul>
-        <li><b>Uzun kılıç</b> +5, 1d8+3 (iki elle 1d10+3)</li>
-        <li><b>Kalkan itişi:</b> STR save 13 → prone + 5 ft geri</li>
-        <li><b>Lay on Hands</b> havuz 10 — bonus aksiyon, 5 HP</li>
-        <li><b>Fırsat saldırısı</b> ⚠ kaçmaya çalışanı vurur</li>
-        <li class="not">En zayıfın önünü keser, geçişi kapatır. Öldürmez — devirir, kuşatır.</li>
-      </ul></div>
-    <div class="sb"><div class="ad">🏹 Ağcı İzci ×1 <span class="not">CR ½ · atları hedefler</span></div>
-      <div class="say">AC 13 · HP 18 · Stealth +4</div>
-      <ul>
-        <li><b>Ağ</b> (5/15 ft) ×2: isabet → RESTRAINED · kurtulma aksiyon + STR DC 10, ya da ağa 5 kesme hasarı (AC 10)</li>
-        <li><b>Hafif arbalet</b> +4, 1d8+2, 80/320 (loading: turda 1 atış)</li>
-        <li class="not">Önce atlar, sonra en hızlı PC. Yakın dövüşe girmez.</li>
-      </ul></div>
-    <div class="sb"><div class="ad">⚔ Çavuş ×1 <span class="not">CR 2 · moral çapası</span></div>
-      <div class="say">AC 16 · HP 45 · Save STR +5, CON +5</div>
-      <ul>
-        <li><b>Çoklu saldırı:</b> 2× mızrak +5, 1d6+3</li>
-        <li><b>Komut</b> (1/savaş): 30 ft müttefikler sonraki saldırıda +1d4, o tur korkutulamaz</li>
-        <li><b>Koruyucu Adım</b> (reaksiyon): yanındaki müttefiğe gelen saldırıyı üstüne çeker</li>
-      </ul></div>
-    <div class="kart not"><b>Öncü toplamı: HP ≈ 165 · ~1350 XP (L4×3 zor bant).</b> Parti DPR ~35-40 → 4-5 raund; moral genelde 3. raundda kırılır. Pusuda sürpriz raunduyla 2-3 raund.</div>
+    <div class="kart" style="border-color:#8a7434">
+      <b>★ DALGA MANTIĞI — üç AYRI savaş, arka arkaya</b><br>
+      Üç grup aynı anda gelmez. Kaçış sayacında hangi pul 0'a inerse <b>o grup yetişir ve savaş başlar.</b> Savaş biterse (grup kırılır ya da çekilir) <b>kaçış kaldığı yerden devam eder</b> — ama kaynakların yanmış olur.<br>
+      <b>Uzarsa ceza:</b> savaş <b>5 raundu geçerse</b> sıradaki grup da yetişir ve katılır. Yani "hızlı bitir" baskısı gerçek.<br><br>
+      <b>Tasarım hedefi (Yigit):</b> dinlenmeden üçünü üst üste kazanmak <b>mümkün olmamalı.</b><br>
+      • <b>1. savaş (öncü, ~3100 XP):</b> dinlenmiş ekip kazanır — ama Karya'nın slotları, Aya'nın Focus'u, Süveyda'nın Wild Shape'i yanar.<br>
+      • <b>2. savaş (orta gövde, ~1900 XP ama 10 aksiyon/raund):</b> yorgun ekip için gerçek tehlike. Burada düşen olabilir.<br>
+      • <b>3. savaş (ağır uç, ~2900 XP):</b> tükenmiş ekip için <b>kazanılamaz</b> — çıkış yolu kaçmak, teslim olmak ya da pazarlık (Karan teklif eder).<br>
+      <span class="not">Kısa dinlenme (1 saat) kaçış sırasında mümkün DEĞİL — kovalayan durmuyor. Tek istisna: bir grubu kırıp 20 tur dolarsa merkez menzilinde soluklanırlar.</span>
+    </div>
 
-    <h2>🔴 ORTA GÖVDE — 10 kişi <span class="not">savaşın 5. raundunda girer · GRUP ZARIYLA</span></h2>
-    <div class="sb"><div class="ad">Asayiş Bölüğü — 2 grup × 5 kişi</div>
-      <div class="say">Grup AC 14 · Grup HP 40 (her 8 hasar = 1 asker düşer) · Hız 30 (atlı 60)</div>
+    <h2>🟡 ÖNCÜ — 6 kişi <span class="not">+2 hızlı · savaşa ilk bunlar girer · ~3100 XP</span></h2>
+
+    <div class="sb"><div class="ad">⛨ Şifa Rahibi ×2 <span class="not">SRD: Priest · CR 2 (450 XP) · ÖNCE BUNLARI İNDİR</span></div>
+      <div class="say">AC 13 (zincir gömlek) · <b>HP 38</b> (7d8+7) · Hız 30 · Büyü DC 13 · Passive Perc 15<br>
+        STR 16(+3) DEX 10(+0) CON 12(+1) INT 13(+1) WIS 16(+3) CHA 13(+1)</div>
       <ul>
-        <li><b>Grup saldırısı</b> (grup başına TEK zar): +4, isabet → <b>2d8+4</b>, en yakın PC. Grup yarılandıysa hasar yarıya iner.</li>
-        <li><b>Kuşatma:</b> grup bir PC’ye bitişikse o PC’nin kaçış hareketi fırsat saldırısı yer.</li>
-        <li><b>Ağ yağmuru</b> (1/savaş): 15 ft alan, DEX save 13 → restrained.</li>
-        <li class="not">Moral YOK — sayı onların moralidir. Girmeleri = "bitirin ya da kaçın" sinyali. Vinyet: "atlılar sıra oluyor, mızraklar aynı anda iniyor."</li>
+        <li><b>Çoklu saldırı:</b> Topuz ve/veya Kutsal Alev'den <b>2 saldırı</b></li>
+        <li><b>Topuz</b> +5, 5 ft: 6 (1d6+3) ezici <b>+ 5 (2d4) radiant</b></li>
+        <li><b>Kutsal Alev</b> +5, 60 ft: <b>11 (2d10) radiant</b></li>
+        <li><b>Büyü (istediği kadar):</b> Light, Thaumaturgy</li>
+        <li><b>1/gün:</b> <b>Spirit Guardians</b> — 15 ft alan, giren/turuna orada başlayan WIS save 13 → 3d8 radiant (başarı yarısı), hız yarıya iner ⚠ alan kontrolü</li>
+        <li><b>İlahi Yardım — 3/gün (BONUS aksiyon):</b> Bless · Healing Word · Lesser Restoration · Dispel Magic'ten biri</li>
+        <li class="not">Taktik: açılış Bless; sonra Spirit Guardians ile ön hattı kilitler; düşeni Healing Word ile kaldırır. <b>İki rahip = 6 iyileştirme/destek</b> — menzilden kesilmezse savaş bitmez.</li>
       </ul></div>
 
-    <h2>⚫ AĞIR UÇ — 4 kişi <span class="not">10. raund · geldilerse dövüş bitmiştir</span></h2>
-    <div class="sb"><div class="ad">Karan <span class="not">komutan — SAHADA DÖVÜŞMEZ, SAĞ KALIR</span></div>
-      <div class="say">AC 18 · HP 90 · (anlatısal duvar — stat verme)</div>
+    <div class="sb"><div class="ad">🛡 Ağır Süvari ×2 <span class="not">SRD: Warrior Veteran · CR 3 (700 XP)</span></div>
+      <div class="say">AC 17 (parçalı zırh) · <b>HP 65</b> (10d8+20) · Hız 30 · Passive Perc 12<br>
+        STR 16(+3) DEX 13(+1) CON 14(+2) · Athletics +5</div>
       <ul>
-        <li>Bağırmaz, sesi düz taşınır. Eldivenini düzeltir. Emirleri sayıyla verir ("Üç. Sola.").</li>
-        <li>Yaklaşırsa <b>teklif eder:</b> "Atları bırakın, kadını bırakın, gidin." (Demre’yi kastediyor.)</li>
-        <li class="not">Tasarım çizgisi: bu oturumda ölmez, dövüşe girmez. S10+ düşmanı.</li>
-      </ul></div>
-    <div class="sb"><div class="ad">Zırhlı Kıdemli ×2 <span class="not">CR 2</span></div>
-      <div class="say">AC 18 (plakalı) · HP 52</div>
-      <ul><li><b>2× balta</b> +6, 1d8+4 · <b>Yakala:</b> STR save 14 → grappled (canlı getirme emri)</li>
-          <li class="not">Bunlar tutmaya değil bitirmeye gelir. Görünmeleri = "kaç" demek.</li></ul></div>
-    <div class="sb"><div class="ad">Tuna — "Kanal" <span class="not">[S] Sular’lı telepat · savaşçı değil</span></div>
-      <div class="say">AC 12 · HP 22 · Demre’nin alıcısı</div>
-      <ul>
-        <li>Savaşmaz; Karan onu ortada koruma altında tutar. Müfrezenin en değerli ve en kırılgan varlığı.</li>
-        <li class="not">[S] Aya ağda onu hissedebilir — iki Sular’lı, iki tarafta. Bu oturumda açılmak zorunda değil.</li>
+        <li><b>Çoklu saldırı:</b> 2× büyük kılıç ya da ağır arbalet</li>
+        <li><b>Büyük kılıç</b> +5, 5 ft: <b>10 (2d6+3)</b> kesici</li>
+        <li><b>Ağır arbalet</b> +3, 100/400: <b>12 (2d10+1)</b> delici</li>
+        <li><b>Reaksiyon — Parry:</b> melee saldırı isabet ettiğinde AC'sine <b>+2</b> (ıskaya çevirebilir)</li>
+        <li class="not">Ön duvar. Kaçmaya çalışana fırsat saldırısı. HP 65 — hızlı düşmez, ekibi oyalar.</li>
       </ul></div>
 
-    <div class="kart"><b>Ölçekleme:</b> parti eziyorsa → ortayı 3. raundda getir, ağcı iki ağ birden atsın. Parti çöküyorsa → ağcı ok atsın, moral 2 kayıpta kırılsın, çavuş "geri çekilin" desin.<br>
-      <b>Yağma (öncü kırılırsa, 1 raund):</b> 2 Şifa İksiri · Sezgir nişanları · 2 ağ · 2 zincir gömlek (50g).</div>
+    <div class="sb"><div class="ad">🏹 Ağcı İzci ×1 <span class="not">SRD: Scout · CR ½ (100 XP) + ev kuralı ağ</span></div>
+      <div class="say">AC 13 (deri) · HP 16 · Hız 30 · Stealth +6, Perception +5, Survival +5</div>
+      <ul>
+        <li><b>Çoklu saldırı:</b> kısa kılıç ve/veya uzun yay'dan 2 saldırı</li>
+        <li><b>Uzun yay</b> +4, 150/600: 6 (1d8+2) delici · <b>Kısa kılıç</b> +4: 5 (1d6+2)</li>
+        <li><b>Ağ ×2</b> (ev kuralı, 5/15 ft): isabet → <b>RESTRAINED</b>; kurtulma aksiyon + STR (Athletics) DC 10 ya da ağa 5 kesme hasarı (AC 10). Ağ atan o tur başka saldırı yapamaz.</li>
+        <li class="not">Önce atları hedefler (kaçışı kesmek görevi), sonra en hızlı PC'yi ağlar.</li>
+      </ul></div>
+
+    <div class="sb"><div class="ad">⚔ Çavuş ×1 <span class="not">SRD: Knight · CR 3 (700 XP) · moral çapası</span></div>
+      <div class="say">AC 18 (plaka) · <b>HP 52</b> (8d8+16) · Hız 30 · <b>Korkutulamaz</b> (Immunity: Frightened)<br>
+        STR 16(+3) CON 14(+2/save +4) CHA 15(+2)</div>
+      <ul>
+        <li><b>Çoklu saldırı:</b> 2× büyük kılıç ya da ağır arbalet</li>
+        <li><b>Büyük kılıç</b> +5: <b>10 (2d6+3) kesici + 4 (1d8) radiant</b></li>
+        <li><b>Ağır arbalet</b> +2, 100/400: 11 (2d10) + 4 (1d8) radiant</li>
+        <li><b>Reaksiyon — Parry:</b> AC +2 (o saldırıya karşı)</li>
+        <li><b>Komut</b> (ev kuralı, 1/savaş): 30 ft müttefikler bir sonraki saldırıda +1d4, o tur korkutulamaz</li>
+      </ul></div>
+
+    <div class="kart not"><b>Öncü toplamı: HP 273 · saldırı sayısı/raund ≈ 11.</b> Parti+heyet DPR'ı ~70-90 → 3-4 raund. <b>Moral:</b> çavuş VE bir rahip düşerse kalanlar çekilir.</div>
+
+    <h2>🔴 ORTA GÖVDE — 10 kişi <span class="not">2. SAVAŞ · pul 0'a inince yetişir · ~1900 XP + 10 aksiyon/raund</span></h2>
+    <div class="sb"><div class="ad">Asayiş Bölüğü <span class="not">SRD: 6× Guard (CR 1/8) + 2× Scout (CR ½) + 2× Warrior Veteran (CR 3)</span></div>
+      <div class="say">Muhafız: AC 16 · HP 11 · Mızrak +3, 4 (1d6+1) — 20/60 fırlatılabilir<br>
+        İzci: AC 13 · HP 16 · 2 saldırı, uzun yay +4 (1d8+2)<br>
+        Veteran ×2: yukarıdaki Ağır Süvari ile aynı</div>
+      <ul>
+        <li><b>GRUP ZARI (masada hızlı yöntem):</b> 5'li grup tek zar atar: +4, isabet → <b>2d8+4</b>. Gruba 25 hasar = 1 asker düşer; grup yarılanınca hasar yarıya iner.</li>
+        <li><b>Kuşatma:</b> grup bir PC'ye bitişikse o PC'nin kaçış hareketi fırsat saldırısı yer.</li>
+        <li><b>Ok yağmuru</b> (izciler, 1/savaş): 20 ft alan, DEX save 13 → 3d6 delici (başarı yarısı).</li>
+        <li class="not">Moral yok — sayı onların moralidir. Girmeleri = "bitirin ya da kaçın" sinyali.</li>
+      </ul></div>
+
+    <h2>⚫ AĞIR UÇ — 4 kişi <span class="not">3. SAVAŞ · ~2900 XP — tükenmiş ekip için KAZANILAMAZ</span></h2>
+    <div class="sb"><div class="ad">KARAN <span class="not">SRD: Guard Captain · CR 4 (1100 XP) — sahada dövüşmez, sağ kalır</span></div>
+      <div class="say">AC 18 (göğüslük + kalkan) · <b>HP 75</b> (10d8+30) · Init +4<br>STR 18(+4) DEX 14(+2) CON 16(+3) WIS 14(+2) · Athletics +6, Perception +4</div>
+      <ul>
+        <li><b>Çoklu saldırı:</b> 2× uzun kılıç +6, 8 (1d8+4) · <b>Cirit</b> +6, 30/120</li>
+        <li>Bağırmaz; sesi düz taşınır, eldivenini düzeltir, emri sayıyla verir ("Üç. Sola.")</li>
+        <li><b>Teklif eder:</b> "Atları bırakın, kadını bırakın, gidin." (Demre'yi kastediyor)</li>
+        <li class="not">Tasarım çizgisi: bu oturumda ölmez, dövüşe girmez — S10+ düşmanı. Statı, ekip ısrar ederse elinde olsun diye burada.</li>
+      </ul></div>
+    <div class="sb"><div class="ad">Zırhlı Kıdemli ×2 <span class="not">SRD: Knight · CR 3</span></div>
+      <div class="say">AC 18 · HP 52 · Korkutulamaz · 2× büyük kılıç +5, 10 (2d6+3) + 4 (1d8) radiant · Parry</div>
+      <ul><li class="not">Bunlar tutmaya değil bitirmeye gelir. Görünmeleri = "kaç" demek.</li></ul></div>
+    <div class="sb"><div class="ad">TUNA — "Kanal" <span class="not">[S] Sular'lı telepat · SRD: Priest Acolyte · CR ¼</span></div>
+      <div class="say">AC 13 · HP 11 · Topuz +4, 5 (1d6+2) + 2 (1d4) radiant · Divine Aid 1/gün</div>
+      <ul>
+        <li>Savaşmaz; Karan onu ortada koruma altında tutar. Telepati alıcısı — müfrezenin en değerli ve en kırılgan varlığı.</li>
+        <li class="not">[S] Aya ağda onu hissedebilir — iki Sular'lı, iki tarafta.</li>
+      </ul></div>
+
+    <div class="kart"><b>Ölçekleme:</b> çok zor gidiyorsa → rahiplerden biri Spirit Guardians'ı hiç kullanmaz, orta gövde 7. raunda kayar. Kolay gidiyorsa → orta gövde 3. raundda, ağcı iki ağı birden atar.<br>
+      <b>Yağma (öncü kırılırsa, 1 raund):</b> 2 Şifa İksiri · Sezgir nişanları · 2 ağ · 2 zincir gömlek (50g) · 1 plaka zırh (damgalı, 1500g ama satılamaz).</div>
   </div>
 
   <!-- ============ BİZİMKİLER ============ -->
   <div class="bolum" id="b-bizim">
-    <div class="kart"><b>Kaçışta kim nerede:</b> 3 at = 3 PC · Süveyda hayvan formunda Erdal + Kavşat’ı taşır. Savaş çıkarsa heyeti tam oynayabilirsin (aşağıda) ya da hızlı istersen <b>sahne aleti</b> modu: tur almazlar, raund başına 1 otomatik etki (Süveyda sis / Kavşat kement / Erdal koruma).</div>
+    <div class="kart"><b>⚠ Kanon notu:</b> Heyetin eski taslak statları "canavar tarzı"ydı ve STATE'teki sınıflarla çelişiyordu. Aşağıdakiler <b>sınıf-tabanlı, 5e-uyumlu</b> hâlleri (STATE: Erdal Wizard 7 · Süveyda Druid 7 · Kavşat Artificer 7). Büyü slotları resmî sınıf tablosundan.<br>
+      <b>Kaçışta:</b> 3 at = 3 PC · Süveyda hayvan formunda Erdal + Kavşat'ı taşır (o tur savaşamaz — ya taşır ya döner).</div>
 
-    <h2>Parti — hızlı savaş kartı <span class="not">S9’da L4; kesin değerler Karakterler sekmesinde</span></h2>
+    <h2>Parti — L4 <span class="not">kesin değerler Karakterler sekmesinde</span></h2>
     <div class="sb"><div class="ad">KARYA — Cleric 4 (War Domain)</div>
-      <div class="say">AC 16 (pul + kalkan) · HP ~31 · Büyü DC 12 · Büyü saldırısı +4</div>
+      <div class="say">AC 16 · HP ~31 · Büyü DC 12 · Saldırı +4 · Prof +2</div>
       <ul>
-        <li><b>Slotlar:</b> 1. sv ×4 · 2. sv ×3 &nbsp;|&nbsp; <b>Channel Divinity ×2</b> (Guided Strike / Divine Spark / Turn Undead — ortak havuz)</li>
-        <li><b>War Priest:</b> Attack action aldığı turda bonus aksiyonla 1 saldırı daha (günde 2)</li>
-        <li><b>◆ Yargın’ın Kefesi</b> 1/long rest + 2. sv slot: iki canlının HP’sini eşitler · <b>bedel: dinlenene dek tüm save’ler dezavantajlı</b></li>
-        <li><b>Guided Strike:</b> zar atıldıktan SONRA +10 (Channel Divinity harcar) — kritik ana sakla</li>
+        <li><b>Slot: 4× 1.sv · 3× 2.sv</b> | <b>Channel Divinity 2/kısa dinlenme</b> (Guided Strike / Divine Spark / Turn Undead — ortak havuz)</li>
+        <li>Hazır büyüler: Bless · Healing Word · Command · Create or Destroy Water · Aid · Hold Person (+ Domain: Divine Favor, Shield of Faith, Magic Weapon, Spiritual Weapon)</li>
+        <li><b>War Priest 2/gün:</b> Attack action aldığı turda bonus aksiyonla 1 saldırı daha</li>
+        <li><b>◆ Kefe</b> 1/long rest + 2.sv slot — bedel: dinlenene dek tüm save'ler dezavantajlı</li>
       </ul></div>
     <div class="sb"><div class="ad">AYA — Monk 4 (Warrior of Shadow)</div>
-      <div class="say">AC 14+ (Zırhsız Savunma) · HP ~27 · Hız 30</div>
+      <div class="say">AC 14+ · HP ~27 · Focus DC 12</div>
       <ul>
-        <li><b>Focus ×4</b> · Martial Arts 1d6 · her tur bedava bonus yumruk</li>
-        <li><b>🌑 Darkness</b> (1 Focus, slotsuz): 15 ft küre, <b>içinde yalnız O görür</b> — kaçışta/pusuda oyun bozan hamle</li>
-        <li><b>Flurry</b> (1 Focus: 2 ek yumruk) · <b>Patient Defense</b> · <b>Step of the Wind</b></li>
-        <li><b>Deflect Attacks</b> (reaksiyon): gelen fiziksel hasarı azaltır</li>
+        <li><b>Focus 4/kısa dinlenme</b> · Martial Arts 1d6 · her tur bedava bonus yumruk</li>
+        <li><b>Darkness</b> (1 Focus): 15 ft küre, içinde yalnız O görür · <b>Flurry</b> (1) · <b>Patient Defense</b> (1) · <b>Step of the Wind</b> (1)</li>
+        <li><b>Deflect Attacks</b> (reaksiyon): 1d10+DEX+seviye hasar azaltır</li>
       </ul></div>
     <div class="sb"><div class="ad">KUZGUN — Rogue 4 (Arcane Trickster)</div>
       <div class="say">AC 13 · HP ~23 · Büyü DC 12</div>
       <ul>
-        <li><b>Sneak Attack 2d6</b> (turda 1; advantage VEYA hedefin yanında müttefik)</li>
-        <li><b>Slotlar:</b> 1. sv ×3 — Disguise Self · Silent Image · Charm Person · cantrip: Mage Hand, Minor Illusion, Message</li>
-        <li><b>Cunning Action</b> (bonus Dash/Disengage/Hide) · <b>Steady Aim</b> (hareket etmezse advantage)</li>
-        <li><b>Mastery:</b> Dagger-Nick · Dart-Vex (isabet → sonraki saldırı advantage)</li>
+        <li><b>Slot: 3× 1.sv</b> — Disguise Self · Silent Image · Charm Person | cantrip: Mage Hand, Minor Illusion, Message</li>
+        <li><b>Sneak Attack 2d6</b> (turda 1) · <b>Cunning Action</b> · <b>Steady Aim</b> · Mastery: Nick / Vex</li>
       </ul></div>
 
-    <h2>Heyet — DM oynatır <span class="not">arşiv statları (45)</span></h2>
-    <div class="sb"><div class="ad">ERDAL — kayıt tutan <span class="not">CR ~4 · 58 yaş</span></div>
-      <div class="say">AC 18 (dövme zincir + kalkan) · HP 58 · Init +1<br>STR 16(+3) DEX 12(+1) CON 15(+2) INT 17(+3) WIS 12(+1) CHA 16(+3)</div>
+    <h2>Heyet — DM oynatır <span class="not">sınıf-tabanlı, tam liste</span></h2>
+
+    <div class="sb"><div class="ad">ERDAL — Wizard 7 (Abjuration) <span class="not">58 yaş · kayıt tutan</span></div>
+      <div class="say">AC 15 (Mage Armor) · <b>HP 40</b> (7d6+14) · Hız 30 · Init +1<br>
+        STR 10 DEX 12(+1) CON 14(+2) <b>INT 17(+3)</b> WIS 14(+2) CHA 12(+1) · Save INT +6, WIS +5<br>
+        <b>Büyü DC 14 · Saldırı +6 · Prof +3</b></div>
       <ul>
-        <li><b>2× Uzun kılıç</b> +6, 1d8+3 — düz vurur; dövüş sanatı değil, talim</li>
-        <li><b>★ Duruş</b> (pasif): 5 ft içindeki müttefikler <b>+2 AC</b></li>
-        <li><b>★ Yargı Sesi</b> (1/gün, büyü DEĞİL): 30 ft, işitenler WIS DC 14 → 1 tur saldıramaz</li>
-        <li><b>Reaksiyon — Koruma:</b> müttefiğe gelen saldırıya dezavantaj</li>
-        <li class="not">Konumunu korur, kovalamaz, kaçana vurmaz. Her turun başında yeniden teklif eder: "Durun. Konuşalım."</li>
+        <li><b>SLOTLAR: 4× 1.sv · 3× 2.sv · 3× 3.sv · 1× 4.sv</b></li>
+        <li><b>Cantrip:</b> Fire Bolt (+6, 2d10) · Mage Hand · Prestidigitation · Message</li>
+        <li><b>1.sv:</b> Shield (reaksiyon, +5 AC) · Mage Armor · Magic Missile (3×1d4+1, otomatik isabet) · Detect Magic</li>
+        <li><b>2.sv:</b> Misty Step (bonus, 30 ft ışınlanma) · Hold Person (WIS 14, paralyzed) · Suggestion</li>
+        <li><b>3.sv:</b> <b>Counterspell</b> (reaksiyon — büyü iptal) · Dispel Magic · Fireball (8d6, DEX 14)</li>
+        <li><b>4.sv:</b> <b>Banishment</b> (CHA save 14 → 1 dk başka düzleme sürer) — bir düşmanı savaştan çıkarma kartı</li>
+        <li><b>★ Arcane Ward</b> (Abjuration): abjuration büyüsü yaptığında 2×7+3 = <b>17 puanlık kalkan</b> — hasarı önce bu emer, o bitince canı gider</li>
+        <li class="not">Taktik: Shield/Counterspell ile ayakta kalır, Hold Person ile kilitler, gerçekten sıkışırsa Fireball. Kaçana vurmaz; her turun başında "Durun, konuşalım" teklifini yineler.</li>
       </ul></div>
-    <div class="sb"><div class="ad">SÜVEYDA — Dağ druidi <span class="not">CR ~5 · gücü tanrıdan değil hayattan</span></div>
-      <div class="say">AC 15 · HP 52 · Büyü DC 15, +7 <b>(doğa büyüsü — tanrı-kör bölgede ÇALIŞIR)</b><br>STR 12 DEX 14(+2) CON 16(+3) INT 16(+3) WIS 18(+4) CHA 10</div>
+
+    <div class="sb"><div class="ad">SÜVEYDA — Druid 7 (Circle of the Moon) <span class="not">44 yaş · gücü hayattan, tanrıdan değil</span></div>
+      <div class="say">AC 14 (dövülmüş deri) · <b>HP 52</b> (7d8+21) · Hız 30 · Init +2<br>
+        STR 12 DEX 14(+2) CON 16(+3) INT 13(+1) <b>WIS 18(+4)</b> CHA 10 · Save INT +4, WIS +7<br>
+        <b>Büyü DC 15 · Saldırı +7 · Prof +3 · doğa büyüsü — tanrı-kör bölgede ÇALIŞIR</b></div>
       <ul>
-        <li><b>★ Hayvan Formu</b> (2/kısa dinlenme): <b>Kuş</b> (AC13 HP4, uçuş 60) · <b>Ayı/boğa</b> (AC12 HP34, 2× pençe +6 1d8+4, itme/devirme) — <b>kaçışta iki kişiyi taşıyan form budur</b></li>
-        <li><b>Fog Cloud:</b> 20 ft yoğun örtü — açılışı hep budur (kaçış penceresi)</li>
-        <li><b>Toprak sarsıntısı:</b> 15 ft, DEX DC 15 → 1d6 + prone, 1 tur zorlu arazi</li>
-        <li><b>Gust of Wind:</b> 60 ft hat, STR DC 15 → 15 ft geri itme</li>
-        <li><b>Moonbeam</b> (son çare): 5 ft sütun, CON DC 15, 2d10, konsantrasyon</li>
-        <li><b>Cure Wounds 2/gün:</b> 3d8+4 — dövüş bitince <b>düşmanı da</b> iyileştirir</li>
-        <li class="not">Kimseyi öldürmeye çalışmaz, dövüşü BİTİRMEYE çalışır: sis at, ayır, devir, kaçacak yer bırak.</li>
+        <li><b>SLOTLAR: 4× 1.sv · 3× 2.sv · 3× 3.sv · 1× 4.sv</b></li>
+        <li><b>★ Wild Shape 2/kısa dinlenme</b> — <b>Ayı/boğa formu:</b> AC 13, <b>+45 geçici HP</b>, 2× pençe +7, 2d6+4 ezici, itme/devirme (STR 15) · <b>Kuş formu:</b> uçuş 60, Algı +7, Gizlilik +8 (kaçışta iki kişiyi taşıyan form: büyük memeli)</li>
+        <li><b>Cantrip:</b> Druidcraft · Produce Flame (+7, 2d8) · Shillelagh</li>
+        <li><b>1.sv:</b> <b>Fog Cloud</b> (20 ft örtü — kaçış penceresi) · Cure Wounds (2d8+4) · Healing Word (bonus, 2d4+4) · Entangle (bitki yoksa çalışmaz)</li>
+        <li><b>2.sv:</b> <b>Moonbeam</b> (5 ft sütun, CON 15, 2d10 radiant, her tur hareket ettirilir) · <b>Pass Without Trace</b> (+10 Stealth, tüm grup — kaçışta altın) · Barkskin · Gust of Wind</li>
+        <li><b>3.sv:</b> <b>Call Lightning</b> (10 dk, her tur aksiyon: 3d10 DEX 15) · <b>Wind Wall</b> (ok/menzil kalkanı, 3d8) · Dispel Magic</li>
+        <li><b>4.sv:</b> <b>Polymorph</b> (bir düşmanı zararsız hayvana çevirir, WIS 15) ya da Stoneskin</li>
+        <li class="not">Taktik: kimseyi öldürmeye çalışmaz, <b>dövüşü bitirmeye</b> çalışır. Sıra: Pass Without Trace/Fog Cloud → ayrıştır (Gust/Moonbeam) → gerekirse ayı formunda hattı tut. Dövüş biterse düşmanı da iyileştirir.</li>
       </ul></div>
-    <div class="sb"><div class="ad">KAVŞAT — alet yapan <span class="not">CR ~4 · Çöl</span></div>
-      <div class="say">AC 17 · HP 52 · Init +3<br>STR 15(+2) DEX 17(+3) CON 15(+2) INT 16(+3) WIS 12(+1) CHA 8</div>
+
+    <div class="sb"><div class="ad">KAVŞAT — Artificer 7 (Artillerist) <span class="not">51 yaş · alet yapan</span></div>
+      <div class="say">AC 17 (yaptığı plakalı deri + kalkan) · <b>HP 52</b> (7d8+21) · Hız 30 · Init +3<br>
+        STR 14 DEX 16(+3) CON 16(+3) <b>INT 16(+3)</b> WIS 12(+1) CHA 8 · Save CON +6, INT +6<br>
+        <b>Büyü DC 14 · Saldırı +6 · Prof +3</b></div>
       <ul>
-        <li><b>2× Tekrarlı arbalet</b> +6, 1d10+3 (80/320) — kurma kolu yok</li>
-        <li><b>Kimya şişesi</b> (Recharge 5-6): 20 ft, DEX DC 14 → <b>3d6 asit</b> + 1 tur zorlu arazi</li>
-        <li><b>★ Serilmiş Saha</b> (bonus, 3 kullanım): kement (DEX DC 14 → restrained) / sersemletici (10 ft, CON DC 13 → 1 tur sağır) / duman (15 ft, içinden o görür)</li>
-        <li><b>Reaksiyon — Kapan:</b> 5 ft içine gireni STR DC 14 ya da prone</li>
-        <li class="not">Menzil tutar, melee’ye girmez, yaralı düşene ateş etmez. [S] Cevdet’e bıçak çeken bu adam.</li>
+        <li><b>SLOTLAR: 4× 1.sv · 3× 2.sv</b> (yarı-büyücü)</li>
+        <li><b>★ Eldritch Cannon</b> (bonus aksiyon, 1/kısa dinlenme · AC 18, HP 35, 1 saat): her tur <b>bonus aksiyonla</b> ateşlenir —<br>
+          &nbsp;&nbsp;• <b>Force Ballista:</b> 120 ft, +6, <b>2d8 force</b> + 5 ft geri itme<br>
+          &nbsp;&nbsp;• <b>Flamethrower:</b> 15 ft koni, DEX 14 → <b>2d8 ateş</b> (başarı yarısı)<br>
+          &nbsp;&nbsp;• <b>Protector:</b> 10 ft içindeki herkese <b>1d8+3 geçici HP</b></li>
+        <li><b>Tekrarlı arbalet</b> (kendi yapımı) +6, 80/320: 1d10+3 delici · <b>2 saldırı</b> (Extra Attack yok — ama silahı iki yuvalı, ev kuralı)</li>
+        <li><b>Cantrip:</b> Fire Bolt · Mending · Mage Hand</li>
+        <li><b>1.sv:</b> Faerie Fire (advantage kaynağı) · Catapult (3d8) · Absorb Elements · Cure Wounds</li>
+        <li><b>2.sv:</b> <b>Web</b> (20 ft, DEX 14 → restrained) · Heat Metal (2d8/tur, zırhı yakar) · Enhance Ability</li>
+        <li><b>★ Infusions</b> (kendi yaptığı aletler): Enhanced Weapon (+1) · Bag of Holding · Goggles of Night · <b>Repeating Shot</b> (mühimmat gerekmez)</li>
+        <li><b>Serilmiş saha</b> (ev kuralı, 3 kullanım/gün, bonus): kement (DEX 14 → restrained) · sersemletici (10 ft, CON 13 → 1 tur sağır) · duman (15 ft, içinden o görür)</li>
+        <li class="not">Taktik: topu kurar, menzil tutar, melee'ye girmez. Yaralı düşene ateş etmez. [S] Cevdet'e bıçak çeken bu adam.</li>
       </ul></div>
 
     <h2>Yanımızdaki iki sivil</h2>
-    <div class="sb"><div class="ad">DEMRE <span class="not">Sular, ~40 · [S] Sezgir ajanı — bu gece yakalanıyor</span></div>
-      <div class="say">AC 12 · HP 28 · Büyü DC 13 · güçlü psişik (soul-mark’sız)</div>
+    <div class="sb"><div class="ad">DEMRE <span class="not">Sular · Sorcerer 5 · [S] Sezgir ajanı</span></div>
+      <div class="say">AC 12 · HP 32 (5d6+15) · <b>Büyü DC 14 · Saldırı +6</b> · CHA 18(+4) · Slot: 4× 1.sv · 3× 2.sv · 2× 3.sv</div>
       <ul>
-        <li><b>Telepati:</b> yalnız Sular↔Sular. Aya’ya <b>yalan söyleyemez</b>; Karya/Kuzgun’a kör.</li>
-        <li>Zihin darbesi (1/savaş): 30 ft, INT save 13 → 2d8 psişik + 1 tur dağınık</li>
-        <li class="not">Bağlıyken büyü yapamaz (el + ses gerekir). Serbest kalırsa Karan’a koşar.</li>
+        <li><b>Telepati (halk yeteneği):</b> yalnız Sular↔Sular. Aya'ya <b>yalan söyleyemez</b>; Karya/Kuzgun'a kör.</li>
+        <li>Cantrip: Mind Sliver (INT 14 → 1d6 + sonraki save'e −1d4) · Message · Prestidigitation</li>
+        <li>1.sv: Shield · Sleep · Charm Person | 2.sv: Hold Person · Misty Step | 3.sv: <b>Counterspell</b> · Fear</li>
+        <li class="not"><b>Bağlıyken büyü yapamaz</b> (el ve ses gerekir — ağzı kapatılmalı!). Serbest kalırsa Misty Step ile kaçar, Karan'a koşar.</li>
       </ul></div>
-    <div class="sb"><div class="ad">CEVDET <span class="not">Ova, 20 · Paladin 1 · bağlı esir</span></div>
-      <div class="say">AC 12 · HP 12</div>
+    <div class="sb"><div class="ad">CEVDET <span class="not">Ova · Paladin 1 · bağlı esir</span></div>
+      <div class="say">AC 12 (zırhsız) · HP 12 (1d10+2) · CHA 14</div>
       <ul>
-        <li>Bağlıyken hiçbir şey yapamaz. Çözülürse: kılıç +4, 1d8+2 · Lay on Hands 5</li>
-        <li class="not">Duası çalışmıyor — burada da, ölü bölgede de. Kaçarsa Ova yönüne koşar.</li>
+        <li>Bağlıyken hiçbir şey yapamaz. Çözülürse: uzun kılıç +4, 1d8+2 · <b>Lay on Hands havuz 5</b> · Divine Sense</li>
+        <li class="not">Duası çalışmıyor (burada da, ölü bölgede de). Kaçarsa Ova yönüne koşar.</li>
       </ul></div>
   </div>
 
@@ -385,7 +431,7 @@ function turAt(){
   }
   if(yakalayan){
     bitti = true;
-    sat += '<br><b class="kotu">⚔ ' + yakalayan + ' YETİŞTİ — savaş başlıyor.</b><br><span class="not">Ekip yerinde çakılır. Orta gövde savaşın 5. raundunda, ağırlar 10. raundunda girer.</span>';
+    sat += '<br><b class="kotu">⚔ ' + yakalayan + ' YETİŞTİ — savaş başlıyor.</b><br><span class="not">Ekip yerinde çakılır. Savaşı 5 raundda bitir — yoksa sıradaki grup da yetişir. Grup kırılırsa kaçış devam eder (pulu kaldır).</span>';
   } else if(tur >= 20){
     bitti = true;
     sat += '<br><b class="iyi">🏁 20 tur doldu — KAÇTINIZ.</b>';
