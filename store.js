@@ -23,6 +23,7 @@
     }catch(e){}
   }
 
+  let sonHata = '';
   async function sbAuth(email, pass){
     try{
       const r = await fetch(CFG.SUPABASE_URL+'/auth/v1/token?grant_type=password', {
@@ -30,10 +31,22 @@
         headers:{'Content-Type':'application/json','apikey':CFG.SUPABASE_ANON_KEY},
         body: JSON.stringify({email, password: pass})
       });
-      if(!r.ok) return null;
+      if(!r.ok){
+        let d = {};
+        try{ d = await r.json(); }catch(e){}
+        if(r.status===429) sonHata = 'Çok fazla deneme yapıldı — Supabase giriş limiti. 15-60 dk bekle ya da Supabase panelinden şifreyi güncelle.';
+        else if(r.status===400) sonHata = 'Şifre kabul edilmedi (' + (d.error_description || d.msg || 'invalid credentials') + ')';
+        else sonHata = 'Sunucu hatası: HTTP ' + r.status + (d.msg ? ' — '+d.msg : '');
+        console.warn('[Altıdünya] auth hatası', r.status, d);
+        return null;
+      }
       const j = await r.json();
       return j.access_token ? {jwt:j.access_token, refresh:j.refresh_token} : null;
-    }catch(e){ return null; }
+    }catch(e){
+      sonHata = 'Bağlantı kurulamadı (internet/CORS): ' + e.message;
+      console.warn('[Altıdünya] auth istisna', e);
+      return null;
+    }
   }
 
   async function tokenYenile(){
@@ -117,6 +130,7 @@
       const j = await r.json();
       if(j.length){
         try{ localStorage.setItem(LS(key), JSON.stringify(j[0].value)); }catch(e){}
+        yerelSnapshot(key, j[0].value);
         return {status:'ok', value: j[0].value};
       }
       return {status:'empty'};
@@ -135,8 +149,24 @@
     return null;
   }
 
+  /* Her değişiklikte bu cihazda son 8 sürümü sakla — bulut çökse de kurtarılır */
+  function yerelSnapshot(key, val){
+    try{
+      const a = 'altsite_yedek_'+key;
+      const dizi = JSON.parse(localStorage.getItem(a) || '[]');
+      const yeni = JSON.stringify(val);
+      if(dizi.length && JSON.stringify(dizi[0].v) === yeni) return;   // değişmemişse yazma
+      dizi.unshift({t: new Date().toISOString(), v: val});
+      localStorage.setItem(a, JSON.stringify(dizi.slice(0,8)));
+    }catch(e){}
+  }
+  function yerelYedekler(key){
+    try{ return JSON.parse(localStorage.getItem('altsite_yedek_'+key) || '[]'); }catch(e){ return []; }
+  }
+
   async function set(key, val, yalnizYerel){
     try{ localStorage.setItem(LS(key), JSON.stringify(val)); }catch(e){}
+    yerelSnapshot(key, val);
     if(yalnizYerel) return true;
     if(SB && (jwt || refresh)){
       try{
@@ -178,6 +208,7 @@
   function markSeen(key, val){ snap[key] = JSON.stringify(val); }
 
   window.AltStore = { login, resume, logout, get, getRemote, set, poll, markSeen, gecmisAl, tokenYenile,
+                      yerelYedekler, sonHata: ()=>sonHata,
                       mode: SB ? 'supabase' : 'yerel',
                       role: ()=>role,
                       oturumBittiginde: (fn)=>{ oturumOldu = fn; } };

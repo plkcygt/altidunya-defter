@@ -33,7 +33,17 @@
   function guncelleSync(ok){
     const b = $('#sync-badge');
     b.className = S.mode==='supabase' ? (ok?'on':'err') : '';
-    b.title = S.mode==='supabase' ? (ok?'Senkron: bağlı':'Senkron: HATA — yerel kayıt sürüyor') : 'Yerel mod (tek cihaz)';
+    b.title = S.mode==='supabase' ? (ok?'Senkron: bağlı':'Senkron YOK') : 'Yerel mod (tek cihaz)';
+    let s = document.getElementById('durum-serit');
+    if(S.mode==='supabase' && !ok){
+      if(!s){
+        s = document.createElement('div');
+        s.id = 'durum-serit';
+        s.style.cssText = 'background:#b3542e;color:#fff;text-align:center;padding:.45em .8em;font-size:.85em;font-weight:600;position:sticky;top:0;z-index:30';
+        s.textContent = '⚠ BULUTA BAĞLI DEĞİL — değişiklikler kaydedilmiyor. Sayfayı yenile / tekrar giriş yap.';
+        document.getElementById('view-main').prepend(s);
+      }
+    } else if(s){ s.remove(); }
   }
 
   /* ---------- giriş ---------- */
@@ -43,7 +53,12 @@
     $('#login-btn').disabled = true;
     const r = await S.login(p);
     $('#login-btn').disabled = false;
-    if(!r){ $('#login-err').classList.remove('hidden'); return; }
+    if(!r){
+      const e = $('#login-err');
+      e.textContent = (S.sonHata && S.sonHata()) ? S.sonHata() : 'Şifre yanlış.';
+      e.classList.remove('hidden');
+      return;
+    }
     baslat(r);
   }
   $('#login-btn').addEventListener('click', girisDene);
@@ -387,8 +402,9 @@
             <button class="btn small-btn" onclick="altParteRest('kisa')">Kısa</button>
             <button class="btn small-btn" onclick="altParteRest('uzun')">Uzun</button>
           </span></div>
-        <div class="dm-row"><span>Envanter/kasa tohumu (STATE S8 sonu)</span>
-          <button class="btn small-btn" onclick="altSifirla()">Tohuma sıfırla</button></div>
+        <div class="dm-row"><span>Bu cihazdaki otomatik yedekler <span class="muted">(son 8 sürüm)</span></span>
+          <button class="btn small-btn" onclick="altYerelYedekler('parti')">Kasa/Envanter</button>
+          <button class="btn small-btn" onclick="altYerelYedekler('karakterler')">Karakterler</button></div>
       </div>
       <h2 class="sec">Kurtarma <span class="muted">(sürüm geçmişi)</span></h2>
       <div class="card">
@@ -453,6 +469,33 @@
     toast(sayi+' kayıt buluta yazıldı');
   };
 
+  window.altYerelYedekler = function(key){
+    const liste = S.yerelYedekler(key);
+    const alan = $('#gecmis-alan');
+    if(!liste.length){ alan.innerHTML = '<span class="muted">Bu cihazda otomatik yedek yok (yeni sistem bu andan sonrasını kaydeder).</span>'; return; }
+    alan.innerHTML = liste.map((g,i)=>{
+      let ozet = '';
+      try{
+        if(key==='parti') ozet = (g.v.envanter||[]).length+' eşya · temiz '+(g.v.kasa?g.v.kasa.temiz_gumus:'?')+'g';
+        else ozet = Object.keys(g.v).filter(k=>k[0]!=='_').join(', ');
+      }catch(e){}
+      return `<div class="dm-row"><span>${g.t.replace('T',' ').slice(0,16)} <span class="muted">· ${ozet}</span></span>
+        <button class="btn small-btn" onclick="altYerelGeriYukle('${key}',${i})">Geri yükle</button></div>`;
+    }).join('');
+  };
+
+  window.altYerelGeriYukle = async function(key, i){
+    const liste = S.yerelYedekler(key);
+    const kayit = liste[i];
+    if(!kayit) return toast('Yedek bulunamadı');
+    if(!confirm('Bu yedek geri yüklenecek ve buluta yazılacak. Devam?')) return;
+    await S.set(key, kayit.v);
+    S.markSeen(key, kayit.v);
+    if(key==='parti'){ PARTI = kayit.v; cizKasa(); }
+    if(key==='karakterler'){ pendingChars = kayit.v; pushChars(); }
+    toast('Yedek geri yüklendi');
+  };
+
   window.altYedekKopyala = async function(){
     const paket = {tarih:new Date().toISOString().slice(0,16), parti:PARTI, notlar:NOTLAR};
     const metin = JSON.stringify(paket, null, 1);
@@ -464,13 +507,7 @@
     }
   };
 
-  window.altSifirla = function(){
-    if(!confirm('DİKKAT: Kasa + envanter + notlar TOHUM verisine döner — bulut modundaysan HERKESİN gördüğü ortak kayıt da ezilir (karakterlere dokunmaz). Emin misin?')) return;
-    if(S.mode==='supabase' && !confirm('Bulut kaydı geri alınamaz şekilde tohuma dönecek. Kesin emin misin?')) return;
-    PARTI = JSON.parse(JSON.stringify(window.ALT_SEED.parti));
-    NOTLAR = JSON.parse(JSON.stringify(window.ALT_SEED.notlar));
-    kaydetParti(); kaydetNotlar(); cizKasa(); cizNotlar(); toast('Tohuma sıfırlandı');
-  };
+  /* altSifirla kaldırıldı (2026-08-26): tohumun canlı veriyi ezme riski — kurtarma artık geçmiş/yedek üzerinden. */
 
   /* ---------- oturum sürdür ---------- */
   const resumed = S.resume();
