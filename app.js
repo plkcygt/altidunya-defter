@@ -3,6 +3,7 @@
   const $ = (s)=>document.querySelector(s);
   const S = window.AltStore;
   let PARTI = null, NOTLAR = null, ROLE = null;
+  const remoteOK = { parti:false, notlar:false, karakterler:false };   // bulut doğrulanmadan buluta yazılmaz
   let charFrameReady = false, pendingChars = null;
 
   /* ---------- yardımcılar ---------- */
@@ -18,8 +19,17 @@
   $('#modal-root').addEventListener('click', (e)=>{ if(e.target.id==='modal-root') closeModal(); });
   window.altKapat = closeModal;
 
-  async function kaydetParti(){ await S.set('parti', PARTI); S.markSeen('parti', PARTI); guncelleSync(true); }
-  async function kaydetNotlar(){ await S.set('notlar', NOTLAR); S.markSeen('notlar', NOTLAR); guncelleSync(true); }
+  async function kaydetParti(){
+    const kilit = S.mode==='supabase' && !remoteOK.parti;
+    const tamam = await S.set('parti', PARTI, kilit);
+    S.markSeen('parti', PARTI); guncelleSync(tamam && !kilit);
+    if(kilit) toast('⚠ Bulut doğrulanmadı — değişiklik henüz buluta yazılmadı');
+  }
+  async function kaydetNotlar(){
+    const kilit = S.mode==='supabase' && !remoteOK.notlar;
+    const tamam = await S.set('notlar', NOTLAR, kilit);
+    S.markSeen('notlar', NOTLAR); guncelleSync(tamam && !kilit);
+  }
   function guncelleSync(ok){
     const b = $('#sync-badge');
     b.className = S.mode==='supabase' ? (ok?'on':'err') : '';
@@ -53,20 +63,43 @@
     rb.className = role==='dm' ? 'dm' : '';
     if(role==='dm') $('#tab-dm').classList.remove('hidden');
 
-    PARTI  = (await S.get('parti'))  || JSON.parse(JSON.stringify(window.ALT_SEED.parti));
-    NOTLAR = (await S.get('notlar')) || JSON.parse(JSON.stringify(window.ALT_SEED.notlar));
-    S.markSeen('parti', PARTI); S.markSeen('notlar', NOTLAR);
-    guncelleSync(true);
+    async function guvenliYukle(key, seed){
+      if(S.mode!=='supabase'){
+        remoteOK[key] = true;
+        const yerel = await S.get(key);
+        return yerel || (seed ? JSON.parse(JSON.stringify(seed)) : null);
+      }
+      for(let deneme=0; deneme<3; deneme++){
+        const r = await S.getRemote(key);
+        if(r.status==='ok'){ remoteOK[key]=true; return r.value; }
+        if(r.status==='empty'){
+          remoteOK[key]=true;
+          const v = seed ? JSON.parse(JSON.stringify(seed)) : null;
+          if(v) await S.set(key, v);
+          return v;
+        }
+        if(deneme<2) await new Promise(x=>setTimeout(x, 1800));
+      }
+      guncelleSync(false);
+      toast('⚠ Bulut alınamadı — son yerel kopya gösteriliyor; değişiklikler buluta yazılmayacak');
+      const yerel = await S.get(key);
+      return yerel || (seed ? JSON.parse(JSON.stringify(seed)) : null);
+    }
 
-    const chars = await S.get('karakterler');
+    PARTI  = await guvenliYukle('parti',  window.ALT_SEED.parti);
+    NOTLAR = await guvenliYukle('notlar', window.ALT_SEED.notlar);
+    S.markSeen('parti', PARTI); S.markSeen('notlar', NOTLAR);
+    guncelleSync(remoteOK.parti);
+
+    const chars = await guvenliYukle('karakterler', null);
     if(chars){ pendingChars = chars; pushChars(); }
 
     cizKasa(); cizNotlar(); if(role==='dm') cizDM();
 
     S.poll(['parti','notlar','karakterler'], (k,v)=>{
-      if(k==='parti'){ PARTI=v; cizKasa(); toast('Kasa/envanter güncellendi'); }
-      if(k==='notlar'){ NOTLAR=v; cizNotlar(); $('#not-dot').classList.remove('hidden'); }
-      if(k==='karakterler'){ pendingChars=v; pushChars(); toast('Karakterler güncellendi'); }
+      if(k==='parti'){ remoteOK.parti=true; PARTI=v; cizKasa(); toast('Kasa/envanter güncellendi'); }
+      if(k==='notlar'){ remoteOK.notlar=true; NOTLAR=v; cizNotlar(); $('#not-dot').classList.remove('hidden'); }
+      if(k==='karakterler'){ remoteOK.karakterler=true; pendingChars=v; pushChars(); toast('Karakterler güncellendi'); }
     }, 5000);
   }
 
@@ -76,9 +109,11 @@
     if(!m) return;
     if(m.type==='alt-ready'){ charFrameReady = true; pushChars(); }
     if(m.type==='alt-save' && m.data){
-      await S.set('karakterler', m.data);
+      const kilit = S.mode==='supabase' && !remoteOK.karakterler;
+      const tamam = await S.set('karakterler', m.data, kilit);
       S.markSeen('karakterler', m.data);
-      guncelleSync(true);
+      guncelleSync(tamam && !kilit);
+      if(kilit) toast('⚠ Bulut doğrulanmadı — karakter değişikliği buluta yazılmadı');
     }
   });
   function pushChars(){
@@ -125,8 +160,10 @@
       <h2 class="sec" style="margin-top:1.2em">Envanter</h2>
       <div class="card">`;
     PARTI.envanter.forEach((it,i)=>{
+      if(it.gizli && ROLE!=='dm') return;   // oyunculardan gizli
       html += `<div class="env-item">
         <span class="ad" onclick="altDetay(${i})">${it.ad}</span>
+        ${it.gizli?`<span class="etiket" title="Oyuncular bu eşyayı görmez">👁 gizli</span>`:''}
         ${it.etiket?`<span class="etiket ${it.etiket}">${it.etiket==='riskli'?'⚠ riskli':'★ önemli'}</span>`:''}
         <span class="adet">×${it.adet}</span>
       </div>`;
@@ -139,6 +176,7 @@
         <textarea id="ye-detay" placeholder="Açıklama — nasıl çalışır, kuralı ne? (kalın için <b>...</b> kullanabilirsin)"></textarea>
         <div style="display:flex;gap:.6em;margin-top:.5em;flex-wrap:wrap;align-items:center">
           <label class="muted">Adet <input id="ye-adet" type="number" value="1" min="1" style="width:4.5em;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.3em .4em"></label>
+          <label class="muted"><input type="checkbox" id="ye-gizli"> 👁 gizle</label>
           <select id="ye-etiket" style="background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.4em">
             <option value="">etiket yok</option><option value="onemli">★ önemli</option><option value="riskli">⚠ riskli</option>
           </select>
@@ -222,7 +260,8 @@
       adet: Math.max(1, parseInt($('#ye-adet').value)||1),
       tip: $('#ye-tip').value,
       detay: $('#ye-detay').value.trim() || '—',
-      etiket: $('#ye-etiket').value
+      etiket: $('#ye-etiket').value,
+      gizli: $('#ye-gizli').checked
     });
     kaydetParti(); cizKasa(); toast(ad+' envantere eklendi');
   };
@@ -249,6 +288,7 @@
           <option value="fener" ${it.tip==='fener'?'selected':''}>fener (özel)</option>
         </select>
       </div>
+      <label class="muted" style="display:block;margin-top:.6em"><input type="checkbox" id="ed-gizli" ${it.gizli?'checked':''}> 👁 oyunculardan gizle</label>
       <div class="butonlar">
         <button class="btn primary" onclick="altDuzenleKaydet(${i})">Kaydet</button>
         <button class="btn ghost" style="color:var(--red)" onclick="altEsyaSil(${i})">Sil</button>
@@ -265,6 +305,7 @@
     it.adet = Math.max(0, parseInt($('#ed-adet').value)||0);
     it.etiket = $('#ed-etiket').value;
     it.tip = $('#ed-tip').value;
+    it.gizli = $('#ed-gizli').checked;
     if(it.adet===0) PARTI.envanter.splice(i,1);
     kaydetParti(); cizKasa(); closeModal(); toast('Kaydedildi');
   };

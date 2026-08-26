@@ -3,7 +3,7 @@
    Anahtarlar: 'karakterler' (motorun D nesnesi) · 'parti' · 'notlar'          */
 (function(){
   const CFG = window.ALT_CONFIG || {};
-  const SB = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY);
+  const SB = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY) && location.search.indexOf('yerel=1') === -1;   // ?yerel=1 = bulutu kapat (test/teşhis)
   const LS = (k)=>'altsite_'+k;
   let jwt = null, role = null;
 
@@ -57,6 +57,21 @@
     return {'apikey':CFG.SUPABASE_ANON_KEY, 'Authorization':'Bearer '+jwt, 'Content-Type':'application/json'};
   }
 
+  /* Uzak durumu net döner: ok / empty / err (SB modu için) */
+  async function getRemote(key){
+    if(!(SB && jwt)) return {status:'err'};
+    try{
+      const r = await fetch(CFG.SUPABASE_URL+'/rest/v1/kv?key=eq.'+key+'&select=value', {headers: sbHeaders()});
+      if(!r.ok) return {status:'err'};
+      const j = await r.json();
+      if(j.length){
+        try{ localStorage.setItem(LS(key), JSON.stringify(j[0].value)); }catch(e){}
+        return {status:'ok', value: j[0].value};
+      }
+      return {status:'empty'};
+    }catch(e){ return {status:'err'}; }
+  }
+
   async function get(key){
     if(SB && jwt){
       try{
@@ -74,8 +89,9 @@
     return null;
   }
 
-  async function set(key, val){
+  async function set(key, val, yalnizYerel){
     try{ localStorage.setItem(LS(key), JSON.stringify(val)); }catch(e){}
+    if(yalnizYerel) return true;
     if(SB && jwt){
       try{
         const r = await fetch(CFG.SUPABASE_URL+'/rest/v1/kv', {
@@ -104,7 +120,7 @@
   }
   function markSeen(key, val){ snap[key] = JSON.stringify(val); }
 
-  window.AltStore = { login, resume, logout, get, set, poll, markSeen,
+  window.AltStore = { login, resume, logout, get, getRemote, set, poll, markSeen,
                       mode: SB ? 'supabase' : 'yerel',
                       role: ()=>role };
 })();
