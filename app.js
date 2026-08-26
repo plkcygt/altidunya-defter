@@ -93,7 +93,9 @@
     t.addEventListener('click', ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      ['karakterler','kasa','notlar','dm'].forEach(p=>$('#pane-'+p).classList.add('hidden'));
+      ['karakterler','harita','dunya','kasa','notlar','dm'].forEach(p=>$('#pane-'+p).classList.add('hidden'));
+      const fr2 = $('#pane-'+t.dataset.tab+' iframe.tab-frame');
+      if(fr2 && !fr2.src) fr2.src = fr2.dataset.src;   // sekme ilk açılınca yükle
       $('#pane-'+t.dataset.tab).classList.remove('hidden');
       if(t.dataset.tab==='notlar') $('#not-dot').classList.add('hidden');
     });

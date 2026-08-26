@@ -44,8 +44,8 @@ button{font-family:inherit;cursor:pointer}
 /* --- İçerik --- */
 #content{flex:1;display:flex;flex-direction:column}
 .pane{flex:1;padding:1em;max-width:900px;width:100%;margin:0 auto}
-#pane-karakterler{padding:0;max-width:none}
-#char-frame{width:100%;height:calc(100vh - 58px);border:none;display:block;background:var(--bg)}
+#pane-karakterler,.pane-frame{padding:0;max-width:none}
+#char-frame,.tab-frame{width:100%;height:calc(100vh - 58px);border:none;display:block;background:var(--bg)}
 
 h2.sec{font-family:var(--font-disp);color:var(--gold);font-size:1.15em;margin:.4em 0 .7em;letter-spacing:.03em}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.9em 1em;margin-bottom:.8em}
