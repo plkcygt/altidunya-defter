@@ -398,6 +398,8 @@
           <button class="btn small-btn" onclick="altGecmis('karakterler')">Listele</button></div>
         <div class="dm-row"><span>Bu cihazdaki kaydı buluta zorla yaz</span>
           <button class="btn small-btn" onclick="altYereliBulutaYaz()">Yükle</button></div>
+        <div class="dm-row"><span><b>Yedeği panoya kopyala</b> <span class="muted">— Claude'a yapıştır, repoya işlensin (git = kalıcı arşiv)</span></span>
+          <button class="btn small-btn" onclick="altYedekKopyala()">Kopyala</button></div>
         <div id="gecmis-alan" style="margin-top:.6em"></div>
       </div>
       <p class="muted">Spoiler kuralı: bu sitede yalnız oyuncuların bilebileceği [O] bilgiler yaşar. GM sırları repoda kalır.</p>`;
@@ -449,6 +451,17 @@
       if(v){ await S.set(key, v); S.markSeen(key, v); sayi++; }
     }
     toast(sayi+' kayıt buluta yazıldı');
+  };
+
+  window.altYedekKopyala = async function(){
+    const paket = {tarih:new Date().toISOString().slice(0,16), parti:PARTI, notlar:NOTLAR};
+    const metin = JSON.stringify(paket, null, 1);
+    try{ await navigator.clipboard.writeText(metin); toast('Yedek panoya kopyalandı — Claude'a yapıştır'); }
+    catch(e){
+      modal(`<h3>Yedek</h3><p class="muted">Metni seçip kopyala:</p>
+        <textarea style="min-height:200px" onclick="this.select()">${metin.replace(/</g,'&lt;')}</textarea>
+        <div class="butonlar"><button class="btn" onclick="altKapat()">Kapat</button></div>`);
+    }
   };
 
   window.altSifirla = function(){
