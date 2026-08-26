@@ -121,7 +121,7 @@
         ${paraKart('bakir','Bakır',k.bakir)}
         ${paraKart('altin','Altın',k.altin)}
       </div>
-      <p class="muted" style="margin-top:.5em">${PARTI.kasa_notu||''}</p>
+      <p class="muted" style="margin-top:.5em">${PARTI.kasa_notu||''} ${ROLE==='dm'?`<button class="btn ghost small-btn" onclick="altKasaNot()">✎</button>`:''}</p>
       <h2 class="sec" style="margin-top:1.2em">Envanter</h2>
       <div class="card">`;
     PARTI.envanter.forEach((it,i)=>{
@@ -133,6 +133,21 @@
     });
     html += `</div>`;
     if(ROLE==='dm'){
+      html += `<h2 class="sec">Yeni Eşya Ekle <span class="muted">(DM)</span></h2>
+      <div class="card">
+        <input id="ye-ad" placeholder="Eşya adı" style="width:100%;margin-bottom:.5em;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.55em .7em">
+        <textarea id="ye-detay" placeholder="Açıklama — nasıl çalışır, kuralı ne? (kalın için <b>...</b> kullanabilirsin)"></textarea>
+        <div style="display:flex;gap:.6em;margin-top:.5em;flex-wrap:wrap;align-items:center">
+          <label class="muted">Adet <input id="ye-adet" type="number" value="1" min="1" style="width:4.5em;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.3em .4em"></label>
+          <select id="ye-etiket" style="background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.4em">
+            <option value="">etiket yok</option><option value="onemli">★ önemli</option><option value="riskli">⚠ riskli</option>
+          </select>
+          <select id="ye-tip" style="background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.4em">
+            <option value="detay">normal eşya</option><option value="ic">kullanılabilir (tüketilir)</option>
+          </select>
+          <button class="btn primary" onclick="altYeniEkle()">Ekle</button>
+        </div>
+      </div>`;
       html += `<h2 class="sec">Katalogdan Ekle <span class="muted">(DM)</span></h2><div class="card">`;
       window.ALT_SEED.katalog.forEach((c,i)=>{
         html += `<div class="env-item"><span class="ad">${c.ad} <span class="muted">· ${c.fiyat}</span></span>
@@ -171,7 +186,8 @@
       <p>${it.detay}</p>
       <div class="butonlar">${ekstra}
         ${ROLE==='dm'?`<button class="btn ghost" onclick="altAdet(${i},-1)">− adet</button>
-                       <button class="btn ghost" onclick="altAdet(${i},1)">+ adet</button>`:''}
+                       <button class="btn ghost" onclick="altAdet(${i},1)">+ adet</button>
+                       <button class="btn" onclick="altDuzenle(${i})">✎ Düzenle</button>`:''}
         <button class="btn" onclick="altKapat()">Kapat</button></div>`);
     if(it.tip==='fener' || it.id==='fener') cizFener();
   };
@@ -184,6 +200,81 @@
     kaydetParti(); cizKasa(); closeModal();
     toast(it.ad+' kullanıldı'+(it.id==='potion1'?' — 2d4+2 iyileşme zarı at!':''));
   };
+  window.altKasaNot = function(){
+    modal(`<h3>Kasa Notu</h3>
+      <textarea id="kn-metin" style="min-height:110px">${PARTI.kasa_notu||''}</textarea>
+      <div class="butonlar">
+        <button class="btn primary" onclick="altKasaNotKaydet()">Kaydet</button>
+        <button class="btn" onclick="altKapat()">Vazgeç</button>
+      </div>`);
+  };
+  window.altKasaNotKaydet = function(){
+    PARTI.kasa_notu = document.querySelector('#kn-metin').value.trim();
+    kaydetParti(); cizKasa(); closeModal(); toast('Kasa notu güncellendi');
+  };
+
+  window.altYeniEkle = function(){
+    const ad = $('#ye-ad').value.trim();
+    if(!ad) return toast('Eşya adı gerekli.');
+    PARTI.envanter.push({
+      id: 'oz'+Date.now(),
+      ad,
+      adet: Math.max(1, parseInt($('#ye-adet').value)||1),
+      tip: $('#ye-tip').value,
+      detay: $('#ye-detay').value.trim() || '—',
+      etiket: $('#ye-etiket').value
+    });
+    kaydetParti(); cizKasa(); toast(ad+' envantere eklendi');
+  };
+
+  window.altDuzenle = function(i){
+    const it = PARTI.envanter[i];
+    modal(`<h3>✎ ${it.ad}</h3>
+      <label class="muted">Ad</label>
+      <input id="ed-ad" value="${(it.ad||'').replace(/"/g,'&quot;')}" style="width:100%;margin:.25em 0 .7em;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.55em .7em">
+      <label class="muted">Açıklama</label>
+      <textarea id="ed-detay" style="min-height:110px;margin-top:.25em">${it.detay||''}</textarea>
+      <div style="display:flex;gap:.6em;margin-top:.7em;flex-wrap:wrap;align-items:center">
+        <label class="muted">Adet <input id="ed-adet" type="number" value="${it.adet}" min="0" style="width:4.5em;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.3em .4em"></label>
+        <select id="ed-etiket" style="background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.4em">
+          <option value="" ${!it.etiket?'selected':''}>etiket yok</option>
+          <option value="onemli" ${it.etiket==='onemli'?'selected':''}>★ önemli</option>
+          <option value="riskli" ${it.etiket==='riskli'?'selected':''}>⚠ riskli</option>
+        </select>
+        <select id="ed-tip" style="background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.4em">
+          <option value="detay" ${it.tip!=='ic'&&it.tip!=='duduk'&&it.tip!=='mektup'&&it.tip!=='fener'?'selected':''}>normal eşya</option>
+          <option value="ic" ${it.tip==='ic'?'selected':''}>kullanılabilir (tüketilir)</option>
+          <option value="duduk" ${it.tip==='duduk'?'selected':''}>düdük (özel)</option>
+          <option value="mektup" ${it.tip==='mektup'?'selected':''}>mühürlü (özel)</option>
+          <option value="fener" ${it.tip==='fener'?'selected':''}>fener (özel)</option>
+        </select>
+      </div>
+      <div class="butonlar">
+        <button class="btn primary" onclick="altDuzenleKaydet(${i})">Kaydet</button>
+        <button class="btn ghost" style="color:var(--red)" onclick="altEsyaSil(${i})">Sil</button>
+        <button class="btn" onclick="altKapat()">Vazgeç</button>
+      </div>`);
+  };
+
+  window.altDuzenleKaydet = function(i){
+    const it = PARTI.envanter[i];
+    const ad = $('#ed-ad').value.trim();
+    if(!ad) return toast('Ad boş olamaz.');
+    it.ad = ad;
+    it.detay = $('#ed-detay').value.trim() || '—';
+    it.adet = Math.max(0, parseInt($('#ed-adet').value)||0);
+    it.etiket = $('#ed-etiket').value;
+    it.tip = $('#ed-tip').value;
+    if(it.adet===0) PARTI.envanter.splice(i,1);
+    kaydetParti(); cizKasa(); closeModal(); toast('Kaydedildi');
+  };
+
+  window.altEsyaSil = function(i){
+    if(!confirm(PARTI.envanter[i].ad+' envanterden silinsin mi?')) return;
+    PARTI.envanter.splice(i,1);
+    kaydetParti(); cizKasa(); closeModal(); toast('Silindi');
+  };
+
   window.altAdet = function(i,d){
     PARTI.envanter[i].adet = Math.max(0, PARTI.envanter[i].adet+d);
     if(PARTI.envanter[i].adet===0) PARTI.envanter.splice(i,1);
@@ -259,7 +350,8 @@
   };
 
   window.altSifirla = function(){
-    if(!confirm('Kasa + envanter + notlar tohum verisine döner (karakterlere dokunmaz). Emin misin?')) return;
+    if(!confirm('DİKKAT: Kasa + envanter + notlar TOHUM verisine döner — bulut modundaysan HERKESİN gördüğü ortak kayıt da ezilir (karakterlere dokunmaz). Emin misin?')) return;
+    if(S.mode==='supabase' && !confirm('Bulut kaydı geri alınamaz şekilde tohuma dönecek. Kesin emin misin?')) return;
     PARTI = JSON.parse(JSON.stringify(window.ALT_SEED.parti));
     NOTLAR = JSON.parse(JSON.stringify(window.ALT_SEED.notlar));
     kaydetParti(); kaydetNotlar(); cizKasa(); cizNotlar(); toast('Tohuma sıfırlandı');

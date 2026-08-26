@@ -5,7 +5,7 @@ window.ALT_SEED = {
 
   parti: {
     kasa: { temiz_gumus: 33, isaretli_gumus: 95, bakir: 0, altin: 0 },
-    kasa_notu: "İşaretli gümüş = Yontur boynuz mühürlü adak parası — dindar bir göz görürse \"tapınak parası, nereden?\" diye sorar. Önce temiz sikkeleri harcayın. (1 altın = 10 gümüş = 100 bakır; iksir 50 gümüş çapası.)",
+    kasa_notu: "Kesedeki gümüşün büyük kısmı Yontur mührü taşıyor — Orman tapınağının adak parası. Bilen bir göz görürse soru sorar; önce temiz sikkeleri harcayın. · 1 altın = 10 gümüş = 100 bakır · Şifa iksiri ≈ 50 gümüş",
     envanter: [
       { id:"potion1", ad:"Şifa İksiri (Potion of Healing)", adet:1, tip:"ic", etiket:"",
         detay:"<b>Kendin içersen: Bonus Action</b> (2024 kuralı) · başkasına içirmek: Action.<br><b>2d4+2 HP</b> iyileşir. Baygın (0 HP) birine içirilirse ayılır.<br>Kırmızı, hafif ışıltılı sıvı; şişe cam, mantar mühürlü. Değeri: 50 gümüş." },
