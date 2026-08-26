@@ -499,7 +499,7 @@
   window.altYedekKopyala = async function(){
     const paket = {tarih:new Date().toISOString().slice(0,16), parti:PARTI, notlar:NOTLAR};
     const metin = JSON.stringify(paket, null, 1);
-    try{ await navigator.clipboard.writeText(metin); toast('Yedek panoya kopyalandı — Claude'a yapıştır'); }
+    try{ await navigator.clipboard.writeText(metin); toast("Yedek panoya kopyalandı — Claude'a yapıştır"); }
     catch(e){
       modal(`<h3>Yedek</h3><p class="muted">Metni seçip kopyala:</p>
         <textarea style="min-height:200px" onclick="this.select()">${metin.replace(/</g,'&lt;')}</textarea>
