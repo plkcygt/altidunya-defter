@@ -24,6 +24,22 @@
   th,td{padding:.45em .5em;border-bottom:1px solid #3a322a;text-align:left}
   th{color:#a3968a;font-weight:600;font-size:.8em;letter-spacing:.08em}
   .not{color:#a3968a;font-size:.85em}
+  /* Galeri */
+  .g-izgara{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7em;margin-bottom:1.2em}
+  .g-izgara.g-genis{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}
+  .g-kart{margin:0;background:#1c1815;border:1px solid #3a322a;border-radius:10px;overflow:hidden;
+          cursor:zoom-in;transition:transform .15s,border-color .15s}
+  .g-kart:hover{transform:translateY(-2px);border-color:#8a7434}
+  .g-kart img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center 22%;display:block;background:#0f0d0b}
+  .g-genis .g-kart img{aspect-ratio:16/10;object-position:center}
+  .g-kart figcaption{padding:.45em .6em;font-size:.82em;line-height:1.35}
+  .g-kart figcaption b{color:#c9a227;display:block}
+  .g-alt{color:#a3968a;font-size:.92em}
+  #buyutec{display:none;position:fixed;inset:0;background:rgba(6,5,4,.94);z-index:100;
+           align-items:center;justify-content:center;flex-direction:column;padding:1.5em;cursor:zoom-out}
+  #buyutec img{max-width:100%;max-height:82vh;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
+  #buyutec-yazi{color:#e8ded0;margin-top:.8em;text-align:center;font-family:'Spectral',serif;font-size:1.05em}
+  #buyutec-yazi span{display:block;color:#a3968a;font-size:.85em;font-family:'IBM Plex Sans',sans-serif;margin-top:.2em}
 </style>
 </head>
 <body>
@@ -96,23 +112,80 @@
   Tanrıların terk ettiği ve lanetlediği bölge derler; gidenlerin dönmediği söylenir. Çoğu insan
   yaklaşmaz, adını bile alçak sesle söyler.</p>
 
-  <h2>Tanıdık Yüzler</h2>
-  <p class="not" style="margin-bottom:.6em">Yolda karşılaşılanlar — masada görülen yüzler.</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7em">
-    <figure style="margin:0;background:#1c1815;border:1px solid #3a322a;border-radius:10px;overflow:hidden">
-      <img src="yuzler/talas.jpg" alt="Talas" style="width:100%;display:block">
-      <figcaption style="padding:.45em .6em;font-size:.85em"><b style="color:#c9a227">Talas</b><br><span class="not">Kayıp hoca — S1'den beri aranıyor</span></figcaption></figure>
-    <figure style="margin:0;background:#1c1815;border:1px solid #3a322a;border-radius:10px;overflow:hidden">
-      <img src="yuzler/tugra.jpg" alt="Tuğra" style="width:100%;display:block">
-      <figcaption style="padding:.45em .6em;font-size:.85em"><b style="color:#c9a227">Tuğra</b><br><span class="not">Yenikoyu'nun bilge kadını — Talas'la kayboldu</span></figcaption></figure>
-    <figure style="margin:0;background:#1c1815;border:1px solid #3a322a;border-radius:10px;overflow:hidden">
-      <img src="yuzler/sancar.jpg" alt="Sancar" style="width:100%;display:block">
-      <figcaption style="padding:.45em .6em;font-size:.85em"><b style="color:#c9a227">Sancar</b><br><span class="not">Yenikoyu muhtarı</span></figcaption></figure>
-    <figure style="margin:0;background:#1c1815;border:1px solid #3a322a;border-radius:10px;overflow:hidden">
-      <img src="yuzler/yaman.jpg" alt="Yaman" style="width:100%;display:block">
-      <figcaption style="padding:.45em .6em;font-size:.85em"><b style="color:#c9a227">Yaman</b><br><span class="not">Yenikoyu'nun yaşlı avcısı</span></figcaption></figure>
+  <h2>Yüzler</h2>
+  <p class="not" style="margin-bottom:.5em">Yolda karşılaşılanlar. Görsele dokun — büyür.</p>
+  <div class="g-izgara">
+    <figure class="g-kart" onclick="buyut('karya')"><img src="gorseller/karya.jpg" alt="Karya" loading="lazy"><figcaption><b>Karya</b><span class="g-alt">Dağ’lı rahibe — Yargın’ın müridi</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('aya')"><img src="gorseller/aya.jpg" alt="Aya" loading="lazy"><figcaption><b>Aya</b><span class="g-alt">Sular’dan kaçan keşiş</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('kuzgun')"><img src="gorseller/kuzgun.jpg" alt="Kuzgun" loading="lazy"><figcaption><b>Kuzgun</b><span class="g-alt">Vadi’li hırsız — kayıp iki yılı var</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('talas')"><img src="gorseller/talas.jpg" alt="Talas" loading="lazy"><figcaption><b>Talas</b><span class="g-alt">Kayıp hoca — S1’den beri aranıyor</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('talas_veda')"><img src="gorseller/talas_veda.jpg" alt="Talas’ın vedası" loading="lazy"><figcaption><b>Talas’ın vedası</b><span class="g-alt">Handa son gece: iki mektup, sonra yokluk</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('tugra')"><img src="gorseller/tugra.jpg" alt="Tuğra" loading="lazy"><figcaption><b>Tuğra</b><span class="g-alt">Yenikoyu’nun bilge kadını — Talas’la kayboldu</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('sancar')"><img src="gorseller/sancar.jpg" alt="Sancar" loading="lazy"><figcaption><b>Sancar</b><span class="g-alt">Yenikoyu muhtarı</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('yaman')"><img src="gorseller/yaman.jpg" alt="Yaman" loading="lazy"><figcaption><b>Yaman</b><span class="g-alt">Yenikoyu’nun yaşlı avcısı</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('atilla')"><img src="gorseller/atilla.jpg" alt="Atilla" loading="lazy"><figcaption><b>Atilla</b><span class="g-alt">Kaçak Orman çocuğu — tahta kuş onda</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('asena')"><img src="gorseller/asena.jpg" alt="Asena" loading="lazy"><figcaption><b>Asena</b><span class="g-alt">Berkay’ın annesi — oğlunu "yaratık aldı" sanıyor</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('neris')"><img src="gorseller/neris.jpg" alt="Neris" loading="lazy"><figcaption><b>Neris</b><span class="g-alt">Aya’nın çocukluk arkadaşı — Aynalı’da</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('sergen')"><img src="gorseller/sergen.jpg" alt="Gözcü Sergen" loading="lazy"><figcaption><b>Gözcü Sergen</b><span class="g-alt">Sezgir asayiş müfrezesinin gözcüsü †</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('sayran')"><img src="gorseller/sayran.jpg" alt="Sayran" loading="lazy"><figcaption><b>Sayran</b><span class="g-alt">Sayım mümini — söz verilip öldürüldü †</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('erdal')"><img src="gorseller/erdal.jpg" alt="Erdal" loading="lazy"><figcaption><b>Erdal</b><span class="g-alt">Merkez heyetinin başı — kayıt tutan</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('suveyda')"><img src="gorseller/suveyda.jpg" alt="Süveyda" loading="lazy"><figcaption><b>Süveyda</b><span class="g-alt">Dağ’lı druid — gücü hayattan</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('kavsat')"><img src="gorseller/kavsat.jpg" alt="Kavşat" loading="lazy"><figcaption><b>Kavşat</b><span class="g-alt">Çöl’lü alet yapan</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('cevdet')"><img src="gorseller/cevdet.jpg" alt="Cevdet" loading="lazy"><figcaption><b>Cevdet</b><span class="g-alt">Ova’lı esir paladin — 38 çentik</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('cirak')"><img src="gorseller/cirak.jpg" alt="Çırak" loading="lazy"><figcaption><b>Çırak</b><span class="g-alt">Yolun başındaki üç kişi</span></figcaption></figure>
+  </div>
+
+  <h2>Yaratıklar</h2>
+  <div class="g-izgara">
+    <figure class="g-kart" onclick="buyut('ana')"><img src="gorseller/ana.jpg" alt="Ana Boynuzlu Soluk" loading="lazy"><figcaption><b>Ana Boynuzlu Soluk</b><span class="g-alt">Mağara ağzındaki dev — S1’de kesildi</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('yavru1')"><img src="gorseller/yavru1.jpg" alt="Boynuzlu Soluk yavrusu" loading="lazy"><figcaption><b>Boynuzlu Soluk yavrusu</b><span class="g-alt">Ormanda ilk karşılaşma</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('yavru2')"><img src="gorseller/yavru2.jpg" alt="İkinci yavru" loading="lazy"><figcaption><b>İkinci yavru</b></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('dev')"><img src="gorseller/dev.jpg" alt="Dev Balina" loading="lazy"><figcaption><b>Dev Balina</b><span class="g-alt">Aynalı’nın "kutsal koruyucusu"</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('zombi')"><img src="gorseller/zombi.jpg" alt="Karaya vuran" loading="lazy"><figcaption><b>Karaya vuran</b><span class="g-alt">Beyni eriyen dev — kıyıda yatan yara</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('bekci1')"><img src="gorseller/bekci1.jpg" alt="Feral su canlısı" loading="lazy"><figcaption><b>Feral su canlısı</b><span class="g-alt">Kriz sularında başıboş</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('bekci2')"><img src="gorseller/bekci2.jpg" alt="Batık bekçisi" loading="lazy"><figcaption><b>Batık bekçisi</b><span class="g-alt">Boğulan Ambar dalışı</span></figcaption></figure>
+  </div>
+
+  <h2>Yerler ve Anlar</h2>
+  <div class="g-izgara g-genis">
+    <figure class="g-kart" onclick="buyut('yarilma')"><img src="gorseller/yarilma.jpg" alt="Yarılma" loading="lazy"><figcaption><b>Yarılma</b><span class="g-alt">Bin yıl önce — kimse hatırlamıyor</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('semboller')"><img src="gorseller/semboller.jpg" alt="Altı sembol" loading="lazy"><figcaption><b>Altı sembol</b><span class="g-alt">Tanrıların bilinen nişanları</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('sular')"><img src="gorseller/sular.jpg" alt="Sular" loading="lazy"><figcaption><b>Sular</b><span class="g-alt">Lagünler, kazıklı evler, parlayan geceler</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('vadi')"><img src="gorseller/vadi.jpg" alt="Vadi" loading="lazy"><figcaption><b>Vadi</b><span class="g-alt">Dar geçitler, fısıltı kültürü</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('dag')"><img src="gorseller/dag.jpg" alt="Dağ" loading="lazy"><figcaption><b>Dağ</b><span class="g-alt">Bulut üstü keşiş kulübeleri</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('sinir')"><img src="gorseller/sinir.jpg" alt="Sınır kuşağı" loading="lazy"><figcaption><b>Sınır kuşağı</b><span class="g-alt">"Sınır bir çizgi değil, bir yara izidir."</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('ateist_koy')"><img src="gorseller/ateist_koy.jpg" alt="Ateist sınır köyü" loading="lazy"><figcaption><b>Ateist sınır köyü</b><span class="g-alt">Sayımın gölgesinde yaşayanlar</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('asa')"><img src="gorseller/asa.jpg" alt="Talas’ın asası" loading="lazy"><figcaption><b>Talas’ın asası</b><span class="g-alt">Üstünde bir göz, içinde bir kıvrım</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('galeri')"><img src="gorseller/galeri.jpg" alt="Sergi Salonu" loading="lazy"><figcaption><b>Sergi Salonu</b><span class="g-alt">Yontur’un donmuş numuneleri</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('kurator')"><img src="gorseller/kurator.jpg" alt="Kürator" loading="lazy"><figcaption><b>Kürator</b><span class="g-alt">Koleksiyonun 1 numarası bir insandı</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('tablet')"><img src="gorseller/tablet.jpg" alt="Boğulanların Tableti" loading="lazy"><figcaption><b>Boğulanların Tableti</b><span class="g-alt">Dünyada üç tane — biri ekipten geçti</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('gumusler')"><img src="gorseller/gumusler.jpg" alt="Adak gümüşleri" loading="lazy"><figcaption><b>Adak gümüşleri</b><span class="g-alt">Yontur mühürlü — işaretli para</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('recine')"><img src="gorseller/recine.jpg" alt="Koruyucu Reçine" loading="lazy"><figcaption><b>Koruyucu Reçine</b><span class="g-alt">Tapınaktan çıkan saklama yağı</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('ates')"><img src="gorseller/ates.jpg" alt="Ateş dersi" loading="lazy"><figcaption><b>Ateş dersi</b><span class="g-alt">On mülteciye kamp öğretildi</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('sarilma')"><img src="gorseller/sarilma.jpg" alt="Kavuşma" loading="lazy"><figcaption><b>Kavuşma</b><span class="g-alt">Aya ve Neris, yıllar sonra</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('rituel')"><img src="gorseller/rituel.jpg" alt="Dolunay ritüeli" loading="lazy"><figcaption><b>Dolunay ritüeli</b><span class="g-alt">Bütün köy suya iner</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('felaket')"><img src="gorseller/felaket.jpg" alt="Delik dolunay" loading="lazy"><figcaption><b>Delik dolunay</b><span class="g-alt">Ritüel felakete döndü</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('aya_kriz')"><img src="gorseller/aya_kriz.jpg" alt="Ağdaki delikler" loading="lazy"><figcaption><b>Ağdaki delikler</b><span class="g-alt">Aya krizi teniyle biliyor</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('kuzgun_agda')"><img src="gorseller/kuzgun_agda.jpg" alt="Kuzgun ağda" loading="lazy"><figcaption><b>Kuzgun ağda</b><span class="g-alt">Açıklık, teslimiyet — ona yabancı</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('scar')"><img src="gorseller/scar.jpg" alt="Yara" loading="lazy"><figcaption><b>Yara</b><span class="g-alt">Yutulan köy: çukur değil, yokluk</span></figcaption></figure>
+    <figure class="g-kart" onclick="buyut('kaliplar')"><img src="gorseller/kaliplar.jpg" alt="Boşluk kalıpları" loading="lazy"><figcaption><b>Boşluk kalıpları</b><span class="g-alt">Ceset yok, kemik yok — kaldırılmışlar</span></figcaption></figure>
+  </div>
+
+  <div id="buyutec" onclick="this.style.display='none'">
+    <img id="buyutec-img" alt="">
+    <div id="buyutec-yazi"></div>
   </div>
 
   <p class="not" style="margin-top:2em;text-align:center">— Bu rehber yolcular içindir; dünyanın sırları burada yazmaz. —</p>
+<script>
+const GORSEL = {"karya": {"b": "Karya", "a": "Dağ’lı rahibe — Yargın’ın müridi"}, "aya": {"b": "Aya", "a": "Sular’dan kaçan keşiş"}, "kuzgun": {"b": "Kuzgun", "a": "Vadi’li hırsız — kayıp iki yılı var"}, "talas": {"b": "Talas", "a": "Kayıp hoca — S1’den beri aranıyor"}, "talas_veda": {"b": "Talas’ın vedası", "a": "Handa son gece: iki mektup, sonra yokluk"}, "tugra": {"b": "Tuğra", "a": "Yenikoyu’nun bilge kadını — Talas’la kayboldu"}, "sancar": {"b": "Sancar", "a": "Yenikoyu muhtarı"}, "yaman": {"b": "Yaman", "a": "Yenikoyu’nun yaşlı avcısı"}, "atilla": {"b": "Atilla", "a": "Kaçak Orman çocuğu — tahta kuş onda"}, "asena": {"b": "Asena", "a": "Berkay’ın annesi — oğlunu \"yaratık aldı\" sanıyor"}, "neris": {"b": "Neris", "a": "Aya’nın çocukluk arkadaşı — Aynalı’da"}, "sergen": {"b": "Gözcü Sergen", "a": "Sezgir asayiş müfrezesinin gözcüsü †"}, "sayran": {"b": "Sayran", "a": "Sayım mümini — söz verilip öldürüldü †"}, "erdal": {"b": "Erdal", "a": "Merkez heyetinin başı — kayıt tutan"}, "suveyda": {"b": "Süveyda", "a": "Dağ’lı druid — gücü hayattan"}, "kavsat": {"b": "Kavşat", "a": "Çöl’lü alet yapan"}, "cevdet": {"b": "Cevdet", "a": "Ova’lı esir paladin — 38 çentik"}, "cirak": {"b": "Çırak", "a": "Yolun başındaki üç kişi"}, "ana": {"b": "Ana Boynuzlu Soluk", "a": "Mağara ağzındaki dev — S1’de kesildi"}, "yavru1": {"b": "Boynuzlu Soluk yavrusu", "a": "Ormanda ilk karşılaşma"}, "yavru2": {"b": "İkinci yavru", "a": ""}, "dev": {"b": "Dev Balina", "a": "Aynalı’nın \"kutsal koruyucusu\""}, "zombi": {"b": "Karaya vuran", "a": "Beyni eriyen dev — kıyıda yatan yara"}, "bekci1": {"b": "Feral su canlısı", "a": "Kriz sularında başıboş"}, "bekci2": {"b": "Batık bekçisi", "a": "Boğulan Ambar dalışı"}, "yarilma": {"b": "Yarılma", "a": "Bin yıl önce — kimse hatırlamıyor"}, "semboller": {"b": "Altı sembol", "a": "Tanrıların bilinen nişanları"}, "sular": {"b": "Sular", "a": "Lagünler, kazıklı evler, parlayan geceler"}, "vadi": {"b": "Vadi", "a": "Dar geçitler, fısıltı kültürü"}, "dag": {"b": "Dağ", "a": "Bulut üstü keşiş kulübeleri"}, "sinir": {"b": "Sınır kuşağı", "a": "\"Sınır bir çizgi değil, bir yara izidir.\""}, "ateist_koy": {"b": "Ateist sınır köyü", "a": "Sayımın gölgesinde yaşayanlar"}, "asa": {"b": "Talas’ın asası", "a": "Üstünde bir göz, içinde bir kıvrım"}, "galeri": {"b": "Sergi Salonu", "a": "Yontur’un donmuş numuneleri"}, "kurator": {"b": "Kürator", "a": "Koleksiyonun 1 numarası bir insandı"}, "tablet": {"b": "Boğulanların Tableti", "a": "Dünyada üç tane — biri ekipten geçti"}, "gumusler": {"b": "Adak gümüşleri", "a": "Yontur mühürlü — işaretli para"}, "recine": {"b": "Koruyucu Reçine", "a": "Tapınaktan çıkan saklama yağı"}, "ates": {"b": "Ateş dersi", "a": "On mülteciye kamp öğretildi"}, "sarilma": {"b": "Kavuşma", "a": "Aya ve Neris, yıllar sonra"}, "rituel": {"b": "Dolunay ritüeli", "a": "Bütün köy suya iner"}, "felaket": {"b": "Delik dolunay", "a": "Ritüel felakete döndü"}, "aya_kriz": {"b": "Ağdaki delikler", "a": "Aya krizi teniyle biliyor"}, "kuzgun_agda": {"b": "Kuzgun ağda", "a": "Açıklık, teslimiyet — ona yabancı"}, "scar": {"b": "Yara", "a": "Yutulan köy: çukur değil, yokluk"}, "kaliplar": {"b": "Boşluk kalıpları", "a": "Ceset yok, kemik yok — kaldırılmışlar"}};
+function buyut(ad){
+  const k = GORSEL[ad]; if(!k) return;
+  document.getElementById('buyutec-img').src = 'gorseller/' + ad + '.jpg';
+  document.getElementById('buyutec-yazi').innerHTML = '<b>' + k.b + '</b>' + (k.a ? '<span>' + k.a + '</span>' : '');
+  document.getElementById('buyutec').style.display = 'flex';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') document.getElementById('buyutec').style.display = 'none'; });
+</script>
 </body>
 </html>

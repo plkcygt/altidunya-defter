@@ -1,0 +1,278 @@
+[
+ {
+  "ad": "karya",
+  "baslik": "Karya",
+  "alt": "Dağ’lı rahibe — Yargın’ın müridi",
+  "kat": "yuz"
+ },
+ {
+  "ad": "aya",
+  "baslik": "Aya",
+  "alt": "Sular’dan kaçan keşiş",
+  "kat": "yuz"
+ },
+ {
+  "ad": "kuzgun",
+  "baslik": "Kuzgun",
+  "alt": "Vadi’li hırsız — kayıp iki yılı var",
+  "kat": "yuz"
+ },
+ {
+  "ad": "talas",
+  "baslik": "Talas",
+  "alt": "Kayıp hoca — S1’den beri aranıyor",
+  "kat": "yuz"
+ },
+ {
+  "ad": "talas_veda",
+  "baslik": "Talas’ın vedası",
+  "alt": "Handa son gece: iki mektup, sonra yokluk",
+  "kat": "yuz"
+ },
+ {
+  "ad": "tugra",
+  "baslik": "Tuğra",
+  "alt": "Yenikoyu’nun bilge kadını — Talas’la kayboldu",
+  "kat": "yuz"
+ },
+ {
+  "ad": "sancar",
+  "baslik": "Sancar",
+  "alt": "Yenikoyu muhtarı",
+  "kat": "yuz"
+ },
+ {
+  "ad": "yaman",
+  "baslik": "Yaman",
+  "alt": "Yenikoyu’nun yaşlı avcısı",
+  "kat": "yuz"
+ },
+ {
+  "ad": "atilla",
+  "baslik": "Atilla",
+  "alt": "Kaçak Orman çocuğu — tahta kuş onda",
+  "kat": "yuz"
+ },
+ {
+  "ad": "asena",
+  "baslik": "Asena",
+  "alt": "Berkay’ın annesi — oğlunu \"yaratık aldı\" sanıyor",
+  "kat": "yuz"
+ },
+ {
+  "ad": "neris",
+  "baslik": "Neris",
+  "alt": "Aya’nın çocukluk arkadaşı — Aynalı’da",
+  "kat": "yuz"
+ },
+ {
+  "ad": "sergen",
+  "baslik": "Gözcü Sergen",
+  "alt": "Sezgir asayiş müfrezesinin gözcüsü †",
+  "kat": "yuz"
+ },
+ {
+  "ad": "sayran",
+  "baslik": "Sayran",
+  "alt": "Sayım mümini — söz verilip öldürüldü †",
+  "kat": "yuz"
+ },
+ {
+  "ad": "erdal",
+  "baslik": "Erdal",
+  "alt": "Merkez heyetinin başı — kayıt tutan",
+  "kat": "yuz"
+ },
+ {
+  "ad": "suveyda",
+  "baslik": "Süveyda",
+  "alt": "Dağ’lı druid — gücü hayattan",
+  "kat": "yuz"
+ },
+ {
+  "ad": "kavsat",
+  "baslik": "Kavşat",
+  "alt": "Çöl’lü alet yapan",
+  "kat": "yuz"
+ },
+ {
+  "ad": "cevdet",
+  "baslik": "Cevdet",
+  "alt": "Ova’lı esir paladin — 38 çentik",
+  "kat": "yuz"
+ },
+ {
+  "ad": "cirak",
+  "baslik": "Çırak",
+  "alt": "Yolun başındaki üç kişi",
+  "kat": "yuz"
+ },
+ {
+  "ad": "ana",
+  "baslik": "Ana Boynuzlu Soluk",
+  "alt": "Mağara ağzındaki dev — S1’de kesildi",
+  "kat": "yaratik"
+ },
+ {
+  "ad": "yavru1",
+  "baslik": "Boynuzlu Soluk yavrusu",
+  "alt": "Ormanda ilk karşılaşma",
+  "kat": "yaratik"
+ },
+ {
+  "ad": "yavru2",
+  "baslik": "İkinci yavru",
+  "alt": "",
+  "kat": "yaratik"
+ },
+ {
+  "ad": "dev",
+  "baslik": "Dev Balina",
+  "alt": "Aynalı’nın \"kutsal koruyucusu\"",
+  "kat": "yaratik"
+ },
+ {
+  "ad": "zombi",
+  "baslik": "Karaya vuran",
+  "alt": "Beyni eriyen dev — kıyıda yatan yara",
+  "kat": "yaratik"
+ },
+ {
+  "ad": "bekci1",
+  "baslik": "Feral su canlısı",
+  "alt": "Kriz sularında başıboş",
+  "kat": "yaratik"
+ },
+ {
+  "ad": "bekci2",
+  "baslik": "Batık bekçisi",
+  "alt": "Boğulan Ambar dalışı",
+  "kat": "yaratik"
+ },
+ {
+  "ad": "yarilma",
+  "baslik": "Yarılma",
+  "alt": "Bin yıl önce — kimse hatırlamıyor",
+  "kat": "an"
+ },
+ {
+  "ad": "semboller",
+  "baslik": "Altı sembol",
+  "alt": "Tanrıların bilinen nişanları",
+  "kat": "an"
+ },
+ {
+  "ad": "sular",
+  "baslik": "Sular",
+  "alt": "Lagünler, kazıklı evler, parlayan geceler",
+  "kat": "an"
+ },
+ {
+  "ad": "vadi",
+  "baslik": "Vadi",
+  "alt": "Dar geçitler, fısıltı kültürü",
+  "kat": "an"
+ },
+ {
+  "ad": "dag",
+  "baslik": "Dağ",
+  "alt": "Bulut üstü keşiş kulübeleri",
+  "kat": "an"
+ },
+ {
+  "ad": "sinir",
+  "baslik": "Sınır kuşağı",
+  "alt": "\"Sınır bir çizgi değil, bir yara izidir.\"",
+  "kat": "an"
+ },
+ {
+  "ad": "ateist_koy",
+  "baslik": "Ateist sınır köyü",
+  "alt": "Sayımın gölgesinde yaşayanlar",
+  "kat": "an"
+ },
+ {
+  "ad": "asa",
+  "baslik": "Talas’ın asası",
+  "alt": "Üstünde bir göz, içinde bir kıvrım",
+  "kat": "an"
+ },
+ {
+  "ad": "galeri",
+  "baslik": "Sergi Salonu",
+  "alt": "Yontur’un donmuş numuneleri",
+  "kat": "an"
+ },
+ {
+  "ad": "kurator",
+  "baslik": "Kürator",
+  "alt": "Koleksiyonun 1 numarası bir insandı",
+  "kat": "an"
+ },
+ {
+  "ad": "tablet",
+  "baslik": "Boğulanların Tableti",
+  "alt": "Dünyada üç tane — biri ekipten geçti",
+  "kat": "an"
+ },
+ {
+  "ad": "gumusler",
+  "baslik": "Adak gümüşleri",
+  "alt": "Yontur mühürlü — işaretli para",
+  "kat": "an"
+ },
+ {
+  "ad": "recine",
+  "baslik": "Koruyucu Reçine",
+  "alt": "Tapınaktan çıkan saklama yağı",
+  "kat": "an"
+ },
+ {
+  "ad": "ates",
+  "baslik": "Ateş dersi",
+  "alt": "On mülteciye kamp öğretildi",
+  "kat": "an"
+ },
+ {
+  "ad": "sarilma",
+  "baslik": "Kavuşma",
+  "alt": "Aya ve Neris, yıllar sonra",
+  "kat": "an"
+ },
+ {
+  "ad": "rituel",
+  "baslik": "Dolunay ritüeli",
+  "alt": "Bütün köy suya iner",
+  "kat": "an"
+ },
+ {
+  "ad": "felaket",
+  "baslik": "Delik dolunay",
+  "alt": "Ritüel felakete döndü",
+  "kat": "an"
+ },
+ {
+  "ad": "aya_kriz",
+  "baslik": "Ağdaki delikler",
+  "alt": "Aya krizi teniyle biliyor",
+  "kat": "an"
+ },
+ {
+  "ad": "kuzgun_agda",
+  "baslik": "Kuzgun ağda",
+  "alt": "Açıklık, teslimiyet — ona yabancı",
+  "kat": "an"
+ },
+ {
+  "ad": "scar",
+  "baslik": "Yara",
+  "alt": "Yutulan köy: çukur değil, yokluk",
+  "kat": "an"
+ },
+ {
+  "ad": "kaliplar",
+  "baslik": "Boşluk kalıpları",
+  "alt": "Ceset yok, kemik yok — kaldırılmışlar",
+  "kat": "an"
+ }
+]
