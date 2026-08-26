@@ -243,17 +243,11 @@
 
 <header class="top"><div class="wrap topbar">
   <div>
-    <h1>Altıdünya: Yarılma — Karakter Yöneticisi</h1>
-    <p>Karya · Aya · Kuzgun — otomatik hesaplama + level up sihirbazı (3→10)
+    <h1>Altıdünya: Yarılma — Karakter Yöneticisi
       <span id="verBadge" style="margin-left:8px;border:1px solid var(--gold-dim);border-radius:4px;
-        padding:1px 7px;font-size:11px;color:var(--gold)"></span></p>
+        padding:1px 7px;font-size:11px;color:var(--gold);vertical-align:middle"></span></h1>
   </div>
-  <div class="tools">
-    <button class="ghost" onclick="disaAktar()">↓ Yedek al</button>
-    <button class="ghost" onclick="iceAktar()">↑ Yedek yükle</button>
-    <button class="ghost" onclick="window.print()">🖨 Yazdır</button>
-    <button class="ghost" onclick="sifirla()">⟲ Sıfırla</button>
-  </div>
+  <div class="tools"></div>
 </div></header>
 
 <div class="wrap">
@@ -264,8 +258,7 @@
 <div class="mask" id="mask"><div class="modal" id="modal"></div></div>
 
 <footer class="wrap">
-  Veriler tarayıcına kaydedilir (localStorage) — sekmeyi kapatsan da durur.
-  Başka bilgisayara taşımak için <b>Yedek al</b> kullan.<br>
+  Her değişiklik ortak deftere kaydedilir ve tüm cihazlarda görünür.<br>
   2024 (PHB'24) kural setine göre hazırlandı. Şüpheli bir satır görürsen kitaba bak — bu araç yardımcıdır, hakem değil.
 </footer>
 
@@ -1759,8 +1752,7 @@ function rozetCiz(){
     d.className = 'wrap';
     d.innerHTML = `<div class="warn" style="margin-bottom:14px">
       Yeni bir sürüm yüklendi (v${VERSIYON}) — eski kaydın uyumsuz olduğu için <b>güncel başlangıç verisi</b> yüklendi.
-      Eski kaydın saklandı.
-      <button class="ghost sm" style="margin-left:8px" onclick="eskiKaydiGeriYukle()">Eski kaydı geri yükle</button>
+      Eski kaydın saklandı (gerekirse DM kurtarır).
       <button class="ghost sm" onclick="this.parentElement.parentElement.remove()">Tamam</button>
     </div>`;
     document.getElementById('panes').before(d);
