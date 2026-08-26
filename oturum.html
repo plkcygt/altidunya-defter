@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S9 — Oturum Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{background:#12100e;color:#e8ded0;font-family:'IBM Plex Sans',system-ui,sans-serif;
+       font-size:14.5px;line-height:1.5;padding:1em;max-width:900px;margin:0 auto}
+  h1{font-family:'Spectral',serif;color:#c9a227;font-size:1.25em;text-align:center;letter-spacing:.06em}
+  .alt{text-align:center;color:#a3968a;font-size:.82em;margin-bottom:1em}
+  .sek{display:flex;gap:.3em;margin-bottom:1em;flex-wrap:wrap;justify-content:center}
+  .sek button{background:#1c1815;border:1px solid #3a322a;color:#a3968a;padding:.45em .9em;
+              border-radius:7px;cursor:pointer;font-size:.9em;font-family:inherit}
+  .sek button.on{background:#242019;color:#c9a227;border-color:#8a7434}
+  .bolum{display:none} .bolum.on{display:block}
+  h2{font-family:'Spectral',serif;color:#c9a227;font-size:1.05em;margin:1.1em 0 .4em;
+     border-bottom:1px solid #3a322a;padding-bottom:.25em}
+  .kart{background:#1c1815;border:1px solid #3a322a;border-radius:9px;padding:.75em .9em;margin-bottom:.6em}
+  .kart b{color:#d8c9a2}
+  .oku{font-family:'Spectral',serif;font-style:italic;color:#d8c9a2;background:#1c1815;
+       border-left:3px solid #8a7434;padding:.7em .9em;margin:.5em 0;border-radius:0 8px 8px 0}
+  .not{color:#a3968a;font-size:.86em}
+  table{width:100%;border-collapse:collapse;font-size:.88em;margin:.4em 0}
+  th,td{padding:.35em .45em;border-bottom:1px solid #3a322a;text-align:left}
+  th{color:#a3968a;font-size:.8em;letter-spacing:.06em}
+  .sb{background:#0f0d0b;border:1px solid #3a322a;border-radius:8px;padding:.7em .85em;margin-bottom:.6em}
+  .sb .ad{font-family:'Spectral',serif;color:#c9a227;font-size:1.02em;font-weight:700}
+  .sb .say{color:#a3968a;font-size:.85em;margin:.15em 0 .4em}
+  .sb ul{margin:.3em 0 .3em 1.1em;padding:0}
+  .sb li{margin:.15em 0}
+
+  /* Kaçış sayacı */
+  .pist{background:#1c1815;border:1px solid #3a322a;border-radius:10px;padding:.8em;margin-bottom:.7em}
+  .pul-satir{display:flex;align-items:center;gap:.5em;margin:.45em 0}
+  .pul-ad{width:5.2em;font-size:.85em;font-weight:600}
+  .bar{flex:1;height:26px;background:#0f0d0b;border:1px solid #3a322a;border-radius:5px;position:relative;overflow:hidden}
+  .dolgu{height:100%;transition:width .25s}
+  .deger{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+         font-family:'Spectral',serif;font-size:.9em;font-weight:700;text-shadow:0 1px 3px #000}
+  .mini{width:1.9em;height:1.9em;border-radius:5px;border:1px solid #3a322a;background:#242019;color:#e8ded0;cursor:pointer}
+  #tur-bilgi{text-align:center;font-family:'Spectral',serif;font-size:1.05em;color:#c9a227;margin:.5em 0}
+  #zar-sonuc{background:#0f0d0b;border:1px solid #3a322a;border-radius:8px;padding:.6em;
+             font-size:.88em;min-height:2.6em;margin-top:.5em}
+  .btn{background:#242019;border:1px solid #3a322a;color:#e8ded0;padding:.55em 1.1em;
+       border-radius:7px;cursor:pointer;font-family:inherit;font-size:.92em}
+  .btn.ana{background:#8a7434;border-color:#c9a227;color:#fff;font-weight:600}
+  .satir{display:flex;gap:.5em;flex-wrap:wrap;justify-content:center;margin-top:.6em}
+  .uyari{color:#e0a060} .iyi{color:#7da87b} .kotu{color:#c9776a}
+</style>
+</head>
+<body>
+  <h1>S9 — KANAL GECESİ VE KAÇIŞ</h1>
+  <p class="alt">DM paneli · masada bu ekrana bak</p>
+
+  <div class="sek">
+    <button class="on" data-b="akis">Akış</button>
+    <button data-b="kacis">Kaçış Sayacı</button>
+    <button data-b="dusman">Düşmanlar</button>
+    <button data-b="npc">NPC / Fitil</button>
+  </div>
+
+  <!-- ============ AKIŞ ============ -->
+  <div class="bolum on" id="b-akis">
+    <div class="kart"><b>Açılış borcu:</b> L4 duyurusu (HP + ASI/feat) · sonra sahne 1.</div>
+
+    <h2>1 · Akşam Sohbetleri <span class="not">~30 dk</span></h2>
+    <div class="oku">Akşam onu. Kaya kovuğunun ağzında ateş küçük tutulmuş — duman değil, kor. Heyetin eşyaları toplanmış; ölçüm bitmiş, yarın yola çıkılacak. Demre ateşin en dışında oturuyor, battaniyesine sarılı, gözleri alevde. Ve dördüncü uyku yerinde, bileklerinden bağlı, hiç konuşmadığınız bir çocuk: Cevdet. İp, sizin ipiniz değil — ama düğümü kimse çözmedi.</div>
+    <div class="kart">
+      • <b>Cevdet penceresi</b> — istek: doğru yapılanın işe yaradığını görmek · yara: 38 çentik · tik: "efendim" der, nefret eder.<br>
+      • <b>Erdal havucu</b> (Talas sorulursa; sorulmazsa kendi açar): <i>dolaşım listesi merkezde; Vrahin listede; listeye kimin baktığını kayıt odası bilir.</i><br>
+      • <b>Nöbet sırası masada belirlensin</b> — Demre son nöbeti ister (şafak baskını [S]).
+    </div>
+
+    <h2>2 · Kabus — Üç Perde <span class="not">~10 dk · Kuzgun uykuda</span></h2>
+    <div class="kart">
+      ① Taş koridor, duvarda kazınmış tanıdık işaret; parmakları kendiliğinden takip ediyor; kapıya <b>dışarıdan</b> bakıyor.<br>
+      ② Daha genç eller raftaki kitaba uzanıyor; okuduğu her satır okunduğu anda siliniyor; ensesinde bir nefes.<br>
+      ③ Yüzsüz kalabalık: "ölüm" / "çocuk daha" / "kural kuraldır" — hepsini kesen sakin bir ses; masada <b>boş bir kavanoz</b>; sakin sesin ağzı oynuyor, ses yok.<br>
+      <span class="not">Uyanış: avuçlarında mürekkep hissi. Gönüllü oynarsa → Inspiration.</span>
+    </div>
+
+    <h2>3 · Aya'nın Nöbeti <span class="not">~15 dk</span></h2>
+    <div class="kart">
+      ① <b>Bedava:</b> Demre'nin nefesi uyku ritminde değil; ağda uyuyan birinden aktif dikkat sızıyor.<br>
+      ② <b>Insight DC 13:</b> dışarı akan ince bir iplik — yön kuzeydoğu.<br>
+      ③ <b>Seçim:</b> kanala sessizce dokunmak (karşılıklı WIS) → <i>"...sayı doğru... ateş sönünce..."</i> · başarısızsa Demre fark eder, önce davranır.<br>
+      <span class="not">Zarsız yol: dudakların karanlıkta kıpırdadığını görür — uyandırmaya yeter.</span>
+    </div>
+
+    <h2>4 · İtiraf <span class="not">~20 dk</span></h2>
+    <div class="oku">Geç kaldınız. Haber gitti. Hem ateistler burada, hem Sergen'i öldürenler.</div>
+    <div class="kart">Ton korku değil <b>zafer</b>. Bilgiyi cömert ver: ~20 kişi · komutan <b>Karan</b> · gece baskını planıydı, yakalanınca bozuldu · şafakta gelirler.<br>
+      <span class="not">Kız sorulursa: yalanı sürdürür ya da acı bir gülüş. [S] Kızı hiç olmadı — bu gece açılmak zorunda değil.</span></div>
+
+    <h2>5 · Şafak Kararları <span class="not">~20 dk</span></h2>
+    <div class="oku">Şafak sökerken kuzeydoğu sırtında atlılar belirir — sayamayacağınız kadar; sayınca daha kötü: yirmi.</div>
+    <div class="kart">
+      <b>Kapasite:</b> 3 at = 3 PC · Süveyda (hayvan formu) = Erdal + Kavşat → <b>Demre ve Cevdet'e yer YOK.</b><br>
+      • Kavşat Cevdet'e yönelir: "İz bırakmayız." (ironiyi yüzünde oynat, söyleme)<br>
+      • Demre'yi öldürmenin <b>bilgi değeri kalmadı</b> — kalan tek soru ahlaki.<br>
+      <span class="not">Cevdet ata alınırsa: o at çift yük → kaçış zarına kalıcı −1.</span>
+    </div>
+
+    <h2>6 · Kaçış <span class="not">~45-60 dk → "Kaçış Sayacı" sekmesi</span></h2>
+    <div class="kart">Ekip sorarsa avantajlı pusu yeri (Survival DC 12 / Erdal-Süveyda bilir):<br>
+      • <b>Gelgit Boğazı</b> — atlar çamura saplanır, öncü yaya savaşır<br>
+      • <b>Batık İskele</b> — tek sıra: aynı anda en fazla 2 düşman temas eder<br>
+      • <b>Mangrov Boğazı</b> — Aya'nın Karanlığı çift etkili, menzilli saldırılar dezavantaj<br>
+      <span class="not">Pusu = sürpriz raundu. Öncü kırılırsa kaçış +3 adımla devam eder.</span></div>
+
+    <h2>7 · Perde</h2>
+    <div class="oku">Günlerdir "lanetli boşluk" denen çalılık çöküntüye varıyorsunuz — ve toprak önünüzde birden aşağı kıvrılıyor. Bir çanak. Ve çanağın dibinde, akşam ışığında: damlar, tarlalar, ince duman sütunları. Bir şehir. Kimsenin olmadığı yerde, iki bin kişilik bir şehir.</div>
+
+    <h2>Güvenlik</h2>
+    <div class="kart not">İhanet + iki savunmasız esir kararı. Oturum başında "bir dakika ara" normunu hatırlat. Gore düşük — kapasite matematiği yeter.</div>
+  </div>
+
+  <!-- ============ KAÇIŞ SAYACI ============ -->
+  <div class="bolum" id="b-kacis">
+    <div id="tur-bilgi">Tur 0 / 20</div>
+    <div class="pist">
+      <div class="pul-satir">
+        <span class="pul-ad" style="color:#c9a227">ÖNCÜ +2</span>
+        <div class="bar"><div class="dolgu" id="d-oncu" style="background:#8a7434"></div><span class="deger" id="v-oncu">5</span></div>
+        <button class="mini" onclick="elle('oncu',-1)">−</button><button class="mini" onclick="elle('oncu',1)">+</button>
+      </div>
+      <div class="pul-satir">
+        <span class="pul-ad" style="color:#b3542e">ORTA +0</span>
+        <div class="bar"><div class="dolgu" id="d-orta" style="background:#8a4030"></div><span class="deger" id="v-orta">5</span></div>
+        <button class="mini" onclick="elle('orta',-1)">−</button><button class="mini" onclick="elle('orta',1)">+</button>
+      </div>
+      <div class="pul-satir">
+        <span class="pul-ad" style="color:#8a9db3">AĞIR −2</span>
+        <div class="bar"><div class="dolgu" id="d-agir" style="background:#4a5766"></div><span class="deger" id="v-agir">5</span></div>
+        <button class="mini" onclick="elle('agir',-1)">−</button><button class="mini" onclick="elle('agir',1)">+</button>
+      </div>
+      <div class="satir">
+        <button class="btn ana" onclick="turAt()">🎲 Turu at</button>
+        <button class="btn" onclick="sifirla()">Yeni kaçış</button>
+      </div>
+      <div id="zar-sonuc" class="not">Ekip 5 adım önde. "Turu at" → ekip d20 · öncü d20+2 · orta d20 · ağır d20−2. Kazanan yönde fark ±1 değişir; eşitlik sabit.</div>
+    </div>
+    <div class="kart not">
+      <b>Yakalanma:</b> bir pul 0'a inerse ekip yerinde çakılır → savaş. Kalanlar sabit aralıkla girer:
+      <b>orta savaşın 5. raundu</b>, <b>ağırlar 10. raund.</b><br>
+      <b>20 tur dolarsa:</b> merkez menzili — Karan durur, tarif defterine bakar, ekibi bir kez süzer, geri döner.
+    </div>
+  </div>
+
+  <!-- ============ DÜŞMANLAR ============ -->
+  <div class="bolum" id="b-dusman">
+    <div class="kart"><b>Amaç öldürmek değil — tutmak.</b> Çavuş: "Beş raund tutun. Gövde geliyor."<br>
+      <b>Moral:</b> çavuş VE bir rahip düşerse kalanlar çekilir.<br>
+      <b>PC-ölmez:</b> 0 HP'ye düşeni bitirmezler — bağlamaya çalışırlar (esir tehdidi).</div>
+
+    <div class="sb"><div class="ad">⛨ Vadi Şifa Rahibi ×2 <span class="not">CR 1 · asıl hedef</span></div>
+      <div class="say">AC 15 · HP 27 · Hız 30 · Büyü DC 13 · Passive Perc 13</div>
+      <ul>
+        <li><b>Topuz</b> +4, 1d6+2 · <b>Sacred Flame</b> 60 ft, DEX save 13 → 2d8 radiant</li>
+        <li><b>Healing Word ×3</b> — BONUS, 60 ft: 2d4+3 (düşeni kaldırır)</li>
+        <li><b>Sanctuary</b> ×1 · <b>Shield of Faith</b> ×1 (+2 AC) · <b>Bless</b> ×1</li>
+        <li class="not">Taktik: 20-30 ft geride. Bless → düşeni kaldır → kendine Sanctuary. Rahipler düşmeden birlik düşmez.</li>
+      </ul></div>
+
+    <div class="sb"><div class="ad">🛡 Genç Paladin ×2 <span class="not">CR 1 · ön duvar</span></div>
+      <div class="say">AC 18 (kalkan) · HP 30 · Hız 30</div>
+      <ul>
+        <li><b>Uzun kılıç</b> +5, 1d8+3 · <b>Kalkan itişi:</b> STR save 13 → prone + 5 ft geri</li>
+        <li><b>Lay on Hands</b> (havuz 10) — bonus aksiyon, 5 HP</li>
+        <li><b>Fırsat saldırısı</b> — kaçmaya çalışanı vurur ⚠</li>
+        <li class="not">Taktik: en zayıfın önünü keser; öldürmeye değil TUTMAYA oynar.</li>
+      </ul></div>
+
+    <div class="sb"><div class="ad">🏹 Ağcı İzci ×1 <span class="not">CR ½ · atları hedefler</span></div>
+      <div class="say">AC 13 · HP 18 · Stealth +4</div>
+      <ul>
+        <li><b>Ağ</b> (5/15 ft): isabet → RESTRAINED · kurtulma: aksiyon + STR DC 10 ya da ağa 5 kesme hasarı. 2 ağı var.</li>
+        <li><b>Hafif arbalet</b> +4, 1d8+2, 80/320 (turda 1 atış)</li>
+        <li class="not">Önce atları, sonra en hızlı PC'yi ağlar. Yakın dövüşe girmez.</li>
+      </ul></div>
+
+    <div class="sb"><div class="ad">⚔ Çavuş ×1 <span class="not">CR 2 · moral çapası</span></div>
+      <div class="say">AC 16 · HP 45 · Save STR +5, CON +5</div>
+      <ul>
+        <li><b>Çoklu saldırı:</b> 2× mızrak +5, 1d6+3</li>
+        <li><b>Komut</b> (1/savaş): müttefiklere +1d4 saldırı, o tur korkutulamazlar</li>
+        <li><b>Koruyucu Adım</b> (reaksiyon): yanındaki müttefiğe gelen saldırıyı üstüne çeker</li>
+        <li class="not">Düşerse moral testi. Toplam düşman HP ≈ 165 → ~4-5 raund; moral genelde 3. raundda kırılır.</li>
+      </ul></div>
+
+    <div class="kart"><b>Ölçekleme:</b> parti eziyorsa orta gövdeyi 3. raundda getir · parti çöküyorsa ağcı ok atsın, moral 2 kayıpta kırılsın.<br>
+      <b>Ödül (1 raundluk yağma):</b> 2 Şifa İksiri · Sezgir nişanları · 2 ağ · 2 zincir gömlek (50g).</div>
+  </div>
+
+  <!-- ============ NPC / FİTİL ============ -->
+  <div class="bolum" id="b-npc">
+    <h2>NPC masası <span class="not">istek / yara / tik</span></h2>
+    <table>
+      <tr><th>Kim</th><th>İstek</th><th>Yara</th><th>Tik</th></tr>
+      <tr><td><b>Demre</b> [S: ajan]</td><td>Görevi bitir, hayatta kal</td><td>Ölülerine yetişemedi (gerçek yas)</td><td>Öfkelenince sesi alçalır</td></tr>
+      <tr><td><b>Cevdet</b></td><td>Doğrunun işe yaradığını görmek</td><td>38 çentik</td><td>"Efendim" der, nefret eder</td></tr>
+      <tr><td><b>Erdal</b></td><td>Kayıt tutmak</td><td>Dolunay davasının kâtibi</td><td>Yalanı düzeltmez, not alır</td></tr>
+      <tr><td><b>Süveyda</b></td><td>Dengeyi kendi bulmak</td><td>Dağ'ı bırakışı [açık]</td><td>Beş saniye bekleyip cevaplar</td></tr>
+      <tr><td><b>Kavşat</b></td><td>Ekibi hayatta tutmak</td><td>Eleme günü [S]</td><td>Sevgi dili: önüne yemek koymak</td></tr>
+      <tr><td><b>Karan</b> (uzak)</td><td>Faili götürmek</td><td>Sergen onun yetiştirmesiydi</td><td>Eldivenini düzeltir, emri sayıyla verir</td></tr>
+    </table>
+    <div class="kart not">Karan sahada <b>dövüşmez, sağ kalır.</b> Uzaktan izler; çekilirken ekibi bir kez süzer — artık yüzleri ve yönü biliyor.</div>
+
+    <h2>Fitil rafı</h2>
+    <div class="kart">
+      ① <b>Sergen'in yüzüğü</b> — asayiş rütbe yüzüğü: kılık/otorite blöfü için hazır koz.<br>
+      ② <b>Cevdet ata alınırsa</b> — çift yük: kaçış zarına kalıcı −1.<br>
+      ③ <b>Aya dokunuşta yakalanırsa</b> — Demre önce çığlık atar: kanıtsız sosyal kaos.
+    </div>
+
+    <h2>Sırlar <span class="not">teslimat-bağımsız; açılmayan devreder</span></h2>
+    <div class="kart not">
+      1. Demre Sezgir ağının ajanı · 2. Kızı hiç olmadı · 3. Müfrezede Sular'lı "Kanal" var (Tuna) ·
+      4. Karan, Sergen'in üstüydü; Sergen onun yetiştirmesi · 5. Öncünün emri öldürmek değil oyalamak ·
+      6. Karan merkez menziline asla girmez · 7. Kabustaki üç görüntü gerçek anı · 8. Talas'ın dolaşım listesi merkez kayıt odasında ·
+      9. Heyetin ölçümü bitmişti, dönüş zaten yarındı · 10. Cevdet'in statüsü hâlâ kimsenin kararı değil.
+    </div>
+  </div>
+
+<script>
+document.querySelectorAll('.sek button').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.sek button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.bolum').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('b'+'-'+b.dataset.b).classList.add('on');
+  };
+});
+
+/* --- Kaçış sayacı --- */
+const MOD = {oncu:2, orta:0, agir:-2};
+let fark = {oncu:5, orta:5, agir:5}, tur = 0, bitti = false;
+try{ const s = localStorage.getItem('s9_kacis'); if(s){ const o=JSON.parse(s); fark=o.fark; tur=o.tur; bitti=o.bitti; } }catch(e){}
+
+function kaydet(){ try{ localStorage.setItem('s9_kacis', JSON.stringify({fark,tur,bitti})); }catch(e){} }
+function ciz(){
+  for(const k of ['oncu','orta','agir']){
+    const v = fark[k];
+    document.getElementById('v-'+k).textContent = v<=0 ? 'YETİŞTİ' : v;
+    document.getElementById('d-'+k).style.width = Math.max(0, Math.min(100, v*5)) + '%';
+  }
+  document.getElementById('tur-bilgi').textContent = 'Tur ' + tur + ' / 20';
+  kaydet();
+}
+function elle(k, d){ fark[k] = Math.max(0, Math.min(20, fark[k]+d)); ciz(); }
+function d20(){ return 1 + Math.floor(Math.random()*20); }
+
+function turAt(){
+  if(bitti){ document.getElementById('zar-sonuc').innerHTML = '<span class="uyari">Kaçış bitti — "Yeni kaçış" ile sıfırla.</span>'; return; }
+  if(tur >= 20){ bitti = true; document.getElementById('zar-sonuc').innerHTML = '<b class="iyi">20 TUR DOLDU — KAÇTINIZ.</b><br><span class="not">Karan merkez menziline girmez: durur, tarif defterine bakar, ekibi bir kez süzer, geri döner.</span>'; ciz(); return; }
+  tur++;
+  const e = d20();
+  let sat = '<b>Tur ' + tur + '</b> — ekip <b>' + e + '</b><br>';
+  let yakalayan = null;
+  for(const k of ['oncu','orta','agir']){
+    if(fark[k] <= 0) continue;
+    const ham = d20(), top = ham + MOD[k];
+    let deg = 0;
+    if(e > top) deg = 1; else if(e < top) deg = -1;
+    fark[k] = Math.max(0, Math.min(20, fark[k] + deg));
+    const ad = k==='oncu'?'Öncü':k==='orta'?'Orta':'Ağır';
+    sat += ad + ': ' + ham + (MOD[k]?(MOD[k]>0?'+2':'−2'):'') + ' = <b>' + top + '</b> → ' +
+           (deg>0?'<span class="iyi">fark açıldı</span>':deg<0?'<span class="kotu">fark kapandı</span>':'sabit') +
+           ' (' + (fark[k]<=0?'YETİŞTİ!':fark[k]) + ')<br>';
+    if(fark[k] <= 0 && !yakalayan) yakalayan = ad;
+  }
+  if(yakalayan){
+    bitti = true;
+    sat += '<br><b class="kotu">⚔ ' + yakalayan + ' YETİŞTİ — savaş başlıyor.</b><br><span class="not">Ekip yerinde çakılır. Orta gövde savaşın 5. raundunda, ağırlar 10. raundunda girer.</span>';
+  } else if(tur >= 20){
+    bitti = true;
+    sat += '<br><b class="iyi">🏁 20 tur doldu — KAÇTINIZ.</b>';
+  }
+  document.getElementById('zar-sonuc').innerHTML = sat;
+  ciz();
+}
+function sifirla(){ fark={oncu:5,orta:5,agir:5}; tur=0; bitti=false;
+  document.getElementById('zar-sonuc').innerHTML = '<span class="not">Yeni kaçış: ekip 5 adım önde.</span>'; ciz(); }
+ciz();
+</script>
+</body>
+</html>

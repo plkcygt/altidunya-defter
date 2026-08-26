@@ -102,7 +102,7 @@
     const rb = $('#role-badge');
     rb.textContent = role==='dm' ? 'DM' : 'Oyuncu';
     rb.className = role==='dm' ? 'dm' : '';
-    if(role==='dm') $('#tab-dm').classList.remove('hidden');
+    if(role==='dm'){ $('#tab-dm').classList.remove('hidden'); $('#tab-oturum').classList.remove('hidden'); }
 
     async function guvenliYukle(key, seed){
       if(S.mode!=='supabase'){
@@ -172,7 +172,7 @@
     t.addEventListener('click', ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      ['karakterler','harita','dunya','kasa','notlar','dm'].forEach(p=>$('#pane-'+p).classList.add('hidden'));
+      ['karakterler','harita','dunya','oturum','kasa','notlar','dm'].forEach(p=>$('#pane-'+p).classList.add('hidden'));
       const fr2 = $('#pane-'+t.dataset.tab+' iframe.tab-frame');
       if(fr2 && !fr2.src) fr2.src = fr2.dataset.src;   // sekme ilk açılınca yükle
       $('#pane-'+t.dataset.tab).classList.remove('hidden');

@@ -1,7 +1,7 @@
 /* Altıdünya Parti Defteri — tohum verisi (S8 sonu, STATE.md'den)
    Eşya detayları: 5e 2024 kuralları + ev kuralları (universe/kurallar.md) */
 window.ALT_SEED = {
-  surum: 3,   // 2026-08-26: canlı buluttan eşitlendi
+  surum: 4,   // 2026-08-26: canlı buluttan eşitlendi
 
   parti: {
     "kasa": {
@@ -63,12 +63,13 @@ window.ALT_SEED = {
         "etiket": "onemli"
       },
       {
-        "ad": "Hafif Arbalet",
+        "ad": "Hafif Arbalet(Sezgir spiral damgalı)",
         "id": "arbalet",
         "tip": "detay",
         "adet": 6,
         "detay": "<b>1d8 delici</b> · menzil 80/320 ft · iki el.<br>• <b>Loading:</b> ne kadar saldırın olursa olsun turda <b>en fazla 1 atış</b> (doldurma yavaş).<br>• <b>Ammunition:</b> ok (bolt) gerekir; savaştan sonra okların yarısı geri toplanır.<br>Beş adet — müttefik silahlandırmak ya da satmak (tanesi ~25 gümüş) için.",
-        "etiket": ""
+        "gizli": false,
+        "etiket": "riskli"
       },
       {
         "ad": "Ağ",
@@ -104,13 +105,13 @@ window.ALT_SEED = {
         "etiket": ""
       },
       {
-        "ad": "Sergen'in Yüzüğü",
+        "ad": "Sergen'in Yüzüğü(Sezgir spiral damgalı)",
         "id": "oz1787755877440",
         "tip": "detay",
         "adet": 1,
         "detay": "Sezgir sayım asayiş ekibinde erlerin bir üstünün taktığı rütbe yüzüğü",
         "gizli": false,
-        "etiket": ""
+        "etiket": "riskli"
       },
       {
         "ad": "Kalkan (Sezgir spiral damgalı)",
@@ -119,7 +120,7 @@ window.ALT_SEED = {
         "adet": 6,
         "detay": "<br><b>Değer: 10 gümüş<b>",
         "gizli": false,
-        "etiket": ""
+        "etiket": "riskli"
       },
       {
         "ad": "Çakır'ın Annesine Mektubu",
@@ -137,10 +138,10 @@ window.ALT_SEED = {
         "adet": 1,
         "detay": "Çıraklarım, Tanrıların adımları yaklaşıyor. Beni izliyor. Yanınızda kalamam. Bu yüzden gitmeliyim. <br>\nYutulan köye gidin. Sular'ın güney kıyısı. Görün. Anlamaya çalışın. KONUŞMAYIN. Soru sormayın. Sadece tanık olun.<br>\nOrada işiniz bittiğinde sizi bulurum. Gelmezsem ikinci mektuba bakın.<br> \nAçamazsanız ya da beni bulamazsanız dünyanın merkezine gidin. <br> \nOnlar beni bulmanıza yardım eder.<br> \nBirbirinizden ayrılmayın. Ayrı düşmüş bir zincir kırılmıştır.<br> <br> \nSevgiyle, ve özürle,<br> \nT.",
         "gizli": false,
-        "etiket": ""
+        "etiket": "onemli"
       }
     ],
-    "kasa_notu": "Kesedeki gümüşün büyük kısmı Yontur mührü taşıyor — Orman tapınağının adak parası. Bilen bir göz görürse soru sorar; önce temiz sikkeleri harcayın. · 1 altın = 10 gümüş = 100 bakır · Şifa iksiri ≈ 50 gümüş"
+    "kasa_notu": "Kesedeki gümüşün büyük kısmı Yontur mührü taşıyor, Orman tapınağının adak parası<br>· 1 altın = 10 gümüş = 100 bakır <br>· Şifa iksiri ≈ 50 gümüş"
   },
 
   /* Dükkân kataloğu — DM envantere ekler; fiyatlar kurallar.md (gp = gümüş) */
