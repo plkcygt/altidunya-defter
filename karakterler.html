@@ -817,59 +817,148 @@ function saldirilar(k){
       S.push({ad:'✨ Guided Strike', menzil:'Channel Divinity', isabet:'+10', hasar:'—',
         not:`Attack roll'unu attıktan sonra, sonucu öğrenmeden <b>+10 ekle</b>. <b>Channel Divinity havuzundan harcar (${L>=6?3:2}/rest)</b> — Divine Spark ve Turn Undead ile <b>aynı havuz</b>. Short rest'te 1, long rest'te hepsi yenilenir.`});
     }
-    S.push({ad:'Sacred Flame (cantrip)', menzil:'60 ft', isabet:`DEX save ${buyuDC(k)}`, hasar:'1d8 radiant',
-      not:'Attack roll yok — hedef save atar. <b>Cover işe yaramaz.</b>'});
-    if((k.buyuler||[]).some(b=>b.toLowerCase().includes('spiritual weapon')))
-      S.push({ad:'👻 Spiritual Weapon', menzil:'60 ft', isabet:isaret(buyuAtk(k)), hasar:`1d8${isaret(d('WIS'))} force`,
-        not:'<b>Bonus action</b> ile hareket ettir + saldır. Konsantrasyon gerekmez (2024: gerekir).'});
   }
   return S;
 }
 
-/* ============ AKSİYON GRUPLAMA ============ */
-function buyuAksiyonAdlari(k, tip){
-  const tum = [].concat(k.cantripler||[], k.buyuler||[]);
-  if(k.sinif==='cleric' && k.altsinifId && typeof DOMAIN_SPELLS!=='undefined')
-    (DOMAIN_SPELLS[k.altsinifId]||[]).forEach(b=>tum.push(b));
-  const ads = [];
-  tum.forEach(b=>{
-    const info = SPELL_INFO[spellAnahtar(b)] || '';
-    if(info.indexOf(tip)!==-1){
-      const ad = b.replace(/^\[\d\]\s*/,'').split(' — ')[0];
-      if(ads.indexOf(ad)===-1) ads.push(ad);
-    }
+/* ============ AKSİYON GRUPLAMA v4 (alt-sekmeli) ============ */
+function buyuKayitlari(k){
+  const ham = [];
+  (k.cantripler||[]).forEach(x=>ham.push({raw:x, lv:'C'}));
+  (k.buyuler||[]).forEach(x=>{ const m=x.match(/^\[(\d)\]/); ham.push({raw:x, lv:m?m[1]:'1'}); });
+  if(k.sinif==='cleric' && k.altsinifId && typeof DOMAIN_SPELLS!=='undefined'){
+    const maxLv = (TAM_CASTER[k.seviye]||[]).length;
+    (DOMAIN_SPELLS[k.altsinifId]||[]).forEach(x=>{
+      const m=x.match(/^\[(\d)\]/); const l=m?parseInt(m[1]):1;
+      if(l<=maxLv) ham.push({raw:x, lv:''+l, domain:true});
+    });
+  }
+  const gorulen = {};
+  const out = [];
+  ham.forEach(h=>{
+    const ad = h.raw.replace(/^\[\d\]\s*/,'');
+    const anah = spellAnahtar(h.raw);
+    if(gorulen[anah]) return; gorulen[anah]=1;
+    let info = SPELL_INFO[anah] || '';
+    info = spellDetay ? (spellDetay(h.raw,k)||info) : info;
+    let vakit = 'action';
+    if(info.indexOf('BONUS ACTION')!==-1) vakit='bonus';
+    else if(info.indexOf('REACTION')!==-1) vakit='reaction';
+    const uzun = /^(1 dakika|10 dakika|Ritual|1 saat)/.test(info);
+    out.push({ad, lv:h.lv, info, vakit, uzun, domain:h.domain});
   });
-  return ads;
+  return out;
 }
+
+function aksSatir(a){
+  return `<div class="atk"><div class="atk-ust"><span class="atk-ad">${a.ad}</span><span class="atk-say"><b>${a.isabet||''}</b> <i>${a.hasar||''}</i></span></div><div class="note">${a.menzil?a.menzil+' · ':''}${a.not||''}</div></div>`;
+}
+function aksBuyuSatir(s){
+  return `<div class="atk"><div class="atk-ust"><span class="atk-ad">${s.domain?'◈ ':''}${s.ad}</span><span class="atk-say"><i>${s.lv==='C'?'cantrip':'seviye '+s.lv}${s.uzun?' · savaş dışı':''}</i></span></div><div class="note">${s.info}</div></div>`;
+}
+
+function aksTab(btn, hedefId){
+  const kutu = btn.closest('.aks-bolum');
+  kutu.querySelectorAll('.aks-icerik').forEach(d=>{ d.style.display = (d.id===hedefId && d.style.display!=='block') ? 'block' : 'none'; });
+  kutu.querySelectorAll('.aks-chip').forEach(c=>{ c.style.color='#a3968a'; c.style.borderColor='var(--line)'; });
+  const acik = kutu.querySelector('#'+hedefId);
+  if(acik && acik.style.display==='block'){ btn.style.color='#c9a227'; btn.style.borderColor='#8a7434'; }
+}
+
 function aksiyonlarHTML(k, id){
-  const TUR = a => /Flurry|Steady Aim|War Priest|Spiritual/.test(a.ad) ? 'bonus'
+  const L = k.seviye, pb = profBonus(L), d = st => mod(k.scores[st]);
+  const TUR = a => /Flurry|Steady Aim|War Priest/.test(a.ad) ? 'bonus'
              : /Deflect/.test(a.ad) ? 'reaction'
              : /Sneak|Cunning Strike|Stunning|Guided/.test(a.ad) ? 'ek' : 'action';
-  const g = {action:[],bonus:[],reaction:[],ek:[]};
-  saldirilar(k).forEach(a=>g[TUR(a)].push(a));
-  const L = k.seviye;
-  if(k.sinif==='rogue' && L>=2) g.bonus.push({ad:'⚡ Cunning Action',menzil:'Bonus action',isabet:'—',hasar:'—',
-    not:'Her tur bedava: <b>Dash / Disengage / Hide</b>\'dan biri. Rogue\'un can damarı.'});
-  if(k.sinif==='rogue' && L>=3) g.bonus.push({ad:'🖐 Mage Hand Legerdemain',menzil:'30 ft',isabet:'—',hasar:'—',
-    not:'Görünmez Mage Hand\'i <b>bonus action</b> ile yönet — uzaktan cep karıştırma / kilit / trap (Sleight of Hand ile).'});
-  if(k.sinif==='monk' && L>=2){
-    g.bonus.push({ad:'🌫 Patient Defense',menzil:'Bonus action',isabet:'—',hasar:'—',
-      not:'Bedava: <b>Disengage</b>. <b>1 Focus:</b> Disengage + <b>Dodge</b> (sana saldırılar disadvantage).'});
-    g.bonus.push({ad:'💨 Step of the Wind',menzil:'Bonus action',isabet:'—',hasar:'—',
-      not:'Bedava: <b>Dash</b>. <b>1 Focus:</b> Dash + Disengage + zıplama mesafen ×2.'});
+  const silah=[], bonusSinif=[], reaction=[], ek=[];
+  saldirilar(k).forEach(a=>{
+    const tr=TUR(a);
+    if(tr==='action') silah.push(a);
+    else if(tr==='bonus') bonusSinif.push(a);
+    else if(tr==='reaction') reaction.push(a);
+    else ek.push(a);
+  });
+
+  /* Sınıf güçleri — ACTION */
+  const actionSinif = [];
+  if(k.sinif==='cleric' && L>=2){
+    actionSinif.push({ad:'☀ Divine Spark', menzil:'30 ft', isabet:`CON save ${buyuDC(k)}`, hasar:`${Math.ceil(L/6)}d8`,
+      not:`<b>Channel Divinity harcar.</b> Seç: bir dosta <b>${Math.ceil(L/6)}d8 + ${d('WIS')} iyileşme</b> YA DA bir düşmana save; fail → <b>${Math.ceil(L/6)}d8 radiant/necrotic</b> (başarı yarısı).`});
+    actionSinif.push({ad:'✝ Turn Undead', menzil:'30 ft', isabet:`WIS save ${buyuDC(k)}`, hasar:'—',
+      not:'<b>Channel Divinity harcar.</b> Gören her undead save atar; fail → 1 dk <b>Frightened + Incapacitated</b>, senden kaçar (hasar alırsa biter).'});
+    if(L>=3 && (k.ozelYetenekler||[]).some(o=>o.ad.includes('Kefe')))
+      actionSinif.push({ad:'◆ Yargın\'ın Kefesi', menzil:'60 ft · 2 hedef', isabet:`CON save ${buyuDC(k)} (istemeyen)`, hasar:'—',
+        not:'<b>Action · 2. seviye slot · 1/long rest.</b> İki canlının güncel HP\'si toplanır, eşit bölünür (max aşılmaz, taşan öbüründe kalır; kimse 0\'a inmez). <b>Bedel: dinlenene dek tüm save\'lerin dezavantajlı.</b>'});
   }
-  const bB = buyuAksiyonAdlari(k,'BONUS ACTION'), rB = buyuAksiyonAdlari(k,'REACTION');
-  const sat = a => `<div class="atk"><div class="atk-ust"><span class="atk-ad">${a.ad}</span><span class="atk-say"><b>${a.isabet}</b> <i>${a.hasar}</i></span></div><div class="note">${a.menzil} · ${a.not}</div></div>`;
-  const baslik = (ad,renk) => `<div style="margin:12px 0 5px;font-size:11px;font-weight:700;letter-spacing:.16em;color:${renk};border-bottom:1px solid var(--line);padding-bottom:4px">${ad}</div>`;
-  let h = '<div class="card"><h3>Aksiyonlar <span class="note" style="text-transform:none;letter-spacing:0">her tur: 1 Action + 1 Bonus + hareket · 1 Reaction (tur dışı)</span></h3>';
-  h += baslik('⏺ ACTION','#c9a227') + g.action.map(sat).join('') +
-       `<div class="note" style="margin-top:6px">Genel: <b>Dash</b> (hız ×2) · <b>Disengage</b> (fırsat saldırısı tetiklemezsin) · <b>Dodge</b> (sana saldırılar disadvantage) · <b>Help</b> · <b>Hide</b> · <b>Ready</b> · <b>Search</b> · <b>Utilize</b> (eşya kullan)</div>`;
-  h += baslik('⏩ BONUS ACTION','#7da87b') + g.bonus.map(sat).join('') +
-       `<div class="note" style="margin-top:6px">Genel: <b>şifa iksirini kendine içmek</b> (2024 kuralı)${bB.length?` · Büyülerinden: <b>${bB.join(' · ')}</b>`:''}</div>`;
-  h += baslik('↩ REACTION','#8a9db3') + g.reaction.map(sat).join('') +
-       `<div class="note" style="margin-top:6px">Genel: <b>Opportunity Attack</b> — menzilinden çıkan düşmana 1 melee saldırı${rB.length?` · Büyülerinden: <b>${rB.join(' · ')}</b>`:''}</div>`;
-  if(g.ek.length) h += baslik('✦ VURUŞA BAĞLI / ANLIK','#a3968a') + g.ek.map(sat).join('');
-  return h + '</div>';
+  if(k.sinif==='monk' && L>=3){
+    actionSinif.push({ad:'🌑 Shadow Arts — Darkness', menzil:'60 ft · 15 ft küre', isabet:'—', hasar:'—',
+      not:'<b>Action · 1 Focus (slot gerekmez).</b> Büyülü karanlık: içini <b>yalnız SEN görürsün</b> — içeriden avantajlı saldırır, düşmanları kör bırakırsın. Concentration 10 dk. Ayrıca Minor Illusion cantrip\'in var (Shadow Arts hediyesi).'});
+  }
+  if(k.sinif==='rogue' && L>=1){
+    actionSinif.push({ad:'🗝 Hızlı Eller (Sleight of Hand)', menzil:'—', isabet:isaret(pb*((k.skills['Sleight of Hand'])||0)+d('DEX')), hasar:'—',
+      not:'Cep karıştırma, eşya yürütme, kilit/trap işleri Action ile — Mage Hand Legerdemain varsa uzaktan ve görünmez (bonus action, aşağıda).'});
+  }
+
+  /* Bonus sınıf ekleri */
+  if(k.sinif==='monk'){
+    bonusSinif.unshift({ad:'👊 Bonus Unarmed Strike', menzil:'5 ft', isabet:isaret(pb+d('DEX')), hasar:`1${sanatZari(L)}${isaret(d('DEX'))}`,
+      not:'<b>Bedava, her tur</b> (Martial Arts) — Attack action aldıysan bonus action ile bir yumruk daha.'});
+    if(L>=2){
+      bonusSinif.push({ad:'🌫 Patient Defense', menzil:'Bonus action', isabet:'—', hasar:'—', not:'Bedava: <b>Disengage</b>. <b>1 Focus:</b> Disengage + <b>Dodge</b>.'});
+      bonusSinif.push({ad:'💨 Step of the Wind', menzil:'Bonus action', isabet:'—', hasar:'—', not:'Bedava: <b>Dash</b>. <b>1 Focus:</b> Dash + Disengage + zıplama ×2.'});
+    }
+  }
+  if(k.sinif==='rogue' && L>=2) bonusSinif.push({ad:'⚡ Cunning Action', menzil:'Bonus action', isabet:'—', hasar:'—',
+    not:'Her tur bedava: <b>Dash / Disengage / Hide</b>\'dan biri.'});
+  if(k.sinif==='rogue' && L>=3) bonusSinif.push({ad:'🖐 Mage Hand Legerdemain', menzil:'30 ft', isabet:'—', hasar:'—',
+    not:'Görünmez Mage Hand\'i <b>bonus action</b> ile yönet — uzaktan çalma/kilit/trap (Sleight of Hand).'});
+
+  /* Büyüler vakte göre */
+  const B = buyuKayitlari(k);
+  const aBuyu = B.filter(s=>s.vakit==='action');
+  const bBuyu = B.filter(s=>s.vakit==='bonus');
+  const rBuyu = B.filter(s=>s.vakit==='reaction');
+
+  const GENEL_A = `<div class="note"><b>Dash</b> — hızın kadar ekstra hareket · <b>Disengage</b> — bu tur fırsat saldırısı tetiklemezsin · <b>Dodge</b> — sıradaki turuna dek sana saldırılar disadvantage · <b>Help</b> — bir dosta yardım: sıradaki check/saldırısı advantage · <b>Hide</b> — Stealth check ile gizlen · <b>Ready</b> — "şu olursa şunu yaparım" (reaction\'ını kullanır) · <b>Search</b> — aktif arama (Perception/Investigation) · <b>Utilize</b> — bir eşyayı kullan · <b>Grapple/Shove</b> — Unarmed Strike yerine: tut ya da it (STR/DEX save ${8+pb+d('STR')})</div>`;
+  const GENEL_B = `<div class="note"><b>Şifa iksirini kendine içmek</b> = bonus action (2024). Başkasına içirmek = Action.</div>`;
+  const GENEL_R = `<div class="note"><b>Opportunity Attack</b> — menzilinden ayrılan düşmana 1 melee saldırı. Turda 1 reaction\'ın var; harcarsan (Deflect, Shield, fırsat saldırısı…) sıradaki turuna dek yenisi yok.</div>`;
+
+  const chip = (bolum, gid, etiket, sayi, acik) =>
+    `<span class="aks-chip" onclick="aksTab(this,'${gid}')" style="display:inline-block;margin:6px 6px 0 0;padding:3px 11px;border:1px solid ${acik?'#8a7434':'var(--line)'};border-radius:12px;font-size:11px;cursor:pointer;color:${acik?'#c9a227':'#a3968a'};user-select:none">${etiket}${sayi?` <b>${sayi}</b>`:''}</span>`;
+  const icerik = (gid, html, acik) => `<div class="aks-icerik" id="${gid}" style="display:${acik?'block':'none'};margin-top:6px">${html||'<div class=note>—</div>'}</div>`;
+  const bolumBaslik = (ad, renk, alt) => `<div style="margin:14px 0 2px;font-size:11px;font-weight:700;letter-spacing:.16em;color:${renk};border-bottom:1px solid var(--line);padding-bottom:4px">${ad}${alt?` <span style="font-weight:400;letter-spacing:0;text-transform:none;color:#a3968a">· ${alt}</span>`:''}</div>`;
+
+  let h = `<div class="card"><h3>Aksiyonlar <span class="note" style="text-transform:none;letter-spacing:0">her tur: 1 Action + 1 Bonus Action + hareket · turda 1 Reaction</span></h3>`;
+
+  h += `<div class="aks-bolum">` + bolumBaslik('⏺ ACTION','#c9a227');
+  h += chip('a', `akx-${id}-a1`, '⚔ Silahlar', silah.length, true)
+     + (aBuyu.length? chip('a', `akx-${id}-a2`, '✦ Büyüler', aBuyu.length, false):'')
+     + (actionSinif.length? chip('a', `akx-${id}-a3`, '★ Sınıf Güçleri', actionSinif.length, false):'')
+     + chip('a', `akx-${id}-a4`, '☰ Genel', '', false);
+  h += icerik(`akx-${id}-a1`, silah.map(aksSatir).join(''), true)
+     + icerik(`akx-${id}-a2`, aBuyu.map(aksBuyuSatir).join(''), false)
+     + icerik(`akx-${id}-a3`, actionSinif.map(aksSatir).join(''), false)
+     + icerik(`akx-${id}-a4`, GENEL_A, false);
+  h += `</div>`;
+
+  h += `<div class="aks-bolum">` + bolumBaslik('⏩ BONUS ACTION','#7da87b');
+  h += (bonusSinif.length? chip('b', `akx-${id}-b1`, '★ Sınıf Güçleri', bonusSinif.length, true):'')
+     + (bBuyu.length? chip('b', `akx-${id}-b2`, '✦ Büyüler', bBuyu.length, false):'')
+     + chip('b', `akx-${id}-b3`, '☰ Genel', '', false);
+  h += icerik(`akx-${id}-b1`, bonusSinif.map(aksSatir).join(''), bonusSinif.length>0)
+     + icerik(`akx-${id}-b2`, bBuyu.map(aksBuyuSatir).join(''), false)
+     + icerik(`akx-${id}-b3`, GENEL_B, false);
+  h += `</div>`;
+
+  h += `<div class="aks-bolum">` + bolumBaslik('↩ REACTION','#8a9db3');
+  const rList = reaction.map(aksSatir).join('') + rBuyu.map(aksBuyuSatir).join('') + GENEL_R;
+  h += `<div style="margin-top:4px">${rList}</div></div>`;
+
+  if(ek.length){
+    h += bolumBaslik('✦ ANLIK','#a3968a','aksiyon HARCAMAZ — zar/vuruş anında araya girer');
+    h += ek.map(aksSatir).join('');
+  }
+  return h + `</div>`;
 }
 
 /* ============ ARAYÜZ ============ */
