@@ -1,23 +1,5 @@
-/* =========================================================
-   Altıdünya Parti Defteri — YAPILANDIRMA ÖRNEĞİ
-   Bu dosyayı "config.js" adıyla KOPYALA ve değerleri doldur.
-   config.js repoya GİRMEZ (.gitignore'da) — anahtarlar gizli kalır.
-   =========================================================
-
-   İKİ MOD:
-   1) YEREL MOD (Supabase alanları boş): veriler yalnız bu cihazın
-      tarayıcısında durur. Test için yeterli; cihazlar arası senkron YOK.
-   2) SUPABASE MODU: SETUP.md'deki kurulumdan sonra URL + anon key gir.
-      Şifreler Supabase kullanıcılarının şifreleridir; aşağıdaki
-      DM_SIFRE / OYUNCU_SIFRE alanları Supabase modunda YOK SAYILIR
-      (gerçek doğrulama sunucuda olur).                              */
-
+/* Altıdünya Parti Defteri — canlı yapılandırma */
 window.ALT_CONFIG = {
-  /* --- Supabase (boşsa yerel mod) --- */
-  SUPABASE_URL: "",          // örn: "https://abcdefgh.supabase.co"
-  SUPABASE_ANON_KEY: "",     // Project Settings → API → anon public
-
-  /* --- Yalnız YEREL MOD şifreleri (gerçek güvenlik değildir!) --- */
-  DM_SIFRE: "dm",
-  OYUNCU_SIFRE: "parti"
+  SUPABASE_URL: "https://slzhmhnztfvjhrmzkfdx.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsemhtaG56dGZ2amhybXprZmR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3MjMwNTAsImV4cCI6MjEwMzI5OTA1MH0.Hy59K12IPw2T3YI57MRTKnihnOeZr5fdukceBl_z0OU"
 };
