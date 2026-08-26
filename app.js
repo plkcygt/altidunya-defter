@@ -53,6 +53,11 @@
     ? 'Bulut modu — cihazlar arası senkron açık'
     : 'YEREL MOD — veriler yalnız bu cihazda (SETUP.md ile buluta geç)';
 
+  S.oturumBittiginde(()=>{
+    toast('Oturum süresi doldu — lütfen tekrar gir (verin bulutta duruyor)');
+    setTimeout(()=>location.reload(), 1500);
+  });
+
   /* ---------- ana başlangıç ---------- */
   async function baslat(role){
     ROLE = role;
@@ -61,7 +66,7 @@
     const rb = $('#role-badge');
     rb.textContent = role==='dm' ? 'DM' : 'Oyuncu';
     rb.className = role==='dm' ? 'dm' : '';
-    if(role==='dm') $('#tab-dm').classList.remove('hidden');
+    if(role==='dm'){ $('#tab-dm').classList.remove('hidden'); $('#tab-kasa').classList.remove('hidden'); }
 
     async function guvenliYukle(key, seed){
       if(S.mode!=='supabase'){
@@ -74,8 +79,11 @@
         if(r.status==='ok'){ remoteOK[key]=true; return r.value; }
         if(r.status==='empty'){
           remoteOK[key]=true;
-          const v = seed ? JSON.parse(JSON.stringify(seed)) : null;
-          if(v) await S.set(key, v);
+          // Bulut boş: önce BU CİHAZDAKİ kaydı yükselt (tohum en son çare)
+          let yerel = null;
+          try{ const s = localStorage.getItem('altsite_'+key); if(s) yerel = JSON.parse(s); }catch(e){}
+          const v = yerel || (seed ? JSON.parse(JSON.stringify(seed)) : null);
+          if(v){ await S.set(key, v); if(yerel) toast('Bu cihazdaki kayıt buluta taşındı'); }
           return v;
         }
         if(deneme<2) await new Promise(x=>setTimeout(x, 1800));
@@ -382,12 +390,65 @@
         <div class="dm-row"><span>Envanter/kasa tohumu (STATE S8 sonu)</span>
           <button class="btn small-btn" onclick="altSifirla()">Tohuma sıfırla</button></div>
       </div>
+      <h2 class="sec">Kurtarma <span class="muted">(sürüm geçmişi)</span></h2>
+      <div class="card">
+        <div class="dm-row"><span>Kasa &amp; envanterin eski sürümleri</span>
+          <button class="btn small-btn" onclick="altGecmis('parti')">Listele</button></div>
+        <div class="dm-row"><span>Karakter kayıtlarının eski sürümleri</span>
+          <button class="btn small-btn" onclick="altGecmis('karakterler')">Listele</button></div>
+        <div class="dm-row"><span>Bu cihazdaki kaydı buluta zorla yaz</span>
+          <button class="btn small-btn" onclick="altYereliBulutaYaz()">Yükle</button></div>
+        <div id="gecmis-alan" style="margin-top:.6em"></div>
+      </div>
       <p class="muted">Spoiler kuralı: bu sitede yalnız oyuncuların bilebileceği [O] bilgiler yaşar. GM sırları repoda kalır.</p>`;
   }
   window.altParteRest = function(tip){
     $('#char-frame').contentWindow.postMessage({type:'alt-rest', tip}, '*');
     toast(tip==='uzun' ? 'Parti uzun dinlendi — HP/kaynaklar yenilendi' : 'Parti kısa dinlendi');
     document.querySelector('[data-tab="karakterler"]').click();
+  };
+
+  window.altGecmis = async function(key){
+    const alan = $('#gecmis-alan');
+    alan.innerHTML = '<span class="muted">Yükleniyor…</span>';
+    const liste = await S.gecmisAl(key);
+    if(!liste.length){
+      alan.innerHTML = '<span class="muted">Kayıtlı eski sürüm yok. (Geçmiş tablosu kurulduysa bundan sonraki her değişiklik saklanır.)</span>';
+      return;
+    }
+    alan.innerHTML = liste.map((g,i)=>{
+      let ozet = '';
+      try{
+        const v = g.value;
+        if(key==='parti') ozet = (v.envanter||[]).length+' eşya · '+(v.kasa?('temiz '+v.kasa.temiz_gumus+'g'):'');
+        else ozet = Object.keys(v).filter(k=>k[0]!=='_').join(', ');
+      }catch(e){}
+      const t = (g.kaydedildi||'').replace('T',' ').slice(0,16);
+      return `<div class="dm-row"><span>${t} <span class="muted">· ${ozet}</span></span>
+        <button class="btn small-btn" onclick="altGecmisGeriYukle('${key}',${g.id})">Geri yükle</button></div>`;
+    }).join('');
+  };
+
+  window.altGecmisGeriYukle = async function(key, id){
+    const liste = await S.gecmisAl(key);
+    const kayit = liste.find(x=>x.id===id);
+    if(!kayit) return toast('Sürüm bulunamadı');
+    if(!confirm('Bu sürüm geri yüklenecek — şu anki hâl geçmişe kaydedilir. Devam?')) return;
+    await S.set(key, kayit.value);
+    S.markSeen(key, kayit.value);
+    if(key==='parti'){ PARTI = kayit.value; cizKasa(); }
+    if(key==='karakterler'){ pendingChars = kayit.value; pushChars(); }
+    toast('Geri yüklendi');
+  };
+
+  window.altYereliBulutaYaz = async function(){
+    let sayi = 0;
+    for(const key of ['parti','notlar','karakterler']){
+      let v = null;
+      try{ const s = localStorage.getItem('altsite_'+key); if(s) v = JSON.parse(s); }catch(e){}
+      if(v){ await S.set(key, v); S.markSeen(key, v); sayi++; }
+    }
+    toast(sayi+' kayıt buluta yazıldı');
   };
 
   window.altSifirla = function(){
