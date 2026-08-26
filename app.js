@@ -553,13 +553,34 @@
 
   window.altYedekKopyala = async function(){
     const paket = {tarih:new Date().toISOString().slice(0,16), parti:PARTI, notlar:NOTLAR};
-    const metin = JSON.stringify(paket, null, 1);
-    try{ await navigator.clipboard.writeText(metin); toast("Yedek panoya kopyalandı — Claude'a yapıştır"); }
-    catch(e){
-      modal(`<h3>Yedek</h3><p class="muted">Metni seçip kopyala:</p>
-        <textarea style="min-height:200px" onclick="this.select()">${metin.replace(/</g,'&lt;')}</textarea>
-        <div class="butonlar"><button class="btn" onclick="altKapat()">Kapat</button></div>`);
-    }
+    const metin = JSON.stringify(paket);
+    let panoOK = false;
+    try{ await navigator.clipboard.writeText(metin); panoOK = true; }catch(e){}
+    modal('<h3>Yedek paketi</h3>' +
+      '<p class="muted">' + (panoOK ? 'Panoya kopyalandı ✓ — yine de aşağıdan elle de alabilirsin.' : 'Pano izni yok — metni elle kopyala:') + '</p>' +
+      '<textarea id="yd-metin" style="min-height:180px" readonly></textarea>' +
+      '<div class="butonlar">' +
+      '<button class="btn primary" onclick="altYedekSec()">Tümünü seç</button>' +
+      '<button class="btn" onclick="altYedekIndir()">Dosya indir</button>' +
+      '<button class="btn ghost" onclick="altKapat()">Kapat</button></div>');
+    document.querySelector('#yd-metin').value = metin;
+  };
+
+  window.altYedekSec = function(){
+    const t = document.querySelector('#yd-metin');
+    t.focus(); t.select(); t.setSelectionRange(0, 999999);
+    try{ document.execCommand('copy'); toast('Kopyalandı — sohbete Ctrl+V ile yapıştır'); }
+    catch(e){ toast('Seçildi — şimdi Ctrl+C yap'); }
+  };
+
+  window.altYedekIndir = function(){
+    const metin = document.querySelector('#yd-metin').value;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([metin], {type:'application/json'}));
+    a.download = 'altidunya_yedek_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+    toast('İndirildi — dosyayı sohbete sürükleyebilirsin');
   };
 
   /* altSifirla kaldırıldı (2026-08-26): tohumun canlı veriyi ezme riski — kurtarma artık geçmiş/yedek üzerinden. */
