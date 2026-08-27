@@ -3,7 +3,8 @@
   const $ = (s)=>document.querySelector(s);
   const S = window.AltStore;
   let PARTI = null, NOTLAR = null, ROLE = null;
-  const remoteOK = { parti:false, notlar:false, karakterler:false };   // bulut doğrulanmadan buluta yazılmaz
+  const remoteOK = { parti:false, notlar:false, karakterler:false };
+  let ilkYuklemeBitti = false;   // motorun açılış kaydı buluta yazılmasın (yarış hatası)   // bulut doğrulanmadan buluta yazılmaz
   let charFrameReady = false, pendingChars = null;
 
   /* ---------- yardımcılar ---------- */
@@ -138,6 +139,7 @@
     const chars = await guvenliYukle('karakterler', null);
     if(chars){ pendingChars = chars; pushChars(); }
 
+    ilkYuklemeBitti = true;
     cizKasa(); cizNotlar(); if(role==='dm') cizDM();
 
     S.poll(['parti','notlar','karakterler'], (k,v)=>{
@@ -153,6 +155,7 @@
     if(!m) return;
     if(m.type==='alt-ready'){ charFrameReady = true; pushChars(); }
     if(m.type==='alt-save' && m.data){
+      if(!ilkYuklemeBitti) return;   // motor açılışta kendi tohumunu gönderiyor — yok say
       const kilit = S.mode==='supabase' && !remoteOK.karakterler;
       const tamam = await S.set('karakterler', m.data, kilit);
       S.markSeen('karakterler', m.data);
