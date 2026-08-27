@@ -457,9 +457,14 @@
   window.altGecmis = async function(key){
     const alan = $('#gecmis-alan');
     alan.innerHTML = '<span class="muted">Yükleniyor…</span>';
-    const liste = await S.gecmisAl(key);
+    const sonuc = await S.gecmisAl(key);
+    const liste = sonuc.liste || [];
+    if(sonuc.hata){
+      alan.innerHTML = '<span style="color:var(--red)">Geçmiş okunamadı: ' + sonuc.hata + '</span>';
+      return;
+    }
     if(!liste.length){
-      alan.innerHTML = '<span class="muted">Kayıtlı eski sürüm yok. (Geçmiş tablosu kurulduysa bundan sonraki her değişiklik saklanır.)</span>';
+      alan.innerHTML = '<span class="muted">Kayıtlı eski sürüm yok — tetikleyici kurulduysa bundan SONRAKİ değişiklikler saklanır. Bir eşyanın adetini değiştirip tekrar dene.</span>';
       return;
     }
     alan.innerHTML = liste.map((g,i)=>{
@@ -476,8 +481,8 @@
   };
 
   window.altGecmisGeriYukle = async function(key, id){
-    const liste = await S.gecmisAl(key);
-    const kayit = liste.find(x=>x.id===id);
+    const sonuc = await S.gecmisAl(key);
+    const kayit = (sonuc.liste||[]).find(x=>x.id===id);
     if(!kayit) return toast('Sürüm bulunamadı');
     if(!confirm('Bu sürüm geri yüklenecek — şu anki hâl geçmişe kaydedilir. Devam?')) return;
     await S.set(key, kayit.value);

@@ -183,12 +183,19 @@
 
   /* Sürüm geçmişi (kv_gecmis tablosu — sql/gecmis.sql kurulduysa) */
   async function gecmisAl(key){
-    if(!(SB && (jwt || refresh))) return [];
+    if(!(SB && (jwt || refresh))) return {hata:'bulut kapalı', liste:[]};
     try{
       const r = await sbFetch('/rest/v1/kv_gecmis?key=eq.'+key+'&select=id,value,kaydedildi&order=kaydedildi.desc&limit=25');
-      if(!r.ok) return [];
-      return await r.json();
-    }catch(e){ return []; }
+      if(!r.ok){
+        let d={}; try{ d = await r.json(); }catch(e){}
+        const mesaj = r.status===404
+          ? "kv_gecmis tablosu API'de görünmüyor — SQL: notify pgrst, 'reload schema';"
+          : 'HTTP ' + r.status + (d.message ? ' — ' + d.message : '');
+        console.warn('[Altıdünya] gecmis hatası', r.status, d);
+        return {hata: mesaj, liste:[]};
+      }
+      return {hata:null, liste: await r.json()};
+    }catch(e){ return {hata:'bağlantı: '+e.message, liste:[]}; }
   }
 
   /* Yoklama: uzak veri değiştiyse cb(key, value) */
