@@ -438,6 +438,8 @@
           <button class="btn small-btn" onclick="altGecmis('karakterler')">Listele</button></div>
         <div class="dm-row"><span>Bu cihazdaki kaydı buluta zorla yaz</span>
           <button class="btn small-btn" onclick="altYereliBulutaYaz()">Yükle</button></div>
+        <div class="dm-row"><span><b>Bağlantı teşhisi</b> <span class="muted">— bulut sorgularını tek tek dener, ham sonucu gösterir</span></span>
+          <button class="btn small-btn" onclick="altTeshis()">Çalıştır</button></div>
         <div class="dm-row"><span><b>Bulutla karşılaştır</b> <span class="muted">— ekrandaki hâl buluta yazıldı mı?</span></span>
           <button class="btn small-btn" onclick="altDogrula()">Doğrula</button></div>
         <div class="dm-row"><span><b>Panodan yükle</b> <span class="muted">— Claude'un hazırladığı JSON'u uygula</span></span>
@@ -522,6 +524,32 @@
     if(p.parti){ PARTI = p.parti; await kaydetParti(); cizKasa(); }
     if(p.notlar){ NOTLAR = p.notlar; await kaydetNotlar(); cizNotlar(); }
     closeModal(); toast('Uygulandı ve buluta yazıldı');
+  };
+
+  window.altTeshis = async function(){
+    const alan = $('#gecmis-alan');
+    alan.innerHTML = '<span class="muted">Deneniyor…</span>';
+    const cfg = window.ALT_CONFIG || {};
+    let jwt = null;
+    try{ jwt = JSON.parse(localStorage.getItem('alt_oturum')||'{}').jwt; }catch(e){}
+    const satir = [];
+    satir.push('<div class="dm-row"><span>Mod</span><span>'+S.mode+'</span></div>');
+    satir.push('<div class="dm-row"><span>Oturum jetonu</span><span>'+(jwt?'var':'YOK')+'</span></div>');
+    for(const yol of ['kv?select=key&limit=5', 'kv_gecmis?select=id,key,kaydedildi&limit=5']){
+      try{
+        const r = await fetch(cfg.SUPABASE_URL+'/rest/v1/'+yol, {
+          headers:{apikey:cfg.SUPABASE_ANON_KEY, Authorization:'Bearer '+jwt}});
+        const g = await r.text();
+        const kisa = g.length>220 ? g.slice(0,220)+'…' : g;
+        const renk = r.ok ? 'var(--green)' : 'var(--red)';
+        satir.push('<div style="border-bottom:1px solid var(--line);padding:.4em 0">'+
+          '<b>'+yol.split('?')[0]+'</b> → <span style="color:'+renk+'">HTTP '+r.status+'</span>'+
+          '<div class="muted" style="word-break:break-all;font-size:.8em">'+kisa.replace(/</g,'&lt;')+'</div></div>');
+      }catch(e){
+        satir.push('<div class="dm-row"><span>'+yol+'</span><span style="color:var(--red)">'+e.message+'</span></div>');
+      }
+    }
+    alan.innerHTML = satir.join('');
   };
 
   window.altDogrula = async function(){
