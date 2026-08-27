@@ -185,7 +185,7 @@
   async function gecmisAl(key){
     if(!(SB && (jwt || refresh))) return {hata:'bulut kapalı', liste:[]};
     try{
-      const r = await sbFetch('/rest/v1/kv_gecmis?key=eq.'+key+'&select=id,value,kaydedildi&order=kaydedildi.desc&limit=25');
+      const r = await sbFetch('/rest/v1/kv_gecmis?select=id,key,value,kaydedildi&limit=200');
       if(!r.ok){
         let d={}; try{ d = await r.json(); }catch(e){}
         const mesaj = r.status===404
@@ -194,7 +194,12 @@
         console.warn('[Altıdünya] gecmis hatası', r.status, d);
         return {hata: mesaj, liste:[]};
       }
-      return {hata:null, liste: await r.json()};
+      const hepsi = await r.json();
+      const liste = (Array.isArray(hepsi) ? hepsi : [])
+        .filter(x => x.key === key)
+        .sort((a,b) => (b.kaydedildi||'').localeCompare(a.kaydedildi||''))
+        .slice(0, 25);
+      return {hata:null, liste};
     }catch(e){ return {hata:'bağlantı: '+e.message, liste:[]}; }
   }
 
